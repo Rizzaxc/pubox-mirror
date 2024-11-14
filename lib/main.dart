@@ -1,12 +1,13 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:pubox/health_tab/screen.dart';
-import 'package:pubox/home_tab/screen.dart';
-import 'package:pubox/manage_tab/screen.dart';
+import 'package:pubox/health_tab/view.dart';
+import 'package:pubox/home_tab/view.dart';
+import 'package:pubox/manage_tab/view.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+import 'core/sport_switcher.dart';
 
 Future<void> main() async {
   await dotenv.load();
@@ -67,10 +68,16 @@ class _BottomNavBarState extends State<_BottomNavBar>
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-            title: Text('Pubox'),
-            backgroundColor: Colors.redAccent,
+            backgroundColor: Colors.green.shade50,
+            leading: IconButton(
+                onPressed: () {},
+                icon: Icon(
+                  Icons.account_circle,
+                  size: 32,
+                )),
             actions: [
-              IconButton(onPressed: () {}, icon: Icon(Icons.account_circle))
+              SportSwitcher(),
+
             ]),
         body: TabBarView(
             controller: _tabController,
@@ -80,7 +87,7 @@ class _BottomNavBarState extends State<_BottomNavBar>
           index: 0,
           color: Colors.blueAccent.shade100,
           buttonBackgroundColor: Colors.redAccent.shade400,
-          backgroundColor: Colors.white,
+          backgroundColor: Colors.grey.shade50,
           items: <Widget>[
             Icon(
               Icons.home,
@@ -102,7 +109,7 @@ class _BottomNavBarState extends State<_BottomNavBar>
           animationDuration: Duration(milliseconds: 250),
           onTap: (index) {
             setState(() {
-              _tabController.index = _page;
+              _tabController.index = index;
             });
           },
           letIndexChange: (index) => true,

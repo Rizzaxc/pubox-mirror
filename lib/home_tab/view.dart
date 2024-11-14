@@ -11,7 +11,9 @@ class _HomeTabState extends State<HomeTab> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Text('Home Tab'),
+      child: Container(
+
+      )
     );
   }
 }
