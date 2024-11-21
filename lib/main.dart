@@ -32,6 +32,9 @@ class Pubox extends StatelessWidget {
       title: 'Pubox',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.red.shade400),
+        menuTheme: MenuThemeData(
+          style: MenuStyle(padding: WidgetStatePropertyAll<EdgeInsetsGeometry>(EdgeInsets.all(8))),
+        ),
         useMaterial3: true,
       ),
       home: _BottomNavBar(),
