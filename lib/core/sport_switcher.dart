@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:gap/gap.dart';
+import 'package:pubox/core/sport/icons/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SportSwitcher extends StatefulWidget {
@@ -10,7 +11,8 @@ class SportSwitcher extends StatefulWidget {
 }
 
 class _SportSwitcherState extends State<SportSwitcher> {
-  static const double appBarIconSize = 28;
+  static const double appBarIconSize = 16;
+  static const double menuItemIconSize = 12;
   static const storedSportKey = 'STORED_SPORT_PERSISTENT_KEY';
 
   int selectedSport = 0;
@@ -21,24 +23,28 @@ class _SportSwitcherState extends State<SportSwitcher> {
   @override
   void initState() {
     super.initState();
+
     _loadFromStorage();
   }
 
   Future<void> _loadFromStorage() async {
-    final localStorage = await SharedPreferences.getInstance();
+    final localStorage = SharedPreferencesAsync();
+    final storedSport = await localStorage.getInt(storedSportKey) ?? 0;
     setState(() {
-      selectedSport = localStorage.getInt(storedSportKey) ?? 0;
+      selectedSport = storedSport;
     });
   }
 
+  Future<void> _saveToStorage() async {
+    final localStorage = SharedPreferencesAsync();
+    await localStorage.setInt(storedSportKey, selectedSport);
+  }
+
+  // also triggers dep reload
   Future<void> _changeSport(int sport) async {
     setState(() {
       selectedSport = sport;
     });
-
-    // Asynchronously save current state to storage
-    final localStorage = await SharedPreferences.getInstance();
-    localStorage.setInt(storedSportKey, selectedSport); // do not await
   }
 
   @override
@@ -49,38 +55,43 @@ class _SportSwitcherState extends State<SportSwitcher> {
       menuChildren: <Widget>[
         MenuItemButton(
             onPressed: () => _changeSport(0),
-            child: const Row(
+            child: Row(
               children: [
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Icon(Icons.sports_soccer),
-                ),
-                Text('Bóng Đá'),
+                SportIcons.soccer(size: menuItemIconSize),
+                const Gap(8),
+                const Text('Bóng Đá'),
               ],
             )),
+
         MenuItemButton(
-            onPressed: () => _changeSport(1),
-            child: const Row(
-              children: [
-                Padding(
-                  padding: EdgeInsets.all(8.0),
-                  child: Icon(Icons.sports_tennis),
-                ),
-                Text('Tennis'),
-              ],
-            )),
-        MenuItemButton(
-          onPressed: () => _changeSport(2),
-          child: const Row(
+          onPressed: () => _changeSport(1),
+          child: Row(
             children: [
-              Padding(
-                padding: EdgeInsets.all(8.0),
-                child: Icon(Icons.sports_basketball),
-              ),
-              Text('Bóng Rổ'),
+              SportIcons.basketball(size: menuItemIconSize),
+              const Gap(8),
+              const Text('Bóng Rổ'),
             ],
           ),
         ),
+        MenuItemButton(
+            onPressed: () => _changeSport(2),
+            child: Row(
+              children: [
+                SportIcons.tennis(size: menuItemIconSize),
+                const Gap(8),
+                const Text('Tennis'),
+              ],
+            )),
+
+        MenuItemButton(
+            onPressed: () => _changeSport(3),
+            child: Row(
+              children: [
+                SportIcons.badminton(size: menuItemIconSize),
+                const Gap(8),
+                const Text('Cầu Lông'),
+              ],
+            )),
       ],
       builder: (_, MenuController controller, Widget? child) {
         return IconButton(
@@ -92,8 +103,7 @@ class _SportSwitcherState extends State<SportSwitcher> {
               controller.open();
             }
           },
-          icon: _getSportIcon(selectedSport),
-          iconSize: appBarIconSize,
+          icon: _getSportIcon(selectedSport, appBarIconSize),
         );
       },
     );
@@ -102,18 +112,21 @@ class _SportSwitcherState extends State<SportSwitcher> {
   @override
   void dispose() {
     _buttonFocusNode.dispose();
+    _saveToStorage();
     super.dispose();
   }
 }
 
-Icon _getSportIcon(int value) {
+Widget _getSportIcon(int value, double size) {
   switch (value) {
     case 0:
-      return Icon(Icons.sports_soccer);
+      return SportIcons.soccer(size: size);
     case 1:
-      return Icon(Icons.sports_tennis);
+      return SportIcons.basketball(size: size);
     case 2:
-      return Icon(Icons.sports_basketball);
+      return SportIcons.tennis(size: size);
+    case 3:
+      return SportIcons.badminton(size: size);
     default:
       return Icon(Icons.question_mark);
   }

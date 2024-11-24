@@ -1,6 +1,9 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:pubox/health_tab/view.dart';
 import 'package:pubox/home_tab/view.dart';
 import 'package:pubox/manage_tab/view.dart';
@@ -10,6 +13,11 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'core/sport_switcher.dart';
 
 Future<void> main() async {
+  LicenseRegistry.addLicense(() async* {
+    final license = await rootBundle.loadString('assets/google_fonts/OFL.txt');
+    yield LicenseEntryWithLineBreaks(['google_fonts'], license);
+  });
+
   await dotenv.load();
 
   await Supabase.initialize(
@@ -17,6 +25,7 @@ Future<void> main() async {
       anonKey: dotenv.env['SUPABASE_ANON_KEY']!);
 
   // MobileAds.instance.initialize();
+  GoogleFonts.config.allowRuntimeFetching = false;
 
   WidgetsFlutterBinding.ensureInitialized();
   runApp(Pubox());
@@ -32,9 +41,7 @@ class Pubox extends StatelessWidget {
       title: 'Pubox',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.red.shade400),
-        menuTheme: MenuThemeData(
-          style: MenuStyle(padding: WidgetStatePropertyAll<EdgeInsetsGeometry>(EdgeInsets.all(8))),
-        ),
+        textTheme: GoogleFonts.playTextTheme(),
         useMaterial3: true,
       ),
       home: _BottomNavBar(),
