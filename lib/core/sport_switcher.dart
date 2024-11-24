@@ -10,7 +10,7 @@ class SportSwitcher extends StatefulWidget {
   State<SportSwitcher> createState() => _SportSwitcherState();
 }
 
-class _SportSwitcherState extends State<SportSwitcher> {
+class _SportSwitcherState extends State<SportSwitcher> with WidgetsBindingObserver {
   static const double appBarIconSize = 16;
   static const double menuItemIconSize = 12;
   static const storedSportKey = 'STORED_SPORT_PERSISTENT_KEY';
@@ -23,8 +23,8 @@ class _SportSwitcherState extends State<SportSwitcher> {
   @override
   void initState() {
     super.initState();
-
     _loadFromStorage();
+    WidgetsBinding.instance.addObserver(this);
   }
 
   Future<void> _loadFromStorage() async {
@@ -110,9 +110,18 @@ class _SportSwitcherState extends State<SportSwitcher> {
   }
 
   @override
+  Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
+    if (state == AppLifecycleState.paused) {
+      await _saveToStorage();
+    }
+
+    super.didChangeAppLifecycleState(state);
+  }
+
+  @override
   void dispose() {
     _buttonFocusNode.dispose();
-    _saveToStorage();
+    WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
 }
@@ -128,6 +137,6 @@ Widget _getSportIcon(int value, double size) {
     case 3:
       return SportIcons.badminton(size: size);
     default:
-      return Icon(Icons.question_mark);
+      return Icon(Icons.question_mark, size: size);
   }
 }
