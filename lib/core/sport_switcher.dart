@@ -3,9 +3,10 @@ import 'package:gap/gap.dart';
 import 'package:pubox/core/sport/icons/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+// Singleton that dictates which sport (aka mode) is currently active
 class SportSwitcher extends StatefulWidget {
-  const SportSwitcher({super.key});
-
+  const SportSwitcher._();
+  static final instance = SportSwitcher._();
   @override
   State<SportSwitcher> createState() => _SportSwitcherState();
 }

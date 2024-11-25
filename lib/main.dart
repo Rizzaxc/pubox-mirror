@@ -1,4 +1,5 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -60,6 +61,7 @@ class _BottomNavBarState extends State<_BottomNavBar>
     with SingleTickerProviderStateMixin {
   final GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
   late TabController _tabController;
+  int _page = 0;
 
   @override
   void initState() {
@@ -72,32 +74,15 @@ class _BottomNavBarState extends State<_BottomNavBar>
     _tabController.dispose();
     super.dispose();
   }
+
   // final supabase = Supabase.instance.client;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-            backgroundColor: Colors.green.shade50,
-            leading: IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.account_circle,
-                  size: 32,
-                )),
-            actions: [
-              SportSwitcher(),
-
-            ]),
-        body: TabBarView(
-            controller: _tabController,
-            children: [HomeTab(), ManageTab(), HealthTab()]),
         bottomNavigationBar: CurvedNavigationBar(
           key: _bottomNavigationKey,
           index: 0,
-          color: Colors.blueAccent.shade100,
-          buttonBackgroundColor: Colors.redAccent.shade400,
-          backgroundColor: Colors.grey.shade50,
           items: <Widget>[
             Icon(
               Icons.home,
@@ -115,14 +100,18 @@ class _BottomNavBarState extends State<_BottomNavBar>
               color: Colors.white,
             ),
           ],
+          color: Colors.blueAccent.shade100,
+          buttonBackgroundColor: Colors.redAccent.shade400,
+          backgroundColor: Colors.grey.shade50,
           animationCurve: Curves.easeIn,
           animationDuration: Duration(milliseconds: 250),
           onTap: (index) {
             setState(() {
-              _tabController.index = index;
+              _page = index;
             });
           },
           letIndexChange: (index) => true,
-        ));
+        ),
+        body: [HomeTab(), ManageTab(), HealthTab()][_page]);
   }
 }
