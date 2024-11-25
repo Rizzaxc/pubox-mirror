@@ -74,13 +74,14 @@ class _BottomNavBarState extends State<_BottomNavBar>
     _tabController.dispose();
     super.dispose();
   }
+
   // final supabase = Supabase.instance.client;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          toolbarHeight: 75,
+            toolbarHeight: 75,
             title: Text(appBarTitle[_tabController.index]),
             backgroundColor: Colors.green.shade50,
             leading: IconButton(
@@ -91,7 +92,6 @@ class _BottomNavBarState extends State<_BottomNavBar>
                 )),
             actions: [
               SportSwitcher.instance,
-
             ]),
         body: TabBarView(
             controller: _tabController,

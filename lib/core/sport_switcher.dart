@@ -3,6 +3,7 @@ import 'package:gap/gap.dart';
 import 'package:pubox/core/sport/icons/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+// Singleton that dictates which sport (aka mode) is currently active
 class SportSwitcher extends StatefulWidget {
   const SportSwitcher._();
   /// the one and only instance of this singleton
