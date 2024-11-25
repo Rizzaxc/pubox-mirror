@@ -437,6 +437,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.0"
+  lucide_icons_flutter:
+    dependency: transitive
+    description:
+      name: lucide_icons_flutter
+      sha256: fcdca2fc189693c35f5fb9bd9bbdb6916dae54a2662bf6d0b9edde20fd0d5596
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.2.4"
   matcher:
     dependency: transitive
     description:
@@ -677,6 +685,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "8.10.1"
+  shadcn_ui:
+    dependency: "direct main"
+    description:
+      name: shadcn_ui
+      sha256: "0734925d997427974fe813de0ec0512a6095b3ac212ff1b865c8d663ea1e0351"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.15.4"
   shared_preferences:
     dependency: "direct main"
     description:
@@ -834,6 +850,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.7.0"
+  two_dimensional_scrollables:
+    dependency: transitive
+    description:
+      name: two_dimensional_scrollables
+      sha256: b6028c80e782e58a5d18f9491737aae4f70d72dc08050ac92006905c7c0b5e21
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.3"
   typed_data:
     dependency: transitive
     description:

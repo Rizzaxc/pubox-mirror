@@ -61,6 +61,8 @@ class _BottomNavBarState extends State<_BottomNavBar>
   final GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
   late TabController _tabController;
 
+  static const appBarTitle = ['Home', 'Manage', 'Health'];
+
   @override
   void initState() {
     super.initState();
@@ -78,6 +80,8 @@ class _BottomNavBarState extends State<_BottomNavBar>
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          toolbarHeight: 75,
+            title: Text(appBarTitle[_tabController.index]),
             backgroundColor: Colors.green.shade50,
             leading: IconButton(
                 onPressed: () {},
@@ -86,7 +90,7 @@ class _BottomNavBarState extends State<_BottomNavBar>
                   size: 32,
                 )),
             actions: [
-              SportSwitcher(),
+              SportSwitcher.instance,
 
             ]),
         body: TabBarView(

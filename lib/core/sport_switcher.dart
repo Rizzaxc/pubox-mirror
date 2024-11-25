@@ -4,8 +4,9 @@ import 'package:pubox/core/sport/icons/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SportSwitcher extends StatefulWidget {
-  const SportSwitcher({super.key});
-
+  const SportSwitcher._();
+  /// the one and only instance of this singleton
+  static final instance = SportSwitcher._();
   @override
   State<SportSwitcher> createState() => _SportSwitcherState();
 }
