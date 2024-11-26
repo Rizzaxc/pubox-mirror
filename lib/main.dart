@@ -5,12 +5,15 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:pubox/health_tab/view.dart';
+import 'package:pubox/home_tab/home_f_a_b.dart';
 import 'package:pubox/home_tab/view.dart';
 import 'package:pubox/manage_tab/view.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'core/sport_switcher.dart';
+import 'health_tab/health_f_a_b.dart';
+import 'manage_tab/manage_f_a_b.dart';
 
 Future<void> main() async {
   LicenseRegistry.addLicense(() async* {
@@ -25,7 +28,9 @@ Future<void> main() async {
       anonKey: dotenv.env['SUPABASE_ANON_KEY']!);
 
   // MobileAds.instance.initialize();
-  GoogleFonts.config.allowRuntimeFetching = false;
+
+  final env = dotenv.env['ENV'] ?? 'dev';
+  GoogleFonts.config.allowRuntimeFetching = env == 'dev';
 
   WidgetsFlutterBinding.ensureInitialized();
   runApp(Pubox());
@@ -40,8 +45,10 @@ class Pubox extends StatelessWidget {
     return MaterialApp(
       title: 'Pubox',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.red.shade400),
-        textTheme: GoogleFonts.playTextTheme(),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.red.shade800),
+        // textTheme: GoogleFonts.playfairDisplayTextTheme(),
+        // textTheme: GoogleFonts.nunitoTextTheme(),
+        textTheme: GoogleFonts.bitterTextTheme(),
         useMaterial3: true,
       ),
       home: _BottomNavBar(),
@@ -61,7 +68,12 @@ class _BottomNavBarState extends State<_BottomNavBar>
   final GlobalKey<CurvedNavigationBarState> _bottomNavigationKey = GlobalKey();
   late TabController _tabController;
 
-  static const appBarTitle = ['Home', 'Manage', 'Health'];
+  static const appBarTitle = ['Home', 'Hội Nhóm', 'Sức Khoẻ'];
+  final tabFAB = [
+    HomeFAB(),
+    ManageFAB(),
+    HealthFAB(),
+  ];
 
   @override
   void initState() {
@@ -80,53 +92,59 @@ class _BottomNavBarState extends State<_BottomNavBar>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-            toolbarHeight: 75,
-            title: Text(appBarTitle[_tabController.index]),
-            backgroundColor: Colors.green.shade50,
-            leading: IconButton(
-                onPressed: () {},
-                icon: Icon(
-                  Icons.account_circle,
-                  size: 32,
-                )),
-            actions: [
-              SportSwitcher.instance,
-            ]),
-        body: TabBarView(
-            controller: _tabController,
-            children: [HomeTab(), ManageTab(), HealthTab()]),
-        bottomNavigationBar: CurvedNavigationBar(
-          key: _bottomNavigationKey,
-          index: 0,
-          color: Colors.blueAccent.shade100,
-          buttonBackgroundColor: Colors.redAccent.shade400,
-          backgroundColor: Colors.grey.shade50,
-          items: <Widget>[
-            Icon(
-              Icons.home,
-              size: 26,
-              color: Colors.white,
-            ),
-            Icon(
-              Icons.groups,
-              size: 26,
-              color: Colors.white,
-            ),
-            Icon(
-              FontAwesomeIcons.heartPulse,
-              size: 26,
-              color: Colors.white,
-            ),
-          ],
-          animationCurve: Curves.easeIn,
-          animationDuration: Duration(milliseconds: 250),
-          onTap: (index) {
-            setState(() {
-              _tabController.index = index;
-            });
-          },
-          letIndexChange: (index) => true,
-        ));
+      backgroundColor: Colors.green.shade50,
+      appBar: AppBar(
+          toolbarHeight: 60,
+          title: Text(
+            appBarTitle[_tabController.index],
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          backgroundColor: Colors.green.shade50,
+          leading: IconButton(
+              onPressed: () {},
+              icon: Icon(
+                Icons.account_circle,
+                size: 32,
+              )),
+          actions: [
+            SportSwitcher.instance,
+          ]),
+      body: TabBarView(
+          controller: _tabController,
+          children: [HomeTab(), ManageTab(), HealthTab()]),
+      bottomNavigationBar: CurvedNavigationBar(
+        key: _bottomNavigationKey,
+        index: 0,
+        color: Colors.blueAccent.shade100,
+        buttonBackgroundColor: Colors.redAccent.shade400,
+        backgroundColor: Colors.green.shade50,
+        items: <Widget>[
+          Icon(
+            Icons.home,
+            size: 26,
+            color: Colors.white,
+          ),
+          Icon(
+            Icons.groups,
+            size: 26,
+            color: Colors.white,
+          ),
+          Icon(
+            FontAwesomeIcons.heartPulse,
+            size: 26,
+            color: Colors.white,
+          ),
+        ],
+        animationCurve: Curves.easeIn,
+        animationDuration: Duration(milliseconds: 250),
+        onTap: (index) {
+          setState(() {
+            _tabController.index = index;
+          });
+        },
+        letIndexChange: (index) => true,
+      ),
+      floatingActionButton: tabFAB[_tabController.index],
+    );
   }
 }
