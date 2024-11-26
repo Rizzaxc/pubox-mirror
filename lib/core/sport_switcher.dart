@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
-import 'package:pubox/core/sport/icons/main.dart';
+import 'package:pubox/core/icons/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 // Singleton that dictates which sport (aka mode) is currently active
