@@ -60,7 +60,7 @@ class _SportSwitcherState extends State<SportSwitcher> with WidgetsBindingObserv
             child: Row(
               children: [
                 SportIcons.soccer(size: menuItemIconSize),
-                const Gap(8),
+                const Gap(12),
                 const Text('Bóng Đá'),
               ],
             )),
@@ -70,7 +70,7 @@ class _SportSwitcherState extends State<SportSwitcher> with WidgetsBindingObserv
           child: Row(
             children: [
               SportIcons.basketball(size: menuItemIconSize),
-              const Gap(8),
+              const Gap(12),
               const Text('Bóng Rổ'),
             ],
           ),
@@ -80,7 +80,7 @@ class _SportSwitcherState extends State<SportSwitcher> with WidgetsBindingObserv
             child: Row(
               children: [
                 SportIcons.tennis(size: menuItemIconSize),
-                const Gap(8),
+                const Gap(12),
                 const Text('Tennis'),
               ],
             )),
@@ -90,7 +90,7 @@ class _SportSwitcherState extends State<SportSwitcher> with WidgetsBindingObserv
             child: Row(
               children: [
                 SportIcons.badminton(size: menuItemIconSize),
-                const Gap(8),
+                const Gap(12),
                 const Text('Cầu Lông'),
               ],
             )),

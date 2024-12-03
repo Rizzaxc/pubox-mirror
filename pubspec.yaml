@@ -27,12 +27,11 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
   supabase_flutter: ^2.8.1
-  curved_navigation_bar: ^1.0.6
   dropdown_button2: ^2.3.9
   dropdown_search: ^6.0.1
   animations: ^2.0.11
   flutter_slidable: ^3.1.1
-  flutter_animate: ^4.5.1
+  flutter_animate: ^4.5.2
   flutter_form_builder: ^9.5.0
   loading_animation_widget: ^1.3.0
   modal_bottom_sheet: ^3.0.0
@@ -43,15 +42,14 @@ dependencies:
   fl_chart: ^0.69.2
   gap: ^3.0.1
   google_fonts: ^6.2.1
-  flutter_svg: ^2.0.15
+  flutter_svg: ^2.0.16
   vector_graphics: ^1.1.15
-  vector_graphics_compiler: ^1.1.15
+  vector_graphics_compiler: ^1.1.16
   timeago: ^3.7.0
   permission_handler: ^11.3.1
-  shadcn_ui: ^0.15.4
+  shadcn_ui: ^0.16.0
   infinite_scroll_pagination: ^4.1.0
   get: ^4.6.6
-  google_nav_bar: ^5.0.7
   animated_bottom_navigation_bar: ^1.3.3
   # awesome_notifications: ^0.10.0
   # google_mobile_ads: ^5.2.0
@@ -82,6 +80,11 @@ flutter:
     - .env
     - assets/google_fonts/
     - assets/icons/
+
+  fonts:
+    - family: PuboxIcons
+      fonts:
+        - asset: assets/fonts/PuboxIcons.ttf
 
     # An image asset can refer to one or more resolution-specific "variants", see
     # https://flutter.dev/to/resolution-aware-images

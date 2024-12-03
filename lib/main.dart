@@ -1,17 +1,17 @@
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:pubox/health_tab/view.dart';
 import 'package:pubox/home_tab/home_f_a_b.dart';
 import 'package:pubox/home_tab/view.dart';
 import 'package:pubox/manage_tab/view.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'core/icons/pubox_icons.dart';
 import 'core/sport_switcher.dart';
 import 'health_tab/health_f_a_b.dart';
 import 'manage_tab/manage_f_a_b.dart';
@@ -49,7 +49,8 @@ class Pubox extends StatelessWidget {
     return MaterialApp(
       title: 'Pubox',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.red.shade800),
+        colorScheme: ColorScheme.fromSeed(
+            seedColor: Colors.red.shade800, surface: Colors.green.shade50),
         textTheme: GoogleFonts.bitterTextTheme(),
         useMaterial3: true,
       ),
@@ -69,7 +70,7 @@ class _BottomNavBarState extends State<_BottomNavBar>
     with SingleTickerProviderStateMixin {
   int currentTabIndex = 0;
 
-  static const appBarTitle = ['Home', 'Hội Nhóm', 'Sức Khoẻ', 'Profile'];
+  static const appBarTitle = ['Home', 'Quản Lý', 'Sức Khoẻ', 'Profile'];
   final tabFABs = [
     HomeFAB(),
     ManageFAB(),
@@ -78,10 +79,10 @@ class _BottomNavBarState extends State<_BottomNavBar>
   ];
 
   static var tabIcons = <IconData>[
-    FontAwesomeIcons.house,
-    FontAwesomeIcons.users,
+    CupertinoIcons.house_fill,
+    Icons.edit_calendar_rounded,
     FontAwesomeIcons.heartPulse,
-    FontAwesomeIcons.solidUser
+    PuboxIcons.profile
   ];
 
   @override
@@ -101,7 +102,6 @@ class _BottomNavBarState extends State<_BottomNavBar>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.green.shade50,
       appBar: AppBar(
           title: Text(
             appBarTitle[currentTabIndex],
@@ -110,12 +110,11 @@ class _BottomNavBarState extends State<_BottomNavBar>
           leading: IconButton(
               onPressed: () {},
               icon: Icon(Icons.notifications_active_outlined)),
-          backgroundColor: Colors.green.shade50,
           actions: [
             SportSwitcher.instance,
           ]),
       body: [
-        HomeTab(),
+        HomeTab.instance,
         ManageTab(),
         HealthTab(),
         ProfileTab()
