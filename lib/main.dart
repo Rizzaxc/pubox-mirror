@@ -1,22 +1,23 @@
+import 'dart:async';
+
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:pubox/health_tab/view.dart';
 import 'package:pubox/home_tab/home_f_a_b.dart';
-import 'package:pubox/home_tab/view.dart';
-import 'package:pubox/manage_tab/view.dart';
+import 'package:pubox/router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'core/icons/pubox_icons.dart';
 import 'core/sport_switcher.dart';
+import 'core/utils.dart';
 import 'health_tab/health_f_a_b.dart';
 import 'manage_tab/manage_f_a_b.dart';
 import 'profile_tab/profile_f_a_b.dart';
-import 'profile_tab/view.dart';
 
 Future<void> main() async {
   LicenseRegistry.addLicense(() async* {
@@ -40,13 +41,15 @@ Future<void> main() async {
   runApp(Pubox());
 }
 
+final supabase = Supabase.instance.client;
+
 class Pubox extends StatelessWidget {
   const Pubox({super.key});
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Pubox',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
@@ -54,29 +57,20 @@ class Pubox extends StatelessWidget {
         textTheme: GoogleFonts.bitterTextTheme(),
         useMaterial3: true,
       ),
-      home: _BottomNavBar(),
+      routerConfig: puboxRouter,
     );
   }
 }
 
-class _BottomNavBar extends StatefulWidget {
-  const _BottomNavBar();
+class ScaffoldWithNavBar extends StatelessWidget {
+  /// Constructs an [ScaffoldWithNavBar].
+  const ScaffoldWithNavBar({
+    required this.navigationShell,
+    Key? key,
+  }) : super(key: key ?? const ValueKey<String>('ScaffoldWithNavBar'));
 
-  @override
-  _BottomNavBarState createState() => _BottomNavBarState();
-}
-
-class _BottomNavBarState extends State<_BottomNavBar>
-    with SingleTickerProviderStateMixin {
-  int currentTabIndex = 0;
-
-  static const appBarTitle = ['Home', 'Quản Lý', 'Sức Khoẻ', 'Profile'];
-  final tabFABs = [
-    HomeFAB(),
-    ManageFAB(),
-    HealthFAB(),
-    ProfileFAB(),
-  ];
+  /// The navigation shell and container for the branch Navigators.
+  final StatefulNavigationShell navigationShell;
 
   static var tabIcons = <IconData>[
     CupertinoIcons.house_fill,
@@ -85,62 +79,111 @@ class _BottomNavBarState extends State<_BottomNavBar>
     PuboxIcons.profile
   ];
 
-  @override
-  void initState() {
-    super.initState();
-    // _tabController = TabController(length: 3, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    // _tabController.dispose();
-    super.dispose();
-  }
-
-  // final supabase = Supabase.instance.client;
+  static const fabs = [HomeFAB(), ManageFAB(), HealthFAB(), ProfileFAB()];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-          title: Text(
-            appBarTitle[currentTabIndex],
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
-          leading: IconButton(
-              onPressed: () {},
-              icon: Icon(Icons.notifications_active_outlined)),
-          actions: [
-            SportSwitcher.instance,
-          ]),
-      body: [
-        HomeTab.instance,
-        ManageTab(),
-        HealthTab(),
-        ProfileTab()
-      ][currentTabIndex],
+      // The StatefulNavigationShell from the associated StatefulShellRoute is
+      // directly passed as the body of the Scaffold.
+      body: navigationShell,
+      floatingActionButtonLocation: FloatingActionButtonLocation.miniCenterDocked,
+      floatingActionButton: fabs[navigationShell.currentIndex],
       extendBody: true,
       bottomNavigationBar: AnimatedBottomNavigationBar(
-        // color: Colors.blueAccent.shade100,
-        // buttonBackgroundColor: Colors.redAccent.shade400,
-        activeIndex: currentTabIndex,
+        activeIndex: navigationShell.currentIndex,
         backgroundColor: Colors.green.shade100,
         splashRadius: 0,
         activeColor: Colors.red.shade900,
         icons: tabIcons,
         iconSize: 28,
-        onTap: (index) {
-          setState(() {
-            currentTabIndex = index;
-          });
-        },
+        borderWidth: 1,
+        borderColor: Colors.green.shade900,
+        onTap: (int index) => _onTap(context, index),
         gapLocation: GapLocation.center,
         notchSmoothness: NotchSmoothness.softEdge,
         notchMargin: 8,
       ),
-      floatingActionButton: tabFABs[currentTabIndex],
-      floatingActionButtonLocation:
-          FloatingActionButtonLocation.miniCenterDocked,
+    );
+  }
+
+  void _onTap(BuildContext context, int index) {
+    // When navigating to a new branch, it's recommended to use the goBranch
+    // method, as doing so makes sure the last navigation state of the
+    // Navigator for the branch is restored.
+    navigationShell.goBranch(
+      index,
+      // A common pattern when using bottom navigation bars is to support
+      // navigating to the initial location when tapping the item that is
+      // already active. This example demonstrates how to support this behavior,
+      // using the initialLocation parameter of goBranch.
+      initialLocation: index == navigationShell.currentIndex,
     );
   }
 }
+
+//
+// class _BottomNavBar extends StatefulWidget {
+//   const _BottomNavBar();
+//
+//   @override
+//   _BottomNavBarState createState() => _BottomNavBarState();
+// }
+//
+// class _BottomNavBarState extends State<_BottomNavBar>
+//     with SingleTickerProviderStateMixin {
+//   int currentTabIndex = 0;
+//   // late final StreamSubscription<AuthState> _authStateSubscription;
+//
+//   static const appBarTitle = ['Home', 'Quản Lý', 'Sức Khoẻ', 'Profile'];
+//
+//
+//
+//
+//
+//   @override
+//   void initState() {
+//     // _authStateSubscription = supabase.auth.onAuthStateChange.listen(
+//     //   (data) {
+//     //     final session = data.session;
+//     //   },
+//     //   onError: (error) {},
+//     // );
+//
+//     super.initState();
+//     // _tabController = TabController(length: 3, vsync: this);
+//   }
+//
+//   @override
+//   void dispose() {
+//     // _tabController.dispose();
+//     // _authStateSubscription.cancel();
+//     super.dispose();
+//   }
+//
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(
+//           title: Text(
+//             appBarTitle[currentTabIndex],
+//             style: TextStyle(fontWeight: FontWeight.bold),
+//           ),
+//           leading: IconButton(
+//               onPressed: () {},
+//               icon: Icon(Icons.notifications_active_outlined)),
+//           actions: [
+//             SportSwitcher.instance,
+//           ]),
+//       body: [
+//         HomeTab.instance,
+//         ManageTab(),
+//         HealthTab(),
+//         ProfileTab()
+//       ][currentTabIndex],
+//       extendBody: true,
+//
+//
+//     );
+//   }
+// }

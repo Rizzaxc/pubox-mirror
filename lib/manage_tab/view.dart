@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pubox/core/sport_switcher.dart';
 
 class ManageTab extends StatefulWidget {
   const ManageTab({super.key});
@@ -10,8 +11,17 @@ class ManageTab extends StatefulWidget {
 class _ManageTabState extends State<ManageTab> {
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Text('Manage Tab'),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Quản Lý'),
+        scrolledUnderElevation: 0,
+        leading: IconButton(
+            onPressed: () {}, icon: Icon(Icons.notifications_active_outlined)),
+        actions: [SportSwitcher.instance],
+      ),
+      body: Center(
+        child: Text('Manage Tab'),
+      ),
     );
   }
 }
