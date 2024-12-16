@@ -1,22 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
+import 'core/player.dart';
 import 'health_tab/view.dart';
 import 'home_tab/view.dart';
 import 'main.dart';
 import 'manage_tab/view.dart';
 import 'profile_tab/view.dart';
+import 'welcome_flow/welcome_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
 final GlobalKey<NavigatorState> _sectionANavigatorKey =
-    GlobalKey<NavigatorState>(debugLabel: 'sectionANav');
+    GlobalKey<NavigatorState>(debugLabel: 'sectionNav');
 
 final GoRouter puboxRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,
-  initialLocation: '/home',
+  initialLocation: '/welcome',
   routes: <RouteBase>[
-    // #docregion configuration-builder
+    GoRoute(
+      path: '/welcome',
+      builder: (context, state) => const WelcomeScreen(),
+      redirect: (context, state) {
+        // if user already logged in, redirect to /home
+        if (supabase.auth.currentSession != null) {
+          return '/home';
+        }
+        return null;
+      },
+    ),
     StatefulShellRoute.indexedStack(
       builder: (context, state, navigationShell) {
         // Return the widget that implements the custom shell (in this case
@@ -46,8 +59,6 @@ final GoRouter puboxRouter = GoRouter(
         StatefulShellBranch(
           routes: <RouteBase>[
             GoRoute(
-              // The screen to display as the root in the first tab of the
-              // bottom navigation bar.
               path: '/manage',
               builder: (context, state) => ManageTab(),
               routes: <RouteBase>[],
@@ -58,8 +69,6 @@ final GoRouter puboxRouter = GoRouter(
         StatefulShellBranch(
           routes: <RouteBase>[
             GoRoute(
-              // The screen to display as the root in the first tab of the
-              // bottom navigation bar.
               path: '/health',
               builder: (context, state) => HealthTab(),
               routes: <RouteBase>[],
@@ -70,8 +79,6 @@ final GoRouter puboxRouter = GoRouter(
         StatefulShellBranch(
           routes: <RouteBase>[
             GoRoute(
-              // The screen to display as the root in the first tab of the
-              // bottom navigation bar.
               path: '/profile',
               builder: (context, state) => ProfileTab(),
               routes: <RouteBase>[],

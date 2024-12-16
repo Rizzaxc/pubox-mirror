@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:pubox/home_tab/home_f_a_b.dart';
 import 'package:pubox/router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -15,6 +16,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'core/icons/pubox_icons.dart';
 import 'core/sport_switcher.dart';
 import 'core/utils.dart';
+import 'core/player.dart';
 import 'health_tab/health_f_a_b.dart';
 import 'manage_tab/manage_f_a_b.dart';
 import 'profile_tab/profile_f_a_b.dart';
@@ -47,18 +49,21 @@ final supabase = Supabase.instance.client;
 class Pubox extends StatelessWidget {
   const Pubox({super.key});
 
-  // This widget is the root of your application.
+  // Root App
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'Pubox',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.red.shade800, surface: Colors.green.shade50),
-        textTheme: GoogleFonts.bitterTextTheme(),
-        useMaterial3: true,
+    return ChangeNotifierProvider(
+      create: (_) => Player(),
+      child: MaterialApp.router(
+        title: 'Pubox',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(
+              seedColor: Colors.red.shade800, surface: Colors.green.shade50),
+          textTheme: GoogleFonts.bitterTextTheme(),
+          useMaterial3: true,
+        ),
+        routerConfig: puboxRouter,
       ),
-      routerConfig: puboxRouter,
     );
   }
 }
@@ -80,6 +85,7 @@ class ScaffoldWithNavBar extends StatelessWidget {
     PuboxIcons.profile
   ];
 
+  // TODO: move into their own screen
   static const fabs = [HomeFAB(), ManageFAB(), HealthFAB(), ProfileFAB()];
 
   @override
@@ -88,7 +94,8 @@ class ScaffoldWithNavBar extends StatelessWidget {
       // The StatefulNavigationShell from the associated StatefulShellRoute is
       // directly passed as the body of the Scaffold.
       body: navigationShell,
-      floatingActionButtonLocation: FloatingActionButtonLocation.miniCenterDocked,
+      floatingActionButtonLocation:
+          FloatingActionButtonLocation.miniCenterDocked,
       floatingActionButton: fabs[navigationShell.currentIndex],
       extendBody: true,
       bottomNavigationBar: AnimatedBottomNavigationBar(

@@ -1,0 +1,18 @@
+#!/bin/sh
+
+# Find all staged Dart files and ensure they're formatted using the official tool
+DART_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '\.dart$')
+
+# If no Dart files are staged, exit
+if [ -z "$DART_FILES" ]; then
+    exit 0
+fi
+
+# Run dart format on staged files
+eval "$(dart format "$DART_FILES")"
+
+# Stage the formatted files
+echo "$DART_FILES" | xargs git add
+
+exit 0
+

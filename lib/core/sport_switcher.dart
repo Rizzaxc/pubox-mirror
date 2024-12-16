@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
-import 'package:pubox/core/icons/main.dart';
+import 'icons/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SelectedSport extends ChangeNotifier {
@@ -34,6 +33,12 @@ class SelectedSport extends ChangeNotifier {
     _id = sport;
     notifyListeners();
   }
+
+  @override
+  Future<void> dispose() async {
+    await saveToStorage();
+    super.dispose();
+  }
 }
 
 class SportSwitcher extends StatelessWidget {
@@ -56,9 +61,9 @@ class SportSwitcher extends StatelessWidget {
             onPressed: () =>
                 Provider.of<SelectedSport>(context, listen: false).change(0),
             child: Row(
+              spacing: 12,
               children: [
                 SportIcons.soccer(size: menuItemIconSize),
-                const Gap(12),
                 const Text('Bóng Đá'),
               ],
             )),
@@ -66,9 +71,9 @@ class SportSwitcher extends StatelessWidget {
           onPressed: () =>
               Provider.of<SelectedSport>(context, listen: false).change(1),
           child: Row(
+            spacing: 12,
             children: [
               SportIcons.basketball(size: menuItemIconSize),
-              const Gap(12),
               const Text('Bóng Rổ'),
             ],
           ),
@@ -77,9 +82,9 @@ class SportSwitcher extends StatelessWidget {
             onPressed: () =>
                 Provider.of<SelectedSport>(context, listen: false).change(2),
             child: Row(
+              spacing: 12,
               children: [
                 SportIcons.tennis(size: menuItemIconSize),
-                const Gap(12),
                 const Text('Tennis'),
               ],
             )),
@@ -87,9 +92,9 @@ class SportSwitcher extends StatelessWidget {
             onPressed: () =>
                 Provider.of<SelectedSport>(context, listen: false).change(3),
             child: Row(
+              spacing: 12,
               children: [
                 SportIcons.badminton(size: menuItemIconSize),
-                const Gap(12),
                 const Text('Cầu Lông'),
               ],
             )),

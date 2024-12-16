@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:pubox/core/sport_switcher.dart';
 import 'package:pubox/core/utils.dart';
@@ -82,7 +81,8 @@ class _HomeTabState extends State<HomeTab>
                     dividerHeight: 0,
                   ),
                 ),
-                const SliverGap(16),
+                // const SliverGap(16),
+                // SliverPadding(padding: 16),
               ];
             },
             body: TabBarView(controller: _tabController, children: [
@@ -125,7 +125,7 @@ class _TeammateSectionState extends State<TeammateSection> {
             Card(
               child: Placeholder(),
             ),
-            Gap(128)
+            // Gap(128)
           ],
         ),
       ],
@@ -163,7 +163,7 @@ class _ChallengerSectionState extends State<ChallengerSection> {
             Card(
               child: Placeholder(),
             ),
-            Gap(128)
+            // Gap(128)
           ],
         ),
       ],
@@ -201,7 +201,7 @@ class _NeutralSectionState extends State<NeutralSection> {
             Card(
               child: Placeholder(),
             ),
-            Gap(128)
+            // Gap(128)
           ],
         ),
       ],
@@ -239,7 +239,7 @@ class _LocationSectionState extends State<LocationSection> {
             Card(
               child: Placeholder(),
             ),
-            Gap(128)
+            // Gap(128)
           ],
         ),
       ],

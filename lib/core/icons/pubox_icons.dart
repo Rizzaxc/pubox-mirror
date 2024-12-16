@@ -1,10 +1,3 @@
-// Place fonts/PuboxIcons.ttf in your fonts/ directory and
-// add the following to your pubspec.yaml
-// flutter:
-//   fonts:
-//    - family: PuboxIcons
-//      fonts:
-//       - asset: fonts/PuboxIcons.ttf
 import 'package:flutter/widgets.dart';
 
 class PuboxIcons {

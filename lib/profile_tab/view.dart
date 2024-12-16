@@ -17,7 +17,7 @@ class _ProfileTabState extends State<ProfileTab> {
       value: SelectedSport.instance,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Profile'),
+          title: const Text('Hồ Sơ'),
           scrolledUnderElevation: 0,
           leading: IconButton(
               onPressed: () {},
