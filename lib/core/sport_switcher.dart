@@ -1,62 +1,60 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:provider/provider.dart';
 import 'package:pubox/core/icons/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-// Singleton that dictates which sport (aka mode) is currently active
-class SportSwitcher extends StatefulWidget {
-  const SportSwitcher._();
-  /// the one and only instance of this singleton
-  static final instance = SportSwitcher._();
-  @override
-  State<SportSwitcher> createState() => _SportSwitcherState();
-}
-
-class _SportSwitcherState extends State<SportSwitcher> with WidgetsBindingObserver {
-  static const double appBarIconSize = 16;
-  static const double menuItemIconSize = 12;
+class SelectedSport extends ChangeNotifier {
   static const storedSportKey = 'STORED_SPORT_PERSISTENT_KEY';
 
-  int selectedSport = 0;
-
-  final FocusNode _buttonFocusNode =
-      FocusNode(debugLabel: 'SportSwitcher Button');
-
-  @override
-  void initState() {
-    super.initState();
-    _loadFromStorage();
-    WidgetsBinding.instance.addObserver(this);
+  SelectedSport._() {
+    loadFromStorage();
   }
+  static final _instance = SelectedSport._();
+  static SelectedSport get instance => _instance;
 
-  Future<void> _loadFromStorage() async {
+  int _id = 0;
+  int get id => _id;
+
+  Future<void> loadFromStorage() async {
     final localStorage = SharedPreferencesAsync();
     final storedSport = await localStorage.getInt(storedSportKey) ?? 0;
-    setState(() {
-      selectedSport = storedSport;
-    });
+    if (storedSport != _id) {
+      change(storedSport);
+    }
   }
 
-  Future<void> _saveToStorage() async {
+  Future<void> saveToStorage() async {
     final localStorage = SharedPreferencesAsync();
-    await localStorage.setInt(storedSportKey, selectedSport);
+
+    await localStorage.setInt(storedSportKey, _id);
   }
 
-  // also triggers dep reload
-  Future<void> _changeSport(int sport) async {
-    setState(() {
-      selectedSport = sport;
-    });
+  void change(int sport) {
+    _id = sport;
+    notifyListeners();
   }
+}
+
+class SportSwitcher extends StatelessWidget {
+  const SportSwitcher._({super.key});
+
+  static final _instance = SportSwitcher._();
+
+  static SportSwitcher get instance => _instance;
+
+  static const double appBarIconSize = 16;
+  static const double menuItemIconSize = 12;
 
   @override
   Widget build(BuildContext context) {
     return MenuAnchor(
       style: MenuStyle(), // TODO
-      childFocusNode: _buttonFocusNode,
+      onClose: Provider.of<SelectedSport>(context, listen: false).saveToStorage,
       menuChildren: <Widget>[
         MenuItemButton(
-            onPressed: () => _changeSport(0),
+            onPressed: () =>
+                Provider.of<SelectedSport>(context, listen: false).change(0),
             child: Row(
               children: [
                 SportIcons.soccer(size: menuItemIconSize),
@@ -64,9 +62,9 @@ class _SportSwitcherState extends State<SportSwitcher> with WidgetsBindingObserv
                 const Text('Bóng Đá'),
               ],
             )),
-
         MenuItemButton(
-          onPressed: () => _changeSport(1),
+          onPressed: () =>
+              Provider.of<SelectedSport>(context, listen: false).change(1),
           child: Row(
             children: [
               SportIcons.basketball(size: menuItemIconSize),
@@ -76,7 +74,8 @@ class _SportSwitcherState extends State<SportSwitcher> with WidgetsBindingObserv
           ),
         ),
         MenuItemButton(
-            onPressed: () => _changeSport(2),
+            onPressed: () =>
+                Provider.of<SelectedSport>(context, listen: false).change(2),
             child: Row(
               children: [
                 SportIcons.tennis(size: menuItemIconSize),
@@ -84,9 +83,9 @@ class _SportSwitcherState extends State<SportSwitcher> with WidgetsBindingObserv
                 const Text('Tennis'),
               ],
             )),
-
         MenuItemButton(
-            onPressed: () => _changeSport(3),
+            onPressed: () =>
+                Provider.of<SelectedSport>(context, listen: false).change(3),
             child: Row(
               children: [
                 SportIcons.badminton(size: menuItemIconSize),
@@ -97,7 +96,6 @@ class _SportSwitcherState extends State<SportSwitcher> with WidgetsBindingObserv
       ],
       builder: (_, MenuController controller, Widget? child) {
         return IconButton(
-          focusNode: _buttonFocusNode,
           onPressed: () {
             if (controller.isOpen) {
               controller.close();
@@ -105,26 +103,12 @@ class _SportSwitcherState extends State<SportSwitcher> with WidgetsBindingObserv
               controller.open();
             }
           },
-          icon: _getSportIcon(selectedSport, appBarIconSize),
+          icon: Consumer<SelectedSport>(
+              builder: (_, selectedSport, __) =>
+                  _getSportIcon(selectedSport.id, appBarIconSize)),
         );
       },
     );
-  }
-
-  @override
-  Future<void> didChangeAppLifecycleState(AppLifecycleState state) async {
-    if (state == AppLifecycleState.paused) {
-      await _saveToStorage();
-    }
-
-    super.didChangeAppLifecycleState(state);
-  }
-
-  @override
-  void dispose() {
-    _buttonFocusNode.dispose();
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
   }
 }
 

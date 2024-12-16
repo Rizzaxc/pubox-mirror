@@ -34,11 +34,12 @@ Future<void> main() async {
   // MobileAds.instance.initialize();
 
   final env = dotenv.env['ENV'] ?? 'dev';
+
   // GoogleFonts.config.allowRuntimeFetching = env == 'dev';
   GoogleFonts.config.allowRuntimeFetching = false;
 
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(Pubox());
+  runApp(const Pubox());
 }
 
 final supabase = Supabase.instance.client;

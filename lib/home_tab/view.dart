@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:gap/gap.dart';
+import 'package:provider/provider.dart';
 import 'package:pubox/core/sport_switcher.dart';
 import 'package:pubox/core/utils.dart';
 import 'package:pubox/home_tab/home_f_a_b.dart';
@@ -58,36 +59,40 @@ class _HomeTabState extends State<HomeTab>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home'),
-        scrolledUnderElevation: 0,
-        leading: IconButton(
-            onPressed: () {}, icon: Icon(Icons.notifications_active_outlined)),
-        actions: [SportSwitcher.instance],
-      ),
-      body: NestedScrollView(
-        headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-          return [
-            SliverAppBar(
-              toolbarHeight: 8,
-              bottom: TabBar(
-                controller: _tabController,
-                tabs: homeSections,
-                dividerHeight: 0,
-              ),
-            ),
-            const SliverGap(16),
-          ];
-        },
-        body: TabBarView(controller: _tabController, children: [
-          TeammateSection(),
-          ChallengerSection(),
-          NeutralSection(),
-          LocationSection()
-        ]),
-      ),
-    );
+    return ChangeNotifierProvider<SelectedSport>.value(
+        value: SelectedSport.instance,
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text('Home'),
+            scrolledUnderElevation: 0,
+            leading: IconButton(
+                onPressed: () {},
+                icon: Icon(Icons.notifications_active_outlined)),
+            actions: [SportSwitcher.instance],
+          ),
+          body: NestedScrollView(
+            headerSliverBuilder:
+                (BuildContext context, bool innerBoxIsScrolled) {
+              return [
+                SliverAppBar(
+                  toolbarHeight: 8,
+                  bottom: TabBar(
+                    controller: _tabController,
+                    tabs: homeSections,
+                    dividerHeight: 0,
+                  ),
+                ),
+                const SliverGap(16),
+              ];
+            },
+            body: TabBarView(controller: _tabController, children: [
+              TeammateSection(),
+              ChallengerSection(),
+              NeutralSection(),
+              LocationSection()
+            ]),
+          ),
+        ));
   }
 }
 
