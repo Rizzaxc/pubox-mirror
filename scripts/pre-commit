@@ -1,5 +1,4 @@
 #!/bin/sh
-
 # Find all staged Dart files and ensure they're formatted using the official tool
 DART_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '\.dart$')
 

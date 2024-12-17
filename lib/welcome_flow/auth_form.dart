@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:supabase_auth_ui/supabase_auth_ui.dart';
+
+import '../misc/flutter_auth_ui/src/components/supa_email_auth.dart';
 
 class AuthForm extends StatelessWidget {
   const AuthForm({super.key});
