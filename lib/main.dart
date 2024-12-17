@@ -61,7 +61,12 @@ class Pubox extends StatelessWidget {
               seedColor: Colors.red.shade800, surface: Colors.green.shade50),
           textTheme: GoogleFonts.bitterTextTheme(),
           useMaterial3: true,
-        ),
+          pageTransitionsTheme: const PageTransitionsTheme(
+            builders: <TargetPlatform, PageTransitionsBuilder>{
+              TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+              TargetPlatform.android: ZoomPageTransitionsBuilder()
+            },
+          ),        ),
         routerConfig: puboxRouter,
       ),
     );

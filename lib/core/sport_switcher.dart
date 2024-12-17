@@ -5,8 +5,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class SelectedSport extends ChangeNotifier {
   static const storedSportKey = 'STORED_SPORT_PERSISTENT_KEY';
+  late final SharedPreferencesAsync localStorage;
 
   SelectedSport._() {
+    localStorage = SharedPreferencesAsync();
     loadFromStorage();
   }
   static final _instance = SelectedSport._();
@@ -16,7 +18,6 @@ class SelectedSport extends ChangeNotifier {
   int get id => _id;
 
   Future<void> loadFromStorage() async {
-    final localStorage = SharedPreferencesAsync();
     final storedSport = await localStorage.getInt(storedSportKey) ?? 0;
     if (storedSport != _id) {
       change(storedSport);
@@ -24,19 +25,17 @@ class SelectedSport extends ChangeNotifier {
   }
 
   Future<void> saveToStorage() async {
-    final localStorage = SharedPreferencesAsync();
-
     await localStorage.setInt(storedSportKey, _id);
   }
 
   void change(int sport) {
     _id = sport;
+    saveToStorage();
     notifyListeners();
   }
 
   @override
   Future<void> dispose() async {
-    await saveToStorage();
     super.dispose();
   }
 }
@@ -55,7 +54,6 @@ class SportSwitcher extends StatelessWidget {
   Widget build(BuildContext context) {
     return MenuAnchor(
       style: MenuStyle(), // TODO
-      onClose: Provider.of<SelectedSport>(context, listen: false).saveToStorage,
       menuChildren: <Widget>[
         MenuItemButton(
             onPressed: () =>
