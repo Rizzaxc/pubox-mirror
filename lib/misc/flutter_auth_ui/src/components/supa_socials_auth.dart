@@ -1,57 +1,38 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:crypto/crypto.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../../../core/icons/main.dart';
 import '../localizations/supa_socials_auth_localization.dart';
 import '../utils/constants.dart';
 
 extension on OAuthProvider {
   IconData get iconData => switch (this) {
         OAuthProvider.apple => FontAwesomeIcons.apple,
-        OAuthProvider.azure => FontAwesomeIcons.microsoft,
-        OAuthProvider.bitbucket => FontAwesomeIcons.bitbucket,
         OAuthProvider.discord => FontAwesomeIcons.discord,
         OAuthProvider.facebook => FontAwesomeIcons.facebook,
-        OAuthProvider.figma => FontAwesomeIcons.figma,
-        OAuthProvider.github => FontAwesomeIcons.github,
-        OAuthProvider.gitlab => FontAwesomeIcons.gitlab,
         OAuthProvider.google => FontAwesomeIcons.google,
         OAuthProvider.linkedin => FontAwesomeIcons.linkedin,
-        OAuthProvider.slack => FontAwesomeIcons.slack,
-        OAuthProvider.spotify => FontAwesomeIcons.spotify,
-        OAuthProvider.twitch => FontAwesomeIcons.twitch,
-        OAuthProvider.twitter => FontAwesomeIcons.xTwitter,
         _ => Icons.close,
       };
 
   Color get btnBgColor => switch (this) {
         OAuthProvider.apple => Colors.black,
-        OAuthProvider.azure => Colors.blueAccent,
-        OAuthProvider.bitbucket => Colors.blue,
         OAuthProvider.discord => Colors.purple,
         OAuthProvider.facebook => const Color(0xFF3b5998),
-        OAuthProvider.figma => const Color.fromRGBO(241, 77, 27, 1),
-        OAuthProvider.github => Colors.black,
-        OAuthProvider.gitlab => Colors.deepOrange,
         OAuthProvider.google => Colors.white,
-        OAuthProvider.kakao => const Color(0xFFFFE812),
-        OAuthProvider.keycloak => const Color.fromRGBO(0, 138, 170, 1),
         OAuthProvider.linkedin => const Color.fromRGBO(0, 136, 209, 1),
-        OAuthProvider.notion => const Color.fromRGBO(69, 75, 78, 1),
-        OAuthProvider.slack => const Color.fromRGBO(74, 21, 75, 1),
-        OAuthProvider.spotify => Colors.green,
-        OAuthProvider.twitch => Colors.purpleAccent,
-        OAuthProvider.twitter => Colors.black,
-        OAuthProvider.workos => const Color.fromRGBO(99, 99, 241, 1),
-        // ignore: unreachable_switch_case
         _ => Colors.black,
       };
 
@@ -138,7 +119,7 @@ class SupaSocialsAuth extends StatefulWidget {
     this.redirectUrl,
     required this.onSuccess,
     this.onError,
-    this.socialButtonVariant = SocialButtonVariant.iconAndText,
+    this.socialButtonVariant = SocialButtonVariant.icon,
     this.showSuccessSnackBar = true,
     this.scopes,
     this.queryParams,
@@ -244,179 +225,109 @@ class _SupaSocialsAuthState extends State<SupaSocialsAuth> {
       return ErrorWidget(Exception('Social provider list cannot be empty'));
     }
 
-    final authButtons = List.generate(
-      providers.length,
-      (index) {
-        final socialProvider = providers[index];
+    final authButtons = List.generate(providers.length, (index) {
+      final socialProvider = providers[index];
 
-        Color? foregroundColor = coloredBg ? Colors.white : null;
-        Color? backgroundColor = coloredBg ? socialProvider.btnBgColor : null;
-        Color? overlayColor = coloredBg ? Colors.white10 : null;
-
-        Color? iconColor = coloredBg ? Colors.white : null;
-
-        Widget iconWidget = SizedBox(
-          height: 48,
-          width: 48,
-          child: Icon(
-            socialProvider.iconData,
-            color: iconColor,
-          ),
-        );
-        if (socialProvider == OAuthProvider.google && coloredBg) {
-          iconWidget = Image.asset(
-            'assets/logos/google_light.png',
-            package: 'supabase_auth_ui',
-            width: 48,
-            height: 48,
-          );
-          foregroundColor = Colors.black;
-          backgroundColor = Colors.white;
-          overlayColor = Colors.white;
-        }
-
-        switch (socialProvider) {
-          case OAuthProvider.notion:
-            iconWidget = Image.asset(
-              'assets/logos/notion.png',
-              package: 'supabase_auth_ui',
-              width: 48,
-              height: 48,
-            );
-            break;
-          case OAuthProvider.kakao:
-            iconWidget = Image.asset(
-              'assets/logos/kakao.png',
-              package: 'supabase_auth_ui',
-              width: 48,
-              height: 48,
-            );
-            break;
-          case OAuthProvider.keycloak:
-            iconWidget = Image.asset(
-              'assets/logos/keycloak.png',
-              package: 'supabase_auth_ui',
-              width: 48,
-              height: 48,
-            );
-            break;
-          case OAuthProvider.workos:
-            iconWidget = Image.asset(
-              'assets/logos/workOS.png',
-              package: 'supabase_auth_ui',
-              color: coloredBg ? Colors.white : null,
-              width: 48,
-              height: 48,
-            );
-            break;
-          default:
-            break;
-        }
-
-        onAuthButtonPressed() async {
-          try {
-            // Check if native Google login should be performed
-            if (socialProvider == OAuthProvider.google) {
-              final webClientId = googleAuthConfig?.webClientId;
-              final iosClientId = googleAuthConfig?.iosClientId;
-              final shouldPerformNativeGoogleSignIn =
-                  (webClientId != null && !kIsWeb && Platform.isAndroid) ||
-                      (iosClientId != null && !kIsWeb && Platform.isIOS);
-              if (shouldPerformNativeGoogleSignIn) {
-                await _nativeGoogleSignIn(
-                  webClientId: webClientId,
-                  iosClientId: iosClientId,
-                );
-                return;
-              }
-            }
-
-            // Check if native Apple login should be performed
-            if (socialProvider == OAuthProvider.apple) {
-              final shouldPerformNativeAppleSignIn =
-                  (isNativeAppleAuthEnabled && !kIsWeb && Platform.isIOS) ||
-                      (isNativeAppleAuthEnabled && !kIsWeb && Platform.isMacOS);
-              if (shouldPerformNativeAppleSignIn) {
-                await _nativeAppleSignIn();
-                return;
-              }
-            }
-
-            final user = supabase.auth.currentUser;
-            if (user?.isAnonymous == true) {
-              await supabase.auth.linkIdentity(
-                socialProvider,
-                redirectTo: widget.redirectUrl,
-                scopes: widget.scopes?[socialProvider],
-                queryParams: widget.queryParams?[socialProvider],
+      onAuthButtonPressed() async {
+        try {
+          // Check if native Google login should be performed
+          if (socialProvider == OAuthProvider.google) {
+            final webClientId = googleAuthConfig?.webClientId;
+            final iosClientId = googleAuthConfig?.iosClientId;
+            final shouldPerformNativeGoogleSignIn =
+                (webClientId != null && !kIsWeb && Platform.isAndroid) ||
+                    (iosClientId != null && !kIsWeb && Platform.isIOS);
+            if (shouldPerformNativeGoogleSignIn) {
+              await _nativeGoogleSignIn(
+                webClientId: webClientId,
+                iosClientId: iosClientId,
               );
               return;
             }
+          }
 
-            await supabase.auth.signInWithOAuth(
+          // Check if native Apple login should be performed
+          if (socialProvider == OAuthProvider.apple) {
+            final shouldPerformNativeAppleSignIn =
+                (isNativeAppleAuthEnabled && !kIsWeb && Platform.isIOS) ||
+                    (isNativeAppleAuthEnabled && !kIsWeb && Platform.isMacOS);
+            if (shouldPerformNativeAppleSignIn) {
+              await _nativeAppleSignIn();
+              return;
+            }
+          }
+
+          final user = supabase.auth.currentUser;
+          if (user?.isAnonymous == true) {
+            await supabase.auth.linkIdentity(
               socialProvider,
               redirectTo: widget.redirectUrl,
               scopes: widget.scopes?[socialProvider],
               queryParams: widget.queryParams?[socialProvider],
-              authScreenLaunchMode: widget.authScreenLaunchMode,
             );
-          } on AuthException catch (error) {
-            if (widget.onError == null && context.mounted) {
-              context.showErrorSnackBar(error.message);
-            } else {
-              widget.onError?.call(error);
-            }
-          } catch (error) {
-            if (widget.onError == null && context.mounted) {
-              context
-                  .showErrorSnackBar('${localization.unexpectedError}: $error');
-            } else {
-              widget.onError?.call(error);
-            }
+            return;
+          }
+
+          await supabase.auth.signInWithOAuth(
+            socialProvider,
+            redirectTo: widget.redirectUrl,
+            scopes: widget.scopes?[socialProvider],
+            queryParams: widget.queryParams?[socialProvider],
+            authScreenLaunchMode: widget.authScreenLaunchMode,
+          );
+        } on AuthException catch (error) {
+          if (widget.onError == null && context.mounted) {
+            context.showErrorSnackBar(error.message);
+          } else {
+            widget.onError?.call(error);
+          }
+        } catch (error) {
+          if (widget.onError == null && context.mounted) {
+            context
+                .showErrorSnackBar('${localization.unexpectedError}: $error');
+          } else {
+            widget.onError?.call(error);
           }
         }
+      }
 
-        final authButtonStyle = ButtonStyle(
-          foregroundColor: WidgetStateProperty.all(foregroundColor),
-          backgroundColor: WidgetStateProperty.all(backgroundColor),
-          overlayColor: WidgetStateProperty.all(overlayColor),
-          iconColor: WidgetStateProperty.all(iconColor),
-        );
+      final btnBody = () {
+        switch (socialProvider) {
+          case OAuthProvider.google:
+            return SvgPicture(
+              PuboxIconData.googleRound,
+              height: 56,
+              width: 56,
+            );
 
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-          child: widget.socialButtonVariant == SocialButtonVariant.icon
-              ? Material(
-                  shape: const CircleBorder(),
-                  elevation: 2,
-                  color: backgroundColor,
-                  child: InkResponse(
-                    radius: 24,
-                    onTap: onAuthButtonPressed,
-                    child: iconWidget,
-                  ),
-                )
-              : ElevatedButton.icon(
-                  icon: iconWidget,
-                  style: authButtonStyle,
-                  onPressed: onAuthButtonPressed,
-                  label: Text(
-                    localization.oAuthButtonLabels[socialProvider] ??
-                        socialProvider.labelText,
-                  ),
-                ),
-        );
-      },
+          case OAuthProvider.apple:
+            return Image.asset(
+              './assets/icons/apple_round.png',
+              height: 56,
+              width: 56,
+            );
+          case OAuthProvider.facebook:
+            return Icon(OAuthProvider.facebook.iconData,
+                size: 56, color: OAuthProvider.facebook.btnBgColor);
+          default:
+            return Icon(Icons.question_mark);
+        }
+      }();
+
+
+      return ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            shape: const CircleBorder(),
+            padding: EdgeInsets.zero,
+            elevation: 4,
+          ),
+          onPressed: onAuthButtonPressed,
+          child: btnBody);
+    });
+    return Wrap(
+      spacing: 16,
+      alignment: WrapAlignment.spaceEvenly,
+      children: authButtons,
     );
-
-    return widget.socialButtonVariant == SocialButtonVariant.icon
-        ? Wrap(
-            alignment: WrapAlignment.spaceEvenly,
-            children: authButtons,
-          )
-        : Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: authButtons,
-          );
   }
 }

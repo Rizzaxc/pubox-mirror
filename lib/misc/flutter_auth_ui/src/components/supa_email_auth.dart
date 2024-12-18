@@ -295,7 +295,6 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
       child: Form(
         key: _formKey,
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             TextFormField(
               keyboardType: TextInputType.emailAddress,

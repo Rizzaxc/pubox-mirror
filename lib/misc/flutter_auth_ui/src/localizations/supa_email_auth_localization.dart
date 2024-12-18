@@ -17,11 +17,11 @@ class SupaEmailAuthLocalization {
   final String confirmPassword;
 
   const SupaEmailAuthLocalization({
-    this.enterEmail = 'Enter your email',
+    this.enterEmail = 'Email',
     this.validEmailError = 'Please enter a valid email address',
-    this.enterPassword = 'Enter your password',
+    this.enterPassword = 'Password',
     this.passwordLengthError =
-        'Please enter a password that is at least 6 characters long',
+        'Please enter a password that is at least 8 characters long',
     this.signIn = 'Sign In',
     this.signUp = 'Sign Up',
     this.forgotPassword = 'Forgot your password?',
