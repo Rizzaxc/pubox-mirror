@@ -18,10 +18,10 @@ class SupaEmailAuthLocalization {
 
   const SupaEmailAuthLocalization({
     this.enterEmail = 'Email',
-    this.validEmailError = 'Please enter a valid email address',
+    this.validEmailError = 'Email không hợp lệ',
     this.enterPassword = 'Password',
     this.passwordLengthError =
-        'Please enter a password that is at least 8 characters long',
+        'Password tối thiểu 8 ký tự',
     this.signIn = 'Sign In',
     this.signUp = 'Sign Up',
     this.forgotPassword = 'Forgot your password?',

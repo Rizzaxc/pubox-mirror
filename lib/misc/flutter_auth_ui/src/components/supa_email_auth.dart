@@ -175,7 +175,7 @@ class SupaEmailAuth extends StatefulWidget {
   /// Validator function for the password field
   ///
   /// If null, a default validator will be used that checks if
-  /// the password is at least 6 characters long.
+  /// the password is at least 8 characters long.
   final String? Function(String?)? passwordValidator;
 
   /// Callback for the user to complete a sign in.
@@ -335,7 +335,7 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
                     : TextInputAction.done,
                 validator: widget.passwordValidator ??
                     (value) {
-                      if (value == null || value.isEmpty || value.length < 6) {
+                      if (value == null || value.isEmpty || value.length < 8) {
                         return localization.passwordLengthError;
                       }
                       return null;
