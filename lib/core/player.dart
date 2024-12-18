@@ -1,10 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../main.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+final supabase = Supabase.instance.client;
 
 class Player extends ChangeNotifier {
   late final StreamSubscription<AuthState> _authStateSubscription;
@@ -42,8 +41,11 @@ class Player extends ChangeNotifier {
 
   Future<void> _populateUserData() async {
     if (_id == null) return;
-    final data = await supabase.from('user').select('username, tag_number')
-        .eq('id', _id!).single();
+    final data = await supabase
+        .from('user')
+        .select('username, tag_number')
+        .eq('id', _id!)
+        .single();
 
     _username = data['username'];
     _tagNumber = data['tagNumber'] as String;
