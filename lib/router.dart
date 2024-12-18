@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-import 'core/player.dart';
 import 'health_tab/view.dart';
 import 'home_tab/view.dart';
 import 'main.dart';
@@ -14,6 +13,8 @@ final GlobalKey<NavigatorState> _rootNavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'root');
 final GlobalKey<NavigatorState> _sectionANavigatorKey =
     GlobalKey<NavigatorState>(debugLabel: 'sectionNav');
+
+final supabase = Supabase.instance.client;
 
 final GoRouter puboxRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,

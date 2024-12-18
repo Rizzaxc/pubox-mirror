@@ -5,21 +5,21 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import 'package:pubox/home_tab/home_f_a_b.dart';
-import 'package:pubox/router.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+
 import 'core/icons/pubox_icons.dart';
-import 'core/sport_switcher.dart';
-import 'core/utils.dart';
 import 'core/player.dart';
 import 'health_tab/health_f_a_b.dart';
+import 'home_tab/home_f_a_b.dart';
 import 'manage_tab/manage_f_a_b.dart';
 import 'profile_tab/profile_f_a_b.dart';
+import 'router.dart';
 
 Future<void> main() async {
   LicenseRegistry.addLicense(() async* {
@@ -29,22 +29,30 @@ Future<void> main() async {
 
   await dotenv.load();
 
-  await Supabase.initialize(
-      url: dotenv.env['SUPABASE_URL']!,
-      anonKey: dotenv.env['SUPABASE_ANON_KEY']!);
+  final env = dotenv.env['ENV'] ?? 'dev';
+  assert(env == 'dev' || env == 'live');
+
+  final supabaseURL = dotenv.env['SUPABASE_URL']!;
+  final supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY']!;
+  await Supabase.initialize(url: supabaseURL, anonKey: supabaseAnonKey);
 
   // MobileAds.instance.initialize();
 
-  final env = dotenv.env['ENV'] ?? 'dev';
-
-  // GoogleFonts.config.allowRuntimeFetching = env == 'dev';
   GoogleFonts.config.allowRuntimeFetching = false;
 
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const Pubox());
-}
 
-final supabase = Supabase.instance.client;
+  final sentryDSN = dotenv.env['SENTRY_DSN']!;
+  await SentryFlutter.init((options) {
+    options.dsn = sentryDSN;
+    // Set tracesSampleRate to 1.0 to capture 100% of transactions for tracing.
+    // We recommend adjusting this value in production.
+    options.tracesSampleRate = env == 'dev' ? 1.0 : 0.1;
+    // The sampling rate for profiling is relative to tracesSampleRate
+    // Setting to 1.0 will profile 100% of sampled transactions:
+    options.profilesSampleRate = 1.0;
+  }, appRunner: () => runApp(const Pubox()));
+}
 
 class Pubox extends StatelessWidget {
   const Pubox({super.key});

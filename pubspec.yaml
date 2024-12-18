@@ -20,7 +20,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   flutter_native_splash: ^2.4.3
-  sentry_flutter: ^8.10.1
+  sentry_flutter: ^8.11.1
   smooth_page_indicator: ^1.2.0+3
 
   # The following adds the Cupertino Icons font to your application.
