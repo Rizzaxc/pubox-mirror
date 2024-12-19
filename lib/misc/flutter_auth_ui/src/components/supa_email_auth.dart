@@ -295,65 +295,71 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
       child: Form(
         key: _formKey,
         child: Column(
+          spacing: 4,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            TextFormField(
-              keyboardType: TextInputType.emailAddress,
-              autofillHints: const [AutofillHints.email],
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              focusNode: _emailFocusNode,
-              textInputAction: _isRecoveringPassword
-                  ? TextInputAction.done
-                  : TextInputAction.next,
-              validator: (value) {
-                if (value == null ||
-                    value.isEmpty ||
-                    !EmailValidator.validate(_emailController.text)) {
-                  return localization.validEmailError;
-                }
-                return null;
-              },
-              decoration: InputDecoration(
-                prefixIcon: widget.prefixIconEmail,
-                label: Text(localization.enterEmail),
-              ),
-              controller: _emailController,
-              onFieldSubmitted: (_) {
-                if (_isRecoveringPassword) {
-                  _passwordRecovery();
-                }
-              },
-            ),
-            if (!_isRecoveringPassword) ...[
-              spacer(16),
-              TextFormField(
-                autofillHints: _isSigningIn
-                    ? [AutofillHints.password]
-                    : [AutofillHints.newPassword],
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: TextFormField(
+                keyboardType: TextInputType.emailAddress,
+                autofillHints: const [AutofillHints.email],
                 autovalidateMode: AutovalidateMode.onUserInteraction,
-                textInputAction: widget.metadataFields != null && !_isSigningIn
-                    ? TextInputAction.next
-                    : TextInputAction.done,
-                validator: widget.passwordValidator ??
-                    (value) {
-                      if (value == null || value.isEmpty || value.length < 8) {
-                        return localization.passwordLengthError;
-                      }
-                      return null;
-                    },
+                focusNode: _emailFocusNode,
+                textInputAction: _isRecoveringPassword
+                    ? TextInputAction.done
+                    : TextInputAction.next,
+                validator: (value) {
+                  if (value == null ||
+                      value.isEmpty ||
+                      !EmailValidator.validate(_emailController.text)) {
+                    return localization.validEmailError;
+                  }
+                  return null;
+                },
                 decoration: InputDecoration(
-                  prefixIcon: widget.prefixIconPassword,
-                  label: Text(localization.enterPassword),
+                  prefixIcon: widget.prefixIconEmail,
+                  label: Text(localization.enterEmail),
                 ),
-                obscureText: true,
-                controller: _passwordController,
+                controller: _emailController,
                 onFieldSubmitted: (_) {
-                  if (widget.metadataFields == null || _isSigningIn) {
-                    _signInSignUp();
+                  if (_isRecoveringPassword) {
+                    _passwordRecovery();
                   }
                 },
               ),
+            ),
+            if (!_isRecoveringPassword) ...[
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: TextFormField(
+                  autofillHints: _isSigningIn
+                      ? [AutofillHints.password]
+                      : [AutofillHints.newPassword],
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  textInputAction: widget.metadataFields != null && !_isSigningIn
+                      ? TextInputAction.next
+                      : TextInputAction.done,
+                  validator: widget.passwordValidator ??
+                      (value) {
+                        if (value == null || value.isEmpty || value.length < 8) {
+                          return localization.passwordLengthError;
+                        }
+                        return null;
+                      },
+                  decoration: InputDecoration(
+                    prefixIcon: widget.prefixIconPassword,
+                    label: Text(localization.enterPassword),
+                  ),
+                  obscureText: true,
+                  controller: _passwordController,
+                  onFieldSubmitted: (_) {
+                    if (widget.metadataFields == null || _isSigningIn) {
+                      _signInSignUp();
+                    }
+                  },
+                ),
+              ),
               if (widget.showConfirmPasswordField && !_isSigningIn) ...[
-                spacer(16),
                 TextFormField(
                   controller: _confirmPasswordController,
                   decoration: InputDecoration(
@@ -369,7 +375,6 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
                   },
                 ),
               ],
-              spacer(16),
               if (widget.metadataFields != null && !_isSigningIn)
                 ...widget.metadataFields!
                     .map((metadataField) => [
@@ -455,37 +460,28 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
                                 }
                               },
                             ),
-                          spacer(16),
                         ])
                     .expand((element) => element),
-              ElevatedButton(
-                onPressed: _signInSignUp,
-                child: (_isLoading)
-                    ? SizedBox(
-                        height: 16,
-                        width: 16,
-                        child: CircularProgressIndicator(
-                          color: Theme.of(context).colorScheme.onPrimary,
-                          strokeWidth: 1.5,
-                        ),
-                      )
-                    : Text(_isSigningIn
-                        ? localization.signIn
-                        : localization.signUp),
-              ),
-              spacer(16),
-              if (_isSigningIn) ...[
-                TextButton(
-                  onPressed: () {
-                    setState(() {
-                      _isRecoveringPassword = true;
-                    });
-                    widget.onToggleRecoverPassword?.call(_isRecoveringPassword);
-                  },
-                  child: Text(localization.forgotPassword),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                child: FilledButton(
+                  onPressed: _signInSignUp,
+                  child: (_isLoading)
+                      ? SizedBox(
+                          height: 16,
+                          width: 16,
+                          child: CircularProgressIndicator(
+                            color: Theme.of(context).colorScheme.onPrimary,
+                            strokeWidth: 1.5,
+                          ),
+                        )
+                      : Text(_isSigningIn
+                          ? localization.signIn
+                          : localization.signUp, style: const TextStyle(fontWeight: FontWeight.bold),),
                 ),
-              ],
-              TextButton(
+              ),
+
+              OutlinedButton(
                 key: const ValueKey('toggleSignInButton'),
                 onPressed: () {
                   setState(() {
@@ -499,15 +495,24 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
                     ? localization.dontHaveAccount
                     : localization.haveAccount),
               ),
+              if (_isSigningIn) ...[
+                OutlinedButton(
+                  onPressed: () {
+                    setState(() {
+                      _isRecoveringPassword = true;
+                    });
+                    widget.onToggleRecoverPassword?.call(_isRecoveringPassword);
+                  },
+                  child: Text(localization.forgotPassword),
+                ),
+              ],
             ],
             if (_isSigningIn && _isRecoveringPassword) ...[
-              spacer(16),
               ElevatedButton(
                 onPressed: _passwordRecovery,
                 child: Text(localization.sendPasswordReset),
               ),
-              spacer(16),
-              TextButton(
+              OutlinedButton(
                 onPressed: () {
                   setState(() {
                     _isRecoveringPassword = false;
@@ -516,7 +521,6 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
                 child: Text(localization.backToSignIn),
               ),
             ],
-            spacer(16),
           ],
         ),
       ),

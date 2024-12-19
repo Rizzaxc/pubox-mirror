@@ -324,10 +324,16 @@ class _SupaSocialsAuthState extends State<SupaSocialsAuth> {
           onPressed: onAuthButtonPressed,
           child: btnBody);
     });
-    return Wrap(
+    return Column(
       spacing: 16,
-      alignment: WrapAlignment.spaceEvenly,
-      children: authButtons,
+      children: [
+        const Divider(thickness: 1.2),
+        Wrap(
+          spacing: 16,
+          alignment: WrapAlignment.spaceEvenly,
+          children: authButtons,
+        ),
+      ],
     );
   }
 }
