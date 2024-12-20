@@ -8,22 +8,41 @@ class AuthForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        spacing: 16,
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          SupaEmailAuth(
-              onSignInComplete: (response) {}, onSignUpComplete: (response) {}),
-          SupaSocialsAuth(
-              socialProviders: [OAuthProvider.google, OAuthProvider.apple, OAuthProvider.facebook],
-              onSuccess: (session) => context.go('/home')),
-          TextButton(
-              onPressed: () => context.go('/home'),
-              child: const Text('Bỏ qua Đăng nhập', style: TextStyle(fontStyle: FontStyle.italic, color: Colors.black54),))
-        ],
-      ),
+    return LayoutBuilder(
+      builder: (context, BoxConstraints constraints) {
+        return SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: ConstrainedBox(
+            constraints: BoxConstraints(minHeight: constraints.maxHeight),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Column(
+                  spacing: 36,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SupaEmailAuth(
+                        onSignInComplete: (response) {},
+                        onSignUpComplete: (response) {}),
+                    SupaSocialsAuth(socialProviders: [
+                      OAuthProvider.google,
+                      OAuthProvider.apple,
+                      OAuthProvider.facebook
+                    ], onSuccess: (session) => context.go('/home')),
+                  ],
+                ),
+                TextButton(
+                    onPressed: () => context.go('/home'),
+                    child: const Text(
+                      'Bỏ qua Đăng nhập',
+                      style: TextStyle(
+                          fontStyle: FontStyle.italic, color: Colors.black54),
+                    ))
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 }

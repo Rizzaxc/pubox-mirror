@@ -17,6 +17,7 @@ class _HealthTabState extends State<HealthTab> {
       child: Scaffold(
           appBar: AppBar(
             title: const Text('Sức Khoẻ'),
+            centerTitle: true,
             scrolledUnderElevation: 0,
             leading: IconButton(
                 onPressed: () {},

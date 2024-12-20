@@ -63,6 +63,7 @@ class _HomeTabState extends State<HomeTab>
         child: Scaffold(
           appBar: AppBar(
             title: const Text('Home'),
+            centerTitle: true,
             scrolledUnderElevation: 0,
             leading: IconButton(
                 onPressed: () {},

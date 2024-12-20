@@ -24,11 +24,10 @@ final GoRouter puboxRouter = GoRouter(
       path: '/welcome',
       builder: (context, state) => const WelcomeScreen(),
       redirect: (context, state) {
-        // if user already logged in, redirect to /home
-        if (supabase.auth.currentSession != null) {
-          return '/home';
-        }
-        return null;
+        // if user is logged in, redirect to home
+        if (supabase.auth.currentSession == null) return null;
+        if (supabase.auth.currentSession!.isExpired) return null;
+        return '/home';
       },
     ),
     StatefulShellRoute.indexedStack(
@@ -52,6 +51,18 @@ final GoRouter puboxRouter = GoRouter(
               builder: (context, state) => HomeTab.instance,
               routes: <RouteBase>[
                 // TODO: 4 tabs
+                GoRoute(path: '/home/teammate', builder: (context, state) {
+                  return const Center(child: Text('Teammate'));
+                }),
+                GoRoute(path: '/home/challenger', builder: (context, state) {
+                  return const Center(child: Text('Challenger'));
+                }),
+                GoRoute(path: '/home/neutral', builder: (context, state) {
+                  return const Center(child: Text('Neutral'));
+                }),
+                GoRoute(path: '/home/location', builder: (context, state) {
+                  return const Center(child: Text('Location'));
+                }),
               ],
             ),
           ],

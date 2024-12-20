@@ -605,7 +605,7 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
         redirectTo: widget.resetPasswordRedirectTo ?? widget.redirectTo,
       );
       widget.onPasswordResetEmailSent?.call();
-      // FIX use_build_context_synchronously
+      // TODO: use_build_context_synchronously
       if (!mounted) return;
       context.showSnackBar(widget.localization.passwordResetSent);
       setState(() {

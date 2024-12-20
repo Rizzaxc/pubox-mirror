@@ -10,13 +10,16 @@ class Player extends ChangeNotifier {
 
   static const defaultUsername = 'Guest';
   String _username = defaultUsername;
+
   get username => _username;
 
   static const defaultTagNumber = '0000';
   String _tagNumber = defaultTagNumber;
+
   get tagNumber => _tagNumber;
 
   String? _id;
+
   get id => _id;
 
   @override
@@ -30,7 +33,8 @@ class Player extends ChangeNotifier {
         supabase.auth.onAuthStateChange.listen((data) async {
       final event = data.event;
       if (event == AuthChangeEvent.signedIn ||
-          event == AuthChangeEvent.userUpdated) {
+          event == AuthChangeEvent.userUpdated ||
+          event == AuthChangeEvent.tokenRefreshed) {
         _id = data.session!.user.id;
         await _populateUserData();
       } else if (event == AuthChangeEvent.signedOut) {
