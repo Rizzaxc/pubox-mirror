@@ -6,6 +6,7 @@ import 'auth_form.dart';
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -18,6 +19,7 @@ class WelcomeScreen extends StatelessWidget {
 
 class ContentCarousel extends StatefulWidget {
   const ContentCarousel({super.key});
+  static const tabCount = 4;
 
   @override
   State<ContentCarousel> createState() => _ContentCarouselState();
@@ -25,6 +27,8 @@ class ContentCarousel extends StatefulWidget {
 
 class _ContentCarouselState extends State<ContentCarousel>
     with TickerProviderStateMixin {
+
+
   late PageController _pageViewController;
   late TabController _tabController;
   int _currentPageIndex = 0;
@@ -33,7 +37,7 @@ class _ContentCarouselState extends State<ContentCarousel>
   void initState() {
     super.initState();
     _pageViewController = PageController();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(length: ContentCarousel.tabCount, vsync: this);
   }
 
   @override
@@ -160,7 +164,7 @@ class PageIndicator extends StatelessWidget {
               splashRadius: 16.0,
               padding: EdgeInsets.zero,
               onPressed: () {
-                if (currentPageIndex == 2) {
+                if (currentPageIndex == ContentCarousel.tabCount - 1) {
                   return;
                 }
                 onUpdateCurrentPageIndex(currentPageIndex + 1);

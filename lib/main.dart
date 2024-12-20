@@ -29,8 +29,8 @@ Future<void> main() async {
 
   await dotenv.load();
 
-  final env = dotenv.env['ENV'] ?? 'dev';
-  assert(env == 'dev' || env == 'live');
+  final env = dotenv.env['ENV'] ?? 'local';
+  assert(env == 'local' || env == 'test' || env == 'live');
 
   final supabaseURL = dotenv.env['SUPABASE_URL']!;
   final supabaseAnonKey = dotenv.env['SUPABASE_ANON_KEY']!;
@@ -43,11 +43,10 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final sentryDSN = dotenv.env['SENTRY_DSN']!;
+  const Map<String, double> sampleRates = {'local': 0, 'test': 1, 'live': 0.1};
   await SentryFlutter.init((options) {
     options.dsn = sentryDSN;
-    // Set tracesSampleRate to 1.0 to capture 100% of transactions for tracing.
-    // We recommend adjusting this value in production.
-    options.tracesSampleRate = env == 'dev' ? 1.0 : 0.1;
+    options.tracesSampleRate = sampleRates[env] ?? 0;
     // The sampling rate for profiling is relative to tracesSampleRate
     // Setting to 1.0 will profile 100% of sampled transactions:
     options.profilesSampleRate = 1.0;
@@ -74,7 +73,8 @@ class Pubox extends StatelessWidget {
               TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
               TargetPlatform.android: ZoomPageTransitionsBuilder()
             },
-          ),        ),
+          ),
+        ),
         routerConfig: puboxRouter,
       ),
     );

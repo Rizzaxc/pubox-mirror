@@ -43,6 +43,16 @@ class Player extends ChangeNotifier {
     });
   }
 
+  Future<bool> hasInitialized() async {
+    if (_id == null) return false;
+    final data = await supabase
+        .from('user')
+        .select()
+        .eq('id', _id!)
+        .single();
+    return data.isNotEmpty;
+  }
+
   Future<void> _populateUserData() async {
     if (_id == null) return;
     final data = await supabase
@@ -51,8 +61,14 @@ class Player extends ChangeNotifier {
         .eq('id', _id!)
         .single();
 
+    // Should not happen, because hasInitialized() is called by the signUp logic
+    if (data.isEmpty) {
+      return;
+    }
+
     _username = data['username'];
     _tagNumber = data['tagNumber'] as String;
+
     notifyListeners();
   }
 
