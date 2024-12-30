@@ -29,6 +29,11 @@ class _ProfileTabState extends State<ProfileTab> {
             SportSwitcher.instance,
             IconButton(
                 onPressed: () async {
+                  if (context.read<Player>().id == null) {
+                    debugPrint('no session');
+                    context.go('/welcome');
+                    return;
+                  }
                   await supabase.auth.signOut();
                   if (context.mounted) {
                     context.go('/welcome');

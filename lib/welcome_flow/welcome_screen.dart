@@ -1,24 +1,34 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import 'auth_form.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: const Text('Welcome to Pubox')),
-        resizeToAvoidBottomInset: false,
-        body: const ContentCarousel(),
+      appBar: AppBar(
+        title: const Text('Welcome to Pubox'),
+        actions: [
+          TextButton(
+              child: const Text(
+                'Skip'),
+              onPressed: () => context.go('/home'))
+        ],
+      ),
+      resizeToAvoidBottomInset: false,
+      body: const ContentCarousel(),
     );
   }
 }
 
 class ContentCarousel extends StatefulWidget {
   const ContentCarousel({super.key});
+
   static const tabCount = 4;
 
   @override
@@ -27,8 +37,6 @@ class ContentCarousel extends StatefulWidget {
 
 class _ContentCarouselState extends State<ContentCarousel>
     with TickerProviderStateMixin {
-
-
   late PageController _pageViewController;
   late TabController _tabController;
   int _currentPageIndex = 0;
@@ -37,7 +45,8 @@ class _ContentCarouselState extends State<ContentCarousel>
   void initState() {
     super.initState();
     _pageViewController = PageController();
-    _tabController = TabController(length: ContentCarousel.tabCount, vsync: this);
+    _tabController =
+        TabController(length: ContentCarousel.tabCount, vsync: this);
   }
 
   @override
@@ -67,9 +76,7 @@ class _ContentCarouselState extends State<ContentCarousel>
             Center(
               child: Text('Third Page', style: textTheme.titleLarge),
             ),
-            Center(
-              child: const AuthForm()
-            ),
+            Center(child: const AuthForm()),
           ],
         ),
         PageIndicator(
@@ -141,39 +148,43 @@ class PageIndicator extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            isOnDesktopAndWeb ? IconButton(
-              splashRadius: 16.0,
-              padding: EdgeInsets.zero,
-              onPressed: () {
-                if (currentPageIndex == 0) {
-                  return;
-                }
-                onUpdateCurrentPageIndex(currentPageIndex - 1);
-              },
-              icon: const Icon(
-                Icons.arrow_left_rounded,
-                size: 32.0,
-              ),
-            ) : const SizedBox.shrink(),
+            isOnDesktopAndWeb
+                ? IconButton(
+                    splashRadius: 16.0,
+                    padding: EdgeInsets.zero,
+                    onPressed: () {
+                      if (currentPageIndex == 0) {
+                        return;
+                      }
+                      onUpdateCurrentPageIndex(currentPageIndex - 1);
+                    },
+                    icon: const Icon(
+                      Icons.arrow_left_rounded,
+                      size: 32.0,
+                    ),
+                  )
+                : const SizedBox.shrink(),
             TabPageSelector(
               controller: tabController,
               color: colorScheme.surface,
               selectedColor: colorScheme.primary,
             ),
-            isOnDesktopAndWeb ? IconButton(
-              splashRadius: 16.0,
-              padding: EdgeInsets.zero,
-              onPressed: () {
-                if (currentPageIndex == ContentCarousel.tabCount - 1) {
-                  return;
-                }
-                onUpdateCurrentPageIndex(currentPageIndex + 1);
-              },
-              icon: const Icon(
-                Icons.arrow_right_rounded,
-                size: 32.0,
-              ),
-            ) : const SizedBox.shrink(),
+            isOnDesktopAndWeb
+                ? IconButton(
+                    splashRadius: 16.0,
+                    padding: EdgeInsets.zero,
+                    onPressed: () {
+                      if (currentPageIndex == ContentCarousel.tabCount - 1) {
+                        return;
+                      }
+                      onUpdateCurrentPageIndex(currentPageIndex + 1);
+                    },
+                    icon: const Icon(
+                      Icons.arrow_right_rounded,
+                      size: 32.0,
+                    ),
+                  )
+                : const SizedBox.shrink(),
           ],
         ),
       ),

@@ -43,10 +43,10 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final sentryDSN = dotenv.env['SENTRY_DSN']!;
-  const Map<String, double> sampleRates = {'local': 0, 'test': 1, 'live': 0.1};
+  const Map<String, double?> sampleRates = {'local': null, 'test': 1, 'live': 0.1};
   await SentryFlutter.init((options) {
     options.dsn = sentryDSN;
-    options.tracesSampleRate = sampleRates[env] ?? 0;
+    options.tracesSampleRate = sampleRates[env];
     // The sampling rate for profiling is relative to tracesSampleRate
     // Setting to 1.0 will profile 100% of sampled transactions:
     options.profilesSampleRate = 1.0;

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 final supabase = Supabase.instance.client;
@@ -29,6 +30,10 @@ class Player extends ChangeNotifier {
   }
 
   Player() {
+    if (supabase.auth.currentUser != null) {
+      _id = supabase.auth.currentUser!.id;
+      _populateUserData();
+    }
     _authStateSubscription =
         supabase.auth.onAuthStateChange.listen((data) async {
       final event = data.event;
@@ -45,31 +50,44 @@ class Player extends ChangeNotifier {
 
   Future<bool> hasInitialized() async {
     if (_id == null) return false;
-    final data = await supabase
-        .from('user')
-        .select()
-        .eq('id', _id!)
-        .single();
-    return data.isNotEmpty;
+    try {
+      final data =
+          await supabase.from('user').select().eq('id', _id!).maybeSingle();
+      return (data != null && data.isNotEmpty);
+    } on PostgrestException catch (exception, stackTrace) {
+      Sentry.captureException(exception, stackTrace: stackTrace);
+      return false;
+    }
   }
 
   Future<void> _populateUserData() async {
-    if (_id == null) return;
-    final data = await supabase
-        .from('user')
-        .select('username, tag_number')
-        .eq('id', _id!)
-        .single();
-
-    // Should not happen, because hasInitialized() is called by the signUp logic
-    if (data.isEmpty) {
+    if (_id == null) {
       return;
     }
 
-    _username = data['username'];
-    _tagNumber = data['tagNumber'] as String;
+    try {
+      final data = await supabase
+          .from('user')
+          .select('username, tag_number')
+          .eq('id', _id!)
+          .maybeSingle();
 
-    notifyListeners();
+      // Should not happen, because hasInitialized() is called by the signUp logic
+      if (data == null || data.isEmpty) {
+        return;
+      }
+
+      _username = data['username'];
+      _tagNumber = data['tag_number'];
+
+      debugPrint('user: $_username@$_tagNumber');
+      notifyListeners();
+    } on PostgrestException catch (exception, stackTrace) {
+      Sentry.captureException(
+        exception,
+        stackTrace: stackTrace,
+      );
+    }
   }
 
   Future<void> _clearUserData() async {

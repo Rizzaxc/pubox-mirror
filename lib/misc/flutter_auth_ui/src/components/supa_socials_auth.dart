@@ -323,31 +323,33 @@ class _SupaSocialsAuthState extends State<SupaSocialsAuth> {
           onPressed: onAuthButtonPressed,
           child: btnBody);
     });
-    return Column(
-      spacing: 16,
-      children: [
-        const Row(
-          children: [
-            Expanded(
-              child: Divider(thickness: 1.2,),
-            ),
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8),
-              child: Text(
-                'Socials',
+    return SafeArea(
+      child: Column(
+        spacing: 16,
+        children: [
+          const Row(
+            children: [
+              Expanded(
+                child: Divider(thickness: 1.2,),
               ),
-            ),
-            Expanded(
-              child: Divider(thickness: 1.2,),
-            ),
-          ],
-        ),
-        Wrap(
-          spacing: 16,
-          alignment: WrapAlignment.spaceEvenly,
-          children: authButtons,
-        ),
-      ],
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8),
+                child: Text(
+                  'Socials',
+                ),
+              ),
+              Expanded(
+                child: Divider(thickness: 1.2,),
+              ),
+            ],
+          ),
+          Wrap(
+            spacing: 16,
+            alignment: WrapAlignment.spaceEvenly,
+            children: authButtons,
+          ),
+        ],
+      ),
     );
   }
 }

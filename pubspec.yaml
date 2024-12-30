@@ -19,8 +19,8 @@ dependencies:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  flutter_native_splash: ^2.4.3
-  sentry_flutter: ^8.11.2
+  flutter_native_splash: ^2.4.4
+  sentry_flutter: ^8.12.0
   smooth_page_indicator: ^1.2.0+3
 
   # The following adds the Cupertino Icons font to your application.
@@ -34,7 +34,6 @@ dependencies:
   flutter_animate: ^4.5.2
   flutter_form_builder: ^9.6.0
   loading_animation_widget: ^1.3.0
-  modal_bottom_sheet: ^3.0.0
   animated_text_kit: ^4.2.2
   flutter_dotenv: ^5.2.1
   font_awesome_flutter: ^10.8.0

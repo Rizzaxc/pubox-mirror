@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
 
+import 'core/utils.dart';
 import 'health_tab/view.dart';
 import 'home_tab/view.dart';
 import 'main.dart';
 import 'manage_tab/view.dart';
 import 'profile_tab/view.dart';
+import 'welcome_flow/auth_form.dart';
 import 'welcome_flow/welcome_screen.dart';
 
 final GlobalKey<NavigatorState> _rootNavigatorKey =
@@ -51,18 +54,26 @@ final GoRouter puboxRouter = GoRouter(
               builder: (context, state) => HomeTab.instance,
               routes: <RouteBase>[
                 // TODO: 4 tabs
-                GoRoute(path: '/home/teammate', builder: (context, state) {
-                  return const Center(child: Text('Teammate'));
-                }),
-                GoRoute(path: '/home/challenger', builder: (context, state) {
-                  return const Center(child: Text('Challenger'));
-                }),
-                GoRoute(path: '/home/neutral', builder: (context, state) {
-                  return const Center(child: Text('Neutral'));
-                }),
-                GoRoute(path: '/home/location', builder: (context, state) {
-                  return const Center(child: Text('Location'));
-                }),
+                GoRoute(
+                    path: '/home/teammate',
+                    builder: (context, state) {
+                      return const Center(child: Text('Teammate'));
+                    }),
+                GoRoute(
+                    path: '/home/challenger',
+                    builder: (context, state) {
+                      return const Center(child: Text('Challenger'));
+                    }),
+                GoRoute(
+                    path: '/home/neutral',
+                    builder: (context, state) {
+                      return const Center(child: Text('Neutral'));
+                    }),
+                GoRoute(
+                    path: '/home/location',
+                    builder: (context, state) {
+                      return const Center(child: Text('Location'));
+                    }),
               ],
             ),
           ],
@@ -72,8 +83,31 @@ final GoRouter puboxRouter = GoRouter(
           routes: <RouteBase>[
             GoRoute(
               path: '/manage',
-              builder: (context, state) => ManageTab(),
-              routes: <RouteBase>[],
+              redirect: (context, state) {
+                if (supabase.auth.currentSession == null) return '/manage/auth';
+                return null;
+              },
+              builder: (context, state) {
+                return const ManageTab();
+              },
+              routes: <RouteBase>[
+                GoRoute(
+                    path: 'auth',
+                    redirect: (context, state) {
+                      if (supabase.auth.currentSession != null) return '/manage';
+                      return null;
+                    },
+                    pageBuilder: (context, state) {
+                      return BottomSheetPage(
+                          isDismissible: false,
+                          enableDrag: false,
+                          constrains: BoxConstraints(
+                              maxHeight: MediaQuery.of(context).size.height * 0.8),
+                          builder: (context) {
+                            return const AuthForm();
+                          });
+                    }),
+              ],
             ),
           ],
         ),
@@ -82,9 +116,29 @@ final GoRouter puboxRouter = GoRouter(
           routes: <RouteBase>[
             GoRoute(
               path: '/health',
-              builder: (context, state) => HealthTab(),
-              routes: <RouteBase>[],
-            ),
+              redirect: (context, state) {
+                if (supabase.auth.currentSession == null) return '/health/auth';
+                return null;
+              },
+              builder: (context, state) => const HealthTab(),
+              routes: <RouteBase>[
+                GoRoute(
+                    path: 'auth',
+                    redirect: (context, state) {
+                      if (supabase.auth.currentSession != null) return '/health';
+                      return null;
+                    },
+                    pageBuilder: (context, state) {
+                      return BottomSheetPage(
+                          isDismissible: false,
+                          enableDrag: false,
+                          constrains: BoxConstraints(
+                              maxHeight: MediaQuery.of(context).size.height * 0.8),
+                          builder: (context) {
+                            return const AuthForm();
+                          });
+                    }),
+              ],            ),
           ],
         ),
 

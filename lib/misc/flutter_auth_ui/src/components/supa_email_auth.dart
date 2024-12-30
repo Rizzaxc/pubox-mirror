@@ -295,11 +295,11 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
       child: Form(
         key: _formKey,
         child: Column(
-          spacing: 4,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              padding: const EdgeInsets.symmetric(vertical: 4.0),
+              // Email field
               child: TextFormField(
                 keyboardType: TextInputType.emailAddress,
                 autofillHints: const [AutofillHints.email],
@@ -329,8 +329,9 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
               ),
             ),
             if (!_isRecoveringPassword) ...[
+              // Password field
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                padding: const EdgeInsets.symmetric(vertical: 4.0),
                 child: TextFormField(
                   autofillHints: _isSigningIn
                       ? [AutofillHints.password]
@@ -463,7 +464,7 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
                         ])
                     .expand((element) => element),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.0),
+                padding: const EdgeInsets.symmetric(vertical: 12.0),
                 child: FilledButton(
                   onPressed: _signInSignUp,
                   child: (_isLoading)
@@ -508,9 +509,12 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
               ],
             ],
             if (_isSigningIn && _isRecoveringPassword) ...[
-              ElevatedButton(
-                onPressed: _passwordRecovery,
-                child: Text(localization.sendPasswordReset),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                child: ElevatedButton(
+                  onPressed: _passwordRecovery,
+                  child: Text(localization.sendPasswordReset, style: const TextStyle(fontWeight: FontWeight.bold),),
+                ),
               ),
               OutlinedButton(
                 onPressed: () {

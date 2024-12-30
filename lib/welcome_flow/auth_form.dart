@@ -10,13 +10,15 @@ import '../misc/flutter_auth_ui/supabase_auth_ui.dart';
 class AuthForm extends StatelessWidget {
   const AuthForm({super.key});
 
-  Future<bool> _waitUntilPlayerInitialized(BuildContext context) async {
+  Future<bool> _awaitPlayerInitialized(BuildContext context) async {
+    const initialDelay = Duration(milliseconds: 100);
     const checkFrequency = Duration(seconds: 1);
     const maxWaitTime = Duration(seconds: 5);
     final checkFn = context.read<Player>().hasInitialized;
 
     var initialized = false;
     final stopwatch = Stopwatch()..start();
+    await Future.delayed(initialDelay);
     while (!initialized && stopwatch.elapsed < maxWaitTime) {
       initialized = await checkFn();
       await Future.delayed(checkFrequency);
@@ -35,46 +37,54 @@ class AuthForm extends StatelessWidget {
           child: ConstrainedBox(
             constraints: BoxConstraints(minHeight: constraints.maxHeight),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              spacing: 48,
+              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
-                Column(
-                  spacing: 36,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SupaEmailAuth(
-                        onSignInComplete: (response) {
-                          if (response.session != null) {
-                            context.go('/home');
-                          }
-                        },
-                        onSignUpComplete: (response) async {
-                          if (response.session == null) return;
-                          final hasPlayerInitialized = await _waitUntilPlayerInitialized(context);
-                          if (hasPlayerInitialized && context.mounted) {
-                            context.go('/home');
-                          }
-                          // TODO: show err msg if not initialized
-                        }),
-                    SupaSocialsAuth(socialProviders: [
-                      OAuthProvider.google,
-                      OAuthProvider.apple,
-                      OAuthProvider.facebook
-                    ], onSuccess: (session) async {
-                      final hasPlayerInitialized = await _waitUntilPlayerInitialized(context);
-                      if (hasPlayerInitialized && context.mounted) {
+                const SizedBox(height: 32,),
+                SupaEmailAuth(
+                    onSignInComplete: (response) {
+                      // Should not be null, but just in case
+                      if (response.session == null) return;
+                      // return to the triggering tab
+                      if (context.canPop()) {
+                        context.pop() ;
+                      } else {
                         context.go('/home');
                       }
+                    },
+                    onSignUpComplete: (response) async {
+                      if (response.session == null) return;
+                      final hasPlayerInitialized = await _awaitPlayerInitialized(context);
+
                       // TODO: show err msg if not initialized
+                      if (!hasPlayerInitialized) return;
+
+                      // happy case
+                      if (context.mounted) {
+                        // return to the triggering tab
+                        if (context.canPop()) {
+                          context.pop() ;
+                        } else {
+                          context.go('/home');
+                        }
+                      }
                     }),
-                  ],
-                ),
-                TextButton(
-                    onPressed: () => context.go('/home'),
-                    child: const Text(
-                      'Bỏ qua Đăng nhập',
-                      style: TextStyle(
-                          fontStyle: FontStyle.italic, color: Colors.black54),
-                    ))
+                SupaSocialsAuth(socialProviders: [
+                  OAuthProvider.google,
+                  OAuthProvider.apple,
+                  OAuthProvider.facebook
+                ], onSuccess: (session) async {
+                  final hasPlayerInitialized = await _awaitPlayerInitialized(context);
+                  // TODO: show err msg if not initialized
+                  if (!hasPlayerInitialized) return;
+
+                  // happy case
+                  if (context.mounted) {
+                    context.go('/home');
+                    return;
+                  }
+                }),
               ],
             ),
           ),
