@@ -6,15 +6,17 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:toastification/toastification.dart';
 
 import 'core/icons/pubox_icons.dart';
-import 'core/player.dart';
+import 'core/player_provider.dart';
 import 'health_tab/health_f_a_b.dart';
 import 'home_tab/home_f_a_b.dart';
 import 'manage_tab/manage_f_a_b.dart';
@@ -43,7 +45,11 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final sentryDSN = dotenv.env['SENTRY_DSN']!;
-  const Map<String, double?> sampleRates = {'local': null, 'test': 1, 'live': 0.1};
+  const Map<String, double?> sampleRates = {
+    'local': null,
+    'test': 1,
+    'live': 0.1
+  };
   await SentryFlutter.init((options) {
     options.dsn = sentryDSN;
     options.tracesSampleRate = sampleRates[env];
@@ -59,23 +65,56 @@ class Pubox extends StatelessWidget {
   // Root App
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => Player(),
-      child: MaterialApp.router(
-        title: 'Pubox',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-              seedColor: Colors.red.shade800, surface: Colors.green.shade50),
-          textTheme: GoogleFonts.bitterTextTheme(),
-          useMaterial3: true,
-          pageTransitionsTheme: const PageTransitionsTheme(
-            builders: <TargetPlatform, PageTransitionsBuilder>{
-              TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
-              TargetPlatform.android: ZoomPageTransitionsBuilder()
-            },
+    // Theming
+    final themeMode = ThemeMode.light;
+    final materialTheme = ThemeData(
+      colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.red.shade800, surface: Colors.green.shade50),
+      textTheme: GoogleFonts.bitterTextTheme(),
+      tabBarTheme: ThemeData().tabBarTheme.copyWith(
+            labelColor: Colors.red.shade800,
+            unselectedLabelColor: Colors.grey.shade700,
+          ),
+      popupMenuTheme: PopupMenuThemeData(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
+      ),
+      pageTransitionsTheme: const PageTransitionsTheme(
+        builders: <TargetPlatform, PageTransitionsBuilder>{
+          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+          TargetPlatform.android: ZoomPageTransitionsBuilder()
+        },
+      ),
+    );
+    final cupertinoTheme =
+        MaterialBasedCupertinoThemeData(materialTheme: materialTheme);
+
+    return PlatformProvider(
+      settings:
+          PlatformSettingsData(iosUseZeroPaddingForAppbarPlatformIcon: true),
+      builder: (context) => PlatformTheme(
+        themeMode: themeMode,
+        materialLightTheme: materialTheme,
+        cupertinoLightTheme: cupertinoTheme,
+        builder: (context) => ChangeNotifierProvider(
+          create: (_) => PlayerProvider(),
+          child: ToastificationWrapper(
+            config: const ToastificationConfig(
+              alignment: Alignment.topCenter,
+              animationDuration: Duration(milliseconds: 250)
+            ),
+            child: PlatformApp.router(
+              title: 'Pubox',
+              routerConfig: puboxRouter,
+              localizationsDelegates: <LocalizationsDelegate<dynamic>>[
+                DefaultMaterialLocalizations.delegate,
+                DefaultWidgetsLocalizations.delegate,
+                DefaultCupertinoLocalizations.delegate,
+              ],
+            ),
           ),
         ),
-        routerConfig: puboxRouter,
       ),
     );
   }
@@ -91,11 +130,30 @@ class ScaffoldWithNavBar extends StatelessWidget {
   /// The navigation shell and container for the branch Navigators.
   final StatefulNavigationShell navigationShell;
 
-  static var tabIcons = <IconData>[
+  static final tabIcons = <IconData>[
     CupertinoIcons.house_fill,
     Icons.edit_calendar_rounded,
     FontAwesomeIcons.heartPulse,
     PuboxIcons.profile
+  ];
+
+  static final List<BottomNavigationBarItem> bottomNavbarItems = [
+    BottomNavigationBarItem(
+        icon: Icon(
+      CupertinoIcons.house_fill,
+    )),
+    BottomNavigationBarItem(
+        icon: Icon(
+      Icons.edit_calendar_rounded,
+    )),
+    BottomNavigationBarItem(
+        icon: Icon(
+      FontAwesomeIcons.heartPulse,
+    )),
+    BottomNavigationBarItem(
+        icon: Icon(
+      PuboxIcons.profile,
+    )),
   ];
 
   // TODO: move into their own screen
@@ -113,17 +171,18 @@ class ScaffoldWithNavBar extends StatelessWidget {
       extendBody: true,
       bottomNavigationBar: AnimatedBottomNavigationBar(
         activeIndex: navigationShell.currentIndex,
-        backgroundColor: Colors.green.shade100,
+        backgroundColor: Colors.green.shade50,
         splashRadius: 0,
-        activeColor: Colors.red.shade900,
-        icons: tabIcons,
+        inactiveColor: Colors.grey.shade700,
+        activeColor: Colors.red.shade800,
         iconSize: 28,
-        borderWidth: 1,
+        // borderWidth: 1,
         borderColor: Colors.green.shade900,
         onTap: (int index) => _onTap(context, index),
         gapLocation: GapLocation.center,
         notchSmoothness: NotchSmoothness.softEdge,
         notchMargin: 8,
+        icons: tabIcons,
       ),
     );
   }

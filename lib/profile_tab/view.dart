@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import '../core/player.dart';
+import '../core/player_provider.dart';
 import '../core/sport_switcher.dart';
 
 class ProfileTab extends StatefulWidget {
@@ -15,8 +15,8 @@ class ProfileTab extends StatefulWidget {
 class _ProfileTabState extends State<ProfileTab> {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<SelectedSport>.value(
-      value: SelectedSport.instance,
+    return ChangeNotifierProvider<SelectedSportProvider>.value(
+      value: SelectedSportProvider.instance,
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Hồ Sơ'),
@@ -29,7 +29,7 @@ class _ProfileTabState extends State<ProfileTab> {
             SportSwitcher.instance,
             IconButton(
                 onPressed: () async {
-                  if (context.read<Player>().id == null) {
+                  if (context.read<PlayerProvider>().player.id == null) {
                     debugPrint('no session');
                     context.go('/welcome');
                     return;

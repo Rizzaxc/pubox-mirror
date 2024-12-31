@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../localizations/supa_reset_password_localization.dart';
-import '../utils/constants.dart';
 
 /// UI component to create password reset form
 class SupaResetPassword extends StatefulWidget {
@@ -12,7 +11,7 @@ class SupaResetPassword extends StatefulWidget {
   /// Method to be called when the auth action is success
   final void Function(UserResponse response) onSuccess;
 
-  /// Method to be called when the auth action threw an excepction
+  /// Method to be called when the auth action threw an exception
   final void Function(Object error)? onError;
 
   /// Localization for the form
@@ -29,6 +28,8 @@ class SupaResetPassword extends StatefulWidget {
   @override
   State<SupaResetPassword> createState() => _SupaResetPasswordState();
 }
+
+final supabase = Supabase.instance.client;
 
 class _SupaResetPasswordState extends State<SupaResetPassword> {
   final _formKey = GlobalKey<FormState>();
@@ -47,6 +48,7 @@ class _SupaResetPasswordState extends State<SupaResetPassword> {
       key: _formKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
+        spacing: 16,
         children: [
           TextFormField(
             autofillHints: const [AutofillHints.newPassword],
@@ -62,7 +64,6 @@ class _SupaResetPasswordState extends State<SupaResetPassword> {
             ),
             controller: _password,
           ),
-          spacer(16),
           ElevatedButton(
             child: Text(
               localization.updatePassword,
@@ -79,26 +80,28 @@ class _SupaResetPasswordState extends State<SupaResetPassword> {
                   ),
                 );
                 widget.onSuccess.call(response);
-                // FIX use_build_context_synchronously
+                // TODO: use_build_context_synchronously
                 if (!context.mounted) return;
-                context.showSnackBar(localization.passwordResetSent);
+                // TODO
+                // context.showSnackBar(localization.passwordResetSent);
               } on AuthException catch (error) {
                 if (widget.onError == null && context.mounted) {
-                  context.showErrorSnackBar(error.message);
+                  // TODO
+                  // context.showErrorSnackBar(error.message);
                 } else {
                   widget.onError?.call(error);
                 }
               } catch (error) {
                 if (widget.onError == null && context.mounted) {
-                  context.showErrorSnackBar(
-                      '${localization.passwordLengthError}: $error');
+                  // TODO
+                  // context.showErrorSnackBar(
+                  //     '${localization.passwordLengthError}: $error');
                 } else {
                   widget.onError?.call(error);
                 }
               }
             },
           ),
-          spacer(10),
         ],
       ),
     );

@@ -1,6 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:go_router/go_router.dart';
 
 import 'auth_form.dart';
@@ -14,7 +14,7 @@ class WelcomeScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Welcome to Pubox'),
         actions: [
-          TextButton(
+          PlatformTextButton(
               child: const Text(
                 'Skip'),
               onPressed: () => context.go('/home'))

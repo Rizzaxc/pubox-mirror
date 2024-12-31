@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:pubox/core/sport_switcher.dart';
+import '../core/sport_switcher.dart';
 
 class HealthTab extends StatefulWidget {
   const HealthTab({super.key});
@@ -12,8 +12,8 @@ class HealthTab extends StatefulWidget {
 class _HealthTabState extends State<HealthTab> {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<SelectedSport>.value(
-      value: SelectedSport.instance,
+    return ChangeNotifierProvider<SelectedSportProvider>.value(
+      value: SelectedSportProvider.instance,
       child: Scaffold(
           appBar: AppBar(
             title: const Text('Sức Khoẻ'),

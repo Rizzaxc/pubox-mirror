@@ -40,4 +40,5 @@ class SportIcons {
     return SizedBox.fromSize(
         size: Size.fromRadius(size), child: PuboxIconData.badminton);
   }
+
 }

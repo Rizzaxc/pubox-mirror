@@ -56,6 +56,10 @@ dependencies:
   email_validator: ^3.0.0
   google_sign_in: ^6.2.2
   sign_in_with_apple: ^6.1.4
+  flutter_platform_widgets: ^7.0.1
+  dynamic_color: ^1.7.0
+  connectivity_plus: ^6.1.1
+  toastification: ^2.3.0
   # awesome_notifications: ^0.10.0
   # google_mobile_ads: ^5.2.0
 

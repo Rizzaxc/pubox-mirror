@@ -93,10 +93,6 @@ final GoRouter puboxRouter = GoRouter(
               routes: <RouteBase>[
                 GoRoute(
                     path: 'auth',
-                    redirect: (context, state) {
-                      if (supabase.auth.currentSession != null) return '/manage';
-                      return null;
-                    },
                     pageBuilder: (context, state) {
                       return BottomSheetPage(
                           isDismissible: false,
@@ -124,10 +120,6 @@ final GoRouter puboxRouter = GoRouter(
               routes: <RouteBase>[
                 GoRoute(
                     path: 'auth',
-                    redirect: (context, state) {
-                      if (supabase.auth.currentSession != null) return '/health';
-                      return null;
-                    },
                     pageBuilder: (context, state) {
                       return BottomSheetPage(
                           isDismissible: false,

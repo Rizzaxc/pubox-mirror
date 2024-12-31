@@ -1,10 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:crypto/crypto.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
@@ -12,10 +10,11 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:toastification/toastification.dart';
 
 import '../../../../core/icons/main.dart';
+import '../../../../core/utils.dart';
 import '../localizations/supa_socials_auth_localization.dart';
-import '../utils/constants.dart';
 
 extension on OAuthProvider {
   IconData get iconData => switch (this) {
@@ -92,7 +91,7 @@ class SupaSocialsAuth extends StatefulWidget {
   /// Method to be called when the auth action is success
   final void Function(Session session) onSuccess;
 
-  /// Method to be called when the auth action threw an excepction
+  /// Method to be called when the auth action threw an exception
   final void Function(Object error)? onError;
 
   /// Whether to show a SnackBar after a successful sign in
@@ -201,9 +200,7 @@ class _SupaSocialsAuthState extends State<SupaSocialsAuth> {
       final session = data.session;
       if (session != null && mounted) {
         widget.onSuccess.call(session);
-        if (widget.showSuccessSnackBar) {
-          context.showSnackBar(localization.successSignInMessage);
-        }
+        context.showToast(localization.successSignInMessage);
       }
     });
   }
@@ -277,14 +274,14 @@ class _SupaSocialsAuthState extends State<SupaSocialsAuth> {
           );
         } on AuthException catch (error) {
           if (widget.onError == null && context.mounted) {
-            context.showErrorSnackBar(error.message);
+            context.showToast(error.message, type: ToastificationType.error);
           } else {
             widget.onError?.call(error);
           }
         } catch (error) {
           if (widget.onError == null && context.mounted) {
-            context
-                .showErrorSnackBar('${localization.unexpectedError}: $error');
+            context.showToast('${localization.unexpectedError}: $error',
+                type: ToastificationType.error);
           } else {
             widget.onError?.call(error);
           }
@@ -330,7 +327,9 @@ class _SupaSocialsAuthState extends State<SupaSocialsAuth> {
           const Row(
             children: [
               Expanded(
-                child: Divider(thickness: 1.2,),
+                child: Divider(
+                  thickness: 1.2,
+                ),
               ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8),
@@ -339,7 +338,9 @@ class _SupaSocialsAuthState extends State<SupaSocialsAuth> {
                 ),
               ),
               Expanded(
-                child: Divider(thickness: 1.2,),
+                child: Divider(
+                  thickness: 1.2,
+                ),
               ),
             ],
           ),

@@ -1,11 +1,10 @@
-
-
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:toastification/toastification.dart';
 
+import '../../../../core/utils.dart';
 import '../localizations/supa_email_auth_localization.dart';
-import '../utils/constants.dart';
 
 /// {@template metadata_field}
 /// Information about the metadata to pass to the signup form
@@ -337,12 +336,15 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
                       ? [AutofillHints.password]
                       : [AutofillHints.newPassword],
                   autovalidateMode: AutovalidateMode.onUserInteraction,
-                  textInputAction: widget.metadataFields != null && !_isSigningIn
-                      ? TextInputAction.next
-                      : TextInputAction.done,
+                  textInputAction:
+                      widget.metadataFields != null && !_isSigningIn
+                          ? TextInputAction.next
+                          : TextInputAction.done,
                   validator: widget.passwordValidator ??
                       (value) {
-                        if (value == null || value.isEmpty || value.length < 8) {
+                        if (value == null ||
+                            value.isEmpty ||
+                            value.length < 8) {
                           return localization.passwordLengthError;
                         }
                         return null;
@@ -476,9 +478,12 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
                             strokeWidth: 1.5,
                           ),
                         )
-                      : Text(_isSigningIn
-                          ? localization.signIn
-                          : localization.signUp, style: const TextStyle(fontWeight: FontWeight.bold),),
+                      : Text(
+                          _isSigningIn
+                              ? localization.signIn
+                              : localization.signUp,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
                 ),
               ),
 
@@ -513,7 +518,10 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 child: ElevatedButton(
                   onPressed: _passwordRecovery,
-                  child: Text(localization.sendPasswordReset, style: const TextStyle(fontWeight: FontWeight.bold),),
+                  child: Text(
+                    localization.sendPasswordReset,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
               OutlinedButton(
@@ -571,15 +579,14 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
       }
     } on AuthException catch (error) {
       if (widget.onError == null && mounted) {
-        context.showErrorSnackBar(error.message);
+        context.showToast(error.message, type: ToastificationType.error);
       } else {
         widget.onError?.call(error);
       }
       _emailFocusNode.requestFocus();
     } catch (error) {
       if (widget.onError == null && mounted) {
-        context.showErrorSnackBar(
-            '${widget.localization.unexpectedError}: $error');
+        context.showToast(widget.localization.unexpectedError, type: ToastificationType.error);
       } else {
         widget.onError?.call(error);
       }
@@ -611,7 +618,7 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
       widget.onPasswordResetEmailSent?.call();
       // TODO: use_build_context_synchronously
       if (!mounted) return;
-      context.showSnackBar(widget.localization.passwordResetSent);
+      context.showToast(widget.localization.passwordResetSent, type: ToastificationType.info);
       setState(() {
         _isRecoveringPassword = false;
       });

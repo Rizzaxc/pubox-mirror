@@ -4,16 +4,21 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:toastification/toastification.dart';
+
+final supabase = Supabase.instance.client;
+
 
 extension ContextExtension on BuildContext {
-  void showSnackBar(String message, {bool isError = false}) {
-    ScaffoldMessenger.of(this).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: isError
-            ? Theme.of(this).colorScheme.error
-            : Theme.of(this).snackBarTheme.backgroundColor,
-      ),
+  void showToast(String message, {ToastificationType type = ToastificationType.success}) {
+    toastification.show(
+      margin: const EdgeInsets.fromLTRB(16, 48, 16, 8),
+      type: type,
+      style: ToastificationStyle.fillColored,
+      autoCloseDuration: const Duration(seconds: 3),
+      description: Text(message),
+      showProgressBar: false,
     );
   }
 }

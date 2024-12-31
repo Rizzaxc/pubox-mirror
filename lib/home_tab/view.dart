@@ -1,10 +1,13 @@
+// ignore_for_file: unused_import
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:pubox/core/sport_switcher.dart';
-import 'package:pubox/core/utils.dart';
-import 'package:pubox/home_tab/home_f_a_b.dart';
+import '../core/sport_switcher.dart';
+import '../core/utils.dart';
+import 'home_f_a_b.dart';
 
 class HomeTab extends StatefulWidget {
   const HomeTab._();
@@ -58,16 +61,21 @@ class _HomeTabState extends State<HomeTab>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return ChangeNotifierProvider<SelectedSport>.value(
-        value: SelectedSport.instance,
+    return ChangeNotifierProvider<SelectedSportProvider>.value(
+        value: SelectedSportProvider.instance,
         child: Scaffold(
           appBar: AppBar(
-            title: const Text('Home'),
+            title: PlatformText('Home'),
+            automaticallyImplyLeading: true,
             centerTitle: true,
             scrolledUnderElevation: 0,
-            leading: IconButton(
-                onPressed: () {},
-                icon: Icon(Icons.notifications_active_outlined)),
+            leading: PlatformIconButton(
+              onPressed: () {},
+              icon: Icon(
+                Icons.notifications_active_outlined,
+                size: 24,
+              ),
+            ),
             actions: [SportSwitcher.instance],
           ),
           body: NestedScrollView(

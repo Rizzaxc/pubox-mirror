@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
-import '../core/player.dart';
+import '../core/player_provider.dart';
 import '../misc/flutter_auth_ui/supabase_auth_ui.dart';
 
 class AuthForm extends StatelessWidget {
@@ -14,7 +14,7 @@ class AuthForm extends StatelessWidget {
     const initialDelay = Duration(milliseconds: 100);
     const checkFrequency = Duration(seconds: 1);
     const maxWaitTime = Duration(seconds: 5);
-    final checkFn = context.read<Player>().hasInitialized;
+    final checkFn = context.read<PlayerProvider>().hasInitialized;
 
     var initialized = false;
     final stopwatch = Stopwatch()..start();
