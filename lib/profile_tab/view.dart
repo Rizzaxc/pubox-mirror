@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import '../core/player_provider.dart';
 import '../core/sport_switcher.dart';
+import '../core/utils.dart';
 
 class ProfileTab extends StatefulWidget {
   const ProfileTab({super.key});

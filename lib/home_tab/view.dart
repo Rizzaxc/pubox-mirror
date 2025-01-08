@@ -89,9 +89,10 @@ class _HomeTabState extends State<HomeTab>
                         controller: _tabController,
                         tabs: homeSections,
                         labelColor: Colors.white,
-                        splashBorderRadius: BorderRadius.circular(32),
+                        indicatorPadding: const EdgeInsets.symmetric(horizontal: 1),
+                        splashBorderRadius: BorderRadius.circular(16),
                         indicator: BoxDecoration(
-                          borderRadius: BorderRadius.circular(32),
+                          borderRadius: BorderRadius.circular(16),
                           color: Colors.red.shade800,
                         ),
                       ),

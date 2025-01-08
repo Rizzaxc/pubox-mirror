@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
+import 'package:toastification/toastification.dart';
 
 import '../core/player_provider.dart';
 import '../core/sport_switcher.dart';
+import '../core/utils.dart';
 import 'empty_page.dart';
 
 class ManageTab extends StatefulWidget {
@@ -14,6 +16,15 @@ class ManageTab extends StatefulWidget {
 }
 
 class _ManageTabState extends State<ManageTab> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (supabase.auth.currentUser == null) {
+        context.showToast('Bạn chưa đăng nhập', type: ToastificationType.error);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {

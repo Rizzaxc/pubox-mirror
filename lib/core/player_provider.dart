@@ -7,8 +7,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'model/player.dart';
+import 'utils.dart';
 
-final supabase = Supabase.instance.client;
 
 class PlayerProvider extends ChangeNotifier {
   static const storedPlayerKey = 'STORED_PLAYER_PERSISTENT_KEY';

@@ -76,7 +76,7 @@ class _ContentCarouselState extends State<ContentCarousel>
             Center(
               child: Text('Third Page', style: textTheme.titleLarge),
             ),
-            Center(child: const AuthForm()),
+            Center(child: AuthForm.instance),
           ],
         ),
         PageIndicator(

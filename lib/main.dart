@@ -72,6 +72,13 @@ class Pubox extends StatelessWidget {
       colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.red.shade700, surface: Colors.green.shade50),
       textTheme: GoogleFonts.bitterTextTheme(),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16)))),
+      buttonTheme: ButtonThemeData(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
       tabBarTheme: ThemeData().tabBarTheme.copyWith(
           indicatorSize: TabBarIndicatorSize.tab,
           unselectedLabelColor: Colors.grey.shade800,

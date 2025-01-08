@@ -8,7 +8,11 @@ import '../core/player_provider.dart';
 import '../misc/flutter_auth_ui/supabase_auth_ui.dart';
 
 class AuthForm extends StatelessWidget {
-  const AuthForm({super.key});
+  const AuthForm._();
+
+  static final _instance = AuthForm._();
+
+  static AuthForm get instance => _instance;
 
   Future<bool> _awaitPlayerInitialized(BuildContext context) async {
     const initialDelay = Duration(milliseconds: 100);

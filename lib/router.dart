@@ -100,7 +100,7 @@ final GoRouter puboxRouter = GoRouter(
                           constrains: BoxConstraints(
                               maxHeight: MediaQuery.of(context).size.height * 0.8),
                           builder: (context) {
-                            return const AuthForm();
+                            return AuthForm.instance;
                           });
                     }),
               ],
@@ -127,7 +127,7 @@ final GoRouter puboxRouter = GoRouter(
                           constrains: BoxConstraints(
                               maxHeight: MediaQuery.of(context).size.height * 0.8),
                           builder: (context) {
-                            return const AuthForm();
+                            return AuthForm.instance;
                           });
                     }),
               ],            ),

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
+import 'package:toastification/toastification.dart';
 import '../core/sport_switcher.dart';
+import '../core/utils.dart';
 
 class HealthTab extends StatefulWidget {
   const HealthTab({super.key});
@@ -12,11 +14,20 @@ class HealthTab extends StatefulWidget {
 
 class _HealthTabState extends State<HealthTab> {
   @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (supabase.auth.currentUser == null) {
+        context.showToast('Bạn chưa đăng nhập', type: ToastificationType.error);
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<SelectedSportProvider>.value(
       value: SelectedSportProvider.instance,
       child: Scaffold(
-
           appBar: AppBar(
             title: PlatformText('Health'),
             automaticallyImplyLeading: true,
@@ -31,7 +42,6 @@ class _HealthTabState extends State<HealthTab> {
             ),
             actions: [SportSwitcher.instance],
           ),
-
           body: Center(child: Text('TODO'))),
     );
   }
