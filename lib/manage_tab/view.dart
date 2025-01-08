@@ -19,11 +19,6 @@ class _ManageTabState extends State<ManageTab> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (supabase.auth.currentUser == null) {
-        context.showToast('Bạn chưa đăng nhập', type: ToastificationType.error);
-      }
-    });
   }
 
   @override
@@ -49,6 +44,7 @@ class _ManageTabState extends State<ManageTab> {
           builder: (context, playerProvider, _) {
             final player = playerProvider.player;
             if (player.id == null) {
+              // TODO: provide context & redirect to /profile/auth
               return const EmptyPage();
             }
             return Center(

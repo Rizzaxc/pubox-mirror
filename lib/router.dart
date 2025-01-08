@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:toastification/toastification.dart';
 import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
 
 import 'core/utils.dart';
@@ -27,9 +28,9 @@ final GoRouter puboxRouter = GoRouter(
       path: '/welcome',
       builder: (context, state) => const WelcomeScreen(),
       redirect: (context, state) {
-        // if user is logged in, redirect to home
         if (supabase.auth.currentSession == null) return null;
         if (supabase.auth.currentSession!.isExpired) return null;
+        // if user is logged in, redirect to home
         return '/home';
       },
     ),
@@ -83,13 +84,35 @@ final GoRouter puboxRouter = GoRouter(
           routes: <RouteBase>[
             GoRoute(
               path: '/manage',
-              redirect: (context, state) {
-                if (supabase.auth.currentSession == null) return '/manage/auth';
-                return null;
-              },
               builder: (context, state) {
                 return const ManageTab();
               },
+              routes: <RouteBase>[
+              ],
+            ),
+          ],
+        ),
+
+        StatefulShellBranch(
+          routes: <RouteBase>[
+            GoRoute(
+              path: '/health',
+              builder: (context, state) => const HealthTab(),
+              routes: <RouteBase>[
+
+              ],            ),
+          ],
+        ),
+
+        StatefulShellBranch(
+          routes: <RouteBase>[
+            GoRoute(
+              path: '/profile',
+              redirect: (context, state) {
+                if (supabase.auth.currentSession == null) return '/profile/auth';
+                return null;
+              },
+              builder: (context, state) => ProfileTab(),
               routes: <RouteBase>[
                 GoRoute(
                     path: 'auth',
@@ -104,42 +127,6 @@ final GoRouter puboxRouter = GoRouter(
                           });
                     }),
               ],
-            ),
-          ],
-        ),
-
-        StatefulShellBranch(
-          routes: <RouteBase>[
-            GoRoute(
-              path: '/health',
-              redirect: (context, state) {
-                if (supabase.auth.currentSession == null) return '/health/auth';
-                return null;
-              },
-              builder: (context, state) => const HealthTab(),
-              routes: <RouteBase>[
-                GoRoute(
-                    path: 'auth',
-                    pageBuilder: (context, state) {
-                      return BottomSheetPage(
-                          isDismissible: false,
-                          enableDrag: false,
-                          constrains: BoxConstraints(
-                              maxHeight: MediaQuery.of(context).size.height * 0.8),
-                          builder: (context) {
-                            return AuthForm.instance;
-                          });
-                    }),
-              ],            ),
-          ],
-        ),
-
-        StatefulShellBranch(
-          routes: <RouteBase>[
-            GoRoute(
-              path: '/profile',
-              builder: (context, state) => ProfileTab(),
-              routes: <RouteBase>[],
             ),
           ],
         ),

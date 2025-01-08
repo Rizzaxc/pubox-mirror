@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
 import 'package:toastification/toastification.dart';
+import '../core/player_provider.dart';
 import '../core/sport_switcher.dart';
 import '../core/utils.dart';
 
@@ -16,11 +17,6 @@ class _HealthTabState extends State<HealthTab> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (supabase.auth.currentUser == null) {
-        context.showToast('Bạn chưa đăng nhập', type: ToastificationType.error);
-      }
-    });
   }
 
   @override
@@ -28,21 +24,34 @@ class _HealthTabState extends State<HealthTab> {
     return ChangeNotifierProvider<SelectedSportProvider>.value(
       value: SelectedSportProvider.instance,
       child: Scaffold(
-          appBar: AppBar(
-            title: PlatformText('Health'),
-            automaticallyImplyLeading: true,
-            centerTitle: true,
-            scrolledUnderElevation: 0,
-            leading: PlatformIconButton(
-              onPressed: () {},
-              icon: Icon(
-                Icons.notifications_active_outlined,
-                size: 24,
-              ),
+        appBar: AppBar(
+          title: PlatformText('Health'),
+          automaticallyImplyLeading: true,
+          centerTitle: true,
+          scrolledUnderElevation: 0,
+          leading: PlatformIconButton(
+            onPressed: () {},
+            icon: Icon(
+              Icons.notifications_active_outlined,
+              size: 24,
             ),
-            actions: [SportSwitcher.instance],
           ),
-          body: Center(child: Text('TODO'))),
+          actions: [SportSwitcher.instance],
+        ),
+        // TODO: provide context & redirect to /profile/auth
+
+        body: Consumer<PlayerProvider>(
+          builder: (context, playerProvider, child) {
+            final player = playerProvider.player;
+            if (player.id == null) {
+              // TODO: provide context & redirect to /profile/auth
+              return const Placeholder();
+            }
+            return Center(
+                child: Text('Welcome ${player.username}@${player.tagNumber}'));
+          },
+        ),
+      ),
     );
   }
 }
