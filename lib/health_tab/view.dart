@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
 import '../core/sport_switcher.dart';
 
@@ -15,15 +16,22 @@ class _HealthTabState extends State<HealthTab> {
     return ChangeNotifierProvider<SelectedSportProvider>.value(
       value: SelectedSportProvider.instance,
       child: Scaffold(
+
           appBar: AppBar(
-            title: const Text('Sức Khoẻ'),
+            title: PlatformText('Health'),
+            automaticallyImplyLeading: true,
             centerTitle: true,
             scrolledUnderElevation: 0,
-            leading: IconButton(
-                onPressed: () {},
-                icon: Icon(Icons.notifications_active_outlined)),
+            leading: PlatformIconButton(
+              onPressed: () {},
+              icon: Icon(
+                Icons.notifications_active_outlined,
+                size: 24,
+              ),
+            ),
             actions: [SportSwitcher.instance],
           ),
+
           body: Center(child: Text('TODO'))),
     );
   }

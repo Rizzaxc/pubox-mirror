@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
@@ -19,18 +20,22 @@ class _ProfileTabState extends State<ProfileTab> {
       value: SelectedSportProvider.instance,
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Hồ Sơ'),
+          title: PlatformText('Hồ Sơ'),
+          automaticallyImplyLeading: true,
           centerTitle: true,
           scrolledUnderElevation: 0,
-          leading: IconButton(
-              onPressed: () {},
-              icon: Icon(Icons.notifications_active_outlined)),
+          leading: PlatformIconButton(
+            onPressed: () {},
+            icon: Icon(
+              Icons.notifications_active_outlined,
+              size: 24,
+            ),
+          ),
           actions: [
             SportSwitcher.instance,
             IconButton(
                 onPressed: () async {
                   if (context.read<PlayerProvider>().player.id == null) {
-                    debugPrint('no session');
                     context.go('/welcome');
                     return;
                   }

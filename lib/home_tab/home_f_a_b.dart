@@ -1,18 +1,29 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
 class HomeFAB extends StatelessWidget {
   const HomeFAB({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-        onLongPress: () {}, // open fullscreen modal
-        onDoubleTap: () {}, // reload
-        child: FloatingActionButton(
-          onPressed: () {}, // open submenu
-          shape: const CircleBorder(),
-          backgroundColor: Colors.green.shade600,
-          child: Icon(Icons.search, color: Colors.white),
-        ));
+    return GestureDetector(
+      onLongPress: () {}, // open fullscreen modal
+      onDoubleTap: () {}, // reload
+      child: PlatformIconButton(
+        onPressed: () {}, // open submenu
+        color: Colors.green.shade600,
+        padding: EdgeInsets.zero,
+        icon: Icon(PlatformIcons(context).search, color: Colors.white, size: 24,),
+        cupertino: (_, __) => CupertinoIconButtonData(
+          borderRadius: BorderRadius.circular(32),
+          minSize: 56
+        ),
+        material: (_, __) => MaterialIconButtonData(
+          padding: EdgeInsets.all(16),
+          iconSize: 24,
+        ),
+      ),
+    );
   }
 }

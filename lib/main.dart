@@ -68,13 +68,14 @@ class Pubox extends StatelessWidget {
     // Theming
     final themeMode = ThemeMode.light;
     final materialTheme = ThemeData(
+      useMaterial3: true,
       colorScheme: ColorScheme.fromSeed(
-          seedColor: Colors.red.shade800, surface: Colors.green.shade50),
+          seedColor: Colors.red.shade700, surface: Colors.green.shade50),
       textTheme: GoogleFonts.bitterTextTheme(),
       tabBarTheme: ThemeData().tabBarTheme.copyWith(
-            labelColor: Colors.red.shade800,
-            unselectedLabelColor: Colors.grey.shade700,
-          ),
+          indicatorSize: TabBarIndicatorSize.tab,
+          unselectedLabelColor: Colors.grey.shade800,
+          dividerHeight: 0),
       popupMenuTheme: PopupMenuThemeData(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
@@ -97,13 +98,12 @@ class Pubox extends StatelessWidget {
         themeMode: themeMode,
         materialLightTheme: materialTheme,
         cupertinoLightTheme: cupertinoTheme,
-        builder: (context) => ChangeNotifierProvider(
-          create: (_) => PlayerProvider(),
-          child: ToastificationWrapper(
-            config: const ToastificationConfig(
+        builder: (context) => ToastificationWrapper(
+          config: const ToastificationConfig(
               alignment: Alignment.topCenter,
-              animationDuration: Duration(milliseconds: 250)
-            ),
+              animationDuration: Duration(milliseconds: 250)),
+          child: ChangeNotifierProvider(
+            create: (_) => PlayerProvider(),
             child: PlatformApp.router(
               title: 'Pubox',
               routerConfig: puboxRouter,
@@ -137,25 +137,6 @@ class ScaffoldWithNavBar extends StatelessWidget {
     PuboxIcons.profile
   ];
 
-  static final List<BottomNavigationBarItem> bottomNavbarItems = [
-    BottomNavigationBarItem(
-        icon: Icon(
-      CupertinoIcons.house_fill,
-    )),
-    BottomNavigationBarItem(
-        icon: Icon(
-      Icons.edit_calendar_rounded,
-    )),
-    BottomNavigationBarItem(
-        icon: Icon(
-      FontAwesomeIcons.heartPulse,
-    )),
-    BottomNavigationBarItem(
-        icon: Icon(
-      PuboxIcons.profile,
-    )),
-  ];
-
   // TODO: move into their own screen
   static const fabs = [HomeFAB(), ManageFAB(), HealthFAB(), ProfileFAB()];
 
@@ -173,7 +154,7 @@ class ScaffoldWithNavBar extends StatelessWidget {
         activeIndex: navigationShell.currentIndex,
         backgroundColor: Colors.green.shade50,
         splashRadius: 0,
-        inactiveColor: Colors.grey.shade700,
+        inactiveColor: Colors.grey.shade600,
         activeColor: Colors.red.shade800,
         iconSize: 28,
         // borderWidth: 1,

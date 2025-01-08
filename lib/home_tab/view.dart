@@ -14,9 +14,6 @@ class HomeTab extends StatefulWidget {
 
   static final instance = HomeTab._();
 
-  // static const title = 'Home';
-  static final fab = HomeFAB();
-
   @override
   State<HomeTab> createState() => _HomeTabState();
 }
@@ -78,28 +75,37 @@ class _HomeTabState extends State<HomeTab>
             ),
             actions: [SportSwitcher.instance],
           ),
-          body: NestedScrollView(
-            headerSliverBuilder:
-                (BuildContext context, bool innerBoxIsScrolled) {
-              return [
-                SliverAppBar(
-                  toolbarHeight: 8,
-                  bottom: TabBar(
-                    controller: _tabController,
-                    tabs: homeSections,
-                    dividerHeight: 0,
+          body: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: NestedScrollView(
+              headerSliverBuilder:
+                  (BuildContext context, bool innerBoxIsScrolled) {
+                return [
+                  SliverPadding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    sliver: SliverAppBar(
+                      toolbarHeight: 8,
+                      bottom: TabBar(
+                        controller: _tabController,
+                        tabs: homeSections,
+                        labelColor: Colors.white,
+                        splashBorderRadius: BorderRadius.circular(32),
+                        indicator: BoxDecoration(
+                          borderRadius: BorderRadius.circular(32),
+                          color: Colors.red.shade800,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-                // const SliverGap(16),
-                // SliverPadding(padding: 16),
-              ];
-            },
-            body: TabBarView(controller: _tabController, children: [
-              TeammateSection(),
-              ChallengerSection(),
-              NeutralSection(),
-              LocationSection()
-            ]),
+                ];
+              },
+              body: TabBarView(controller: _tabController, children: [
+                TeammateSection(),
+                ChallengerSection(),
+                NeutralSection(),
+                LocationSection()
+              ]),
+            ),
           ),
         ));
   }
@@ -112,18 +118,33 @@ class TeammateSection extends StatefulWidget {
   State<TeammateSection> createState() => _TeammateSectionState();
 }
 
-class _TeammateSectionState extends State<TeammateSection> {
+class _TeammateSectionState extends State<TeammateSection>
+    with AutomaticKeepAliveClientMixin {
   static const sectionTitle = Text(
     'Đồng đội',
     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
   );
 
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
+  bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return CustomScrollView(
+      controller: _scrollController,
       slivers: <Widget>[
         SliverAppBar(
           title: sectionTitle,
+          titleSpacing: 4,
           centerTitle: false,
         ),
         SliverList.list(
@@ -136,6 +157,9 @@ class _TeammateSectionState extends State<TeammateSection> {
             ),
             // Gap(128)
           ],
+        ),
+        const SliverPadding(
+          padding: EdgeInsets.only(bottom: 128),
         ),
       ],
     );
@@ -149,19 +173,33 @@ class ChallengerSection extends StatefulWidget {
   State<ChallengerSection> createState() => _ChallengerSectionState();
 }
 
-class _ChallengerSectionState extends State<ChallengerSection> {
+class _ChallengerSectionState extends State<ChallengerSection>
+    with AutomaticKeepAliveClientMixin {
   static const sectionTitle = Text(
     'Đối thủ',
     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
   );
 
   @override
+  bool get wantKeepAlive => true;
+
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     return CustomScrollView(
+      controller: _scrollController,
       slivers: <Widget>[
         SliverAppBar(
           title: sectionTitle,
-          floating: false,
+          titleSpacing: 4,
           centerTitle: false,
         ),
         SliverList.list(
@@ -174,6 +212,9 @@ class _ChallengerSectionState extends State<ChallengerSection> {
             ),
             // Gap(128)
           ],
+        ),
+        const SliverPadding(
+          padding: EdgeInsets.only(bottom: 128),
         ),
       ],
     );
@@ -187,19 +228,33 @@ class NeutralSection extends StatefulWidget {
   State<NeutralSection> createState() => _NeutralSectionState();
 }
 
-class _NeutralSectionState extends State<NeutralSection> {
+class _NeutralSectionState extends State<NeutralSection>
+    with AutomaticKeepAliveClientMixin {
   static const sectionTitle = Text(
     'Trung gian',
     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
   );
 
   @override
+  bool get wantKeepAlive => true;
+
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     return CustomScrollView(
+      controller: _scrollController,
       slivers: <Widget>[
         SliverAppBar(
           title: sectionTitle,
-          floating: false,
+          titleSpacing: 4,
           centerTitle: false,
         ),
         SliverList.list(
@@ -212,6 +267,9 @@ class _NeutralSectionState extends State<NeutralSection> {
             ),
             // Gap(128)
           ],
+        ),
+        const SliverPadding(
+          padding: EdgeInsets.only(bottom: 128),
         ),
       ],
     );
@@ -225,19 +283,33 @@ class LocationSection extends StatefulWidget {
   State<LocationSection> createState() => _LocationSectionState();
 }
 
-class _LocationSectionState extends State<LocationSection> {
+class _LocationSectionState extends State<LocationSection>
+    with AutomaticKeepAliveClientMixin {
   static const sectionTitle = Text(
     'Địa điểm',
     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
   );
 
   @override
+  bool get wantKeepAlive => true;
+
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     return CustomScrollView(
+      controller: _scrollController,
       slivers: <Widget>[
         SliverAppBar(
           title: sectionTitle,
-          floating: false,
+          titleSpacing: 4,
           centerTitle: false,
         ),
         SliverList.list(
@@ -250,6 +322,9 @@ class _LocationSectionState extends State<LocationSection> {
             ),
             // Gap(128)
           ],
+        ),
+        const SliverPadding(
+          padding: EdgeInsets.only(bottom: 128),
         ),
       ],
     );
