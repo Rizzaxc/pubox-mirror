@@ -87,8 +87,7 @@ final GoRouter puboxRouter = GoRouter(
               builder: (context, state) {
                 return const ManageTab();
               },
-              routes: <RouteBase>[
-              ],
+              routes: <RouteBase>[],
             ),
           ],
         ),
@@ -98,9 +97,8 @@ final GoRouter puboxRouter = GoRouter(
             GoRoute(
               path: '/health',
               builder: (context, state) => const HealthTab(),
-              routes: <RouteBase>[
-
-              ],            ),
+              routes: <RouteBase>[],
+            ),
           ],
         ),
 
@@ -109,7 +107,8 @@ final GoRouter puboxRouter = GoRouter(
             GoRoute(
               path: '/profile',
               redirect: (context, state) {
-                if (supabase.auth.currentSession == null) return '/profile/auth';
+                if (supabase.auth.currentSession == null)
+                  return '/profile/auth';
                 return null;
               },
               builder: (context, state) => ProfileTab(),
@@ -121,9 +120,13 @@ final GoRouter puboxRouter = GoRouter(
                           isDismissible: false,
                           enableDrag: false,
                           constrains: BoxConstraints(
-                              maxHeight: MediaQuery.of(context).size.height * 0.8),
+                              maxHeight:
+                                  MediaQuery.of(context).size.height * 0.8),
                           builder: (context) {
-                            return AuthForm.instance;
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 40),
+                              child: AuthForm.instance,
+                            );
                           });
                     }),
               ],

@@ -1,9 +1,7 @@
 import 'dart:math' as math;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
-@immutable
 class ExpandableFAB extends StatefulWidget {
   const ExpandableFAB({
     super.key,
@@ -13,13 +11,12 @@ class ExpandableFAB extends StatefulWidget {
     required this.children,
     this.onParentLongPressed,
     this.onParentDoubleTapped,
-  }) : assert(children.length >= 1 && children.length <= 3);
+  });
 
   final bool? initialOpen;
   final double distance;
   final Widget faceIcon;
-  final List<Widget> children;
-
+  final List<ActionButton> children;
   final VoidCallback? onParentLongPressed;
   final VoidCallback? onParentDoubleTapped;
 
@@ -32,6 +29,8 @@ class _ExpandableFABState extends State<ExpandableFAB>
   late final AnimationController _controller;
   late final Animation<double> _expandAnimation;
   bool _open = false;
+  OverlayEntry? _overlayEntry;
+  final LayerLink _layerLink = LayerLink();
 
   @override
   void initState() {
@@ -43,8 +42,8 @@ class _ExpandableFABState extends State<ExpandableFAB>
       vsync: this,
     );
     _expandAnimation = CurvedAnimation(
-      curve: Curves.fastOutSlowIn,
-      reverseCurve: Curves.easeOutQuad,
+      curve: Curves.easeOut,
+      reverseCurve: Curves.easeIn,
       parent: _controller,
     );
   }
@@ -52,7 +51,13 @@ class _ExpandableFABState extends State<ExpandableFAB>
   @override
   void dispose() {
     _controller.dispose();
+    _removeOverlay();
     super.dispose();
+  }
+
+  void _removeOverlay() {
+    _overlayEntry?.remove();
+    _overlayEntry = null;
   }
 
   void _toggle() {
@@ -60,47 +65,45 @@ class _ExpandableFABState extends State<ExpandableFAB>
       _open = !_open;
       if (_open) {
         _controller.forward();
+        _showOverlay();
       } else {
         _controller.reverse();
+        _removeOverlay();
       }
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    if (_open) {
-      // TODO: only this allows children to be tapped
-      return SizedBox.expand(
-        child: Stack(
-          alignment: Alignment.bottomCenter,
-          clipBehavior: Clip.none,
+  void _showOverlay() {
+    _overlayEntry = OverlayEntry(
+      builder: (context) {
+        return Stack(
           children: [
-            _buildTapToCloseFAB(),
-            ..._buildExpandingActionButtons(),
+            // Menu items
+            Positioned(
+              child: CompositedTransformFollower(
+                link: _layerLink,
+                offset: Offset(-widget.distance, -56*3), // Offset the menu upward
+                child: SizedBox(
+                  width: widget.distance + 56*3,
+                  height: widget.distance + 56*3,
+                  child: AnimatedBuilder(
+                    animation: _expandAnimation,
+                    builder: (context, child) {
+                      return Stack(
+                        alignment: Alignment.bottomCenter,
+                        children: _buildExpandingActionButtons(),
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ),
           ],
-        ),
-      );
-    } else {
-      return _buildTapToOpenFAB();
-    }
-  }
-
-  Widget _buildTapToCloseFAB() {
-    return PlatformIconButton(
-      padding: EdgeInsets.zero,
-      cupertino: (_, __) => CupertinoIconButtonData(
-          borderRadius: BorderRadius.circular(32), minSize: 56),
-      material: (_, __) => MaterialIconButtonData(
-        padding: EdgeInsets.all(16),
-        iconSize: 24,
-      ),
-      icon: Icon(
-        PlatformIcons(context).clear,
-        color: Theme.of(context).colorScheme.onInverseSurface,
-      ),
-      color: Theme.of(context).colorScheme.inverseSurface,
-      onPressed: _toggle,
+        );
+      },
     );
+
+    Overlay.of(context).insert(_overlayEntry!);
   }
 
   // 1 item -> perpendicular
@@ -142,7 +145,7 @@ class _ExpandableFABState extends State<ExpandableFAB>
             progress: _expandAnimation,
             child: widget.children[1]));
         children.add(_ExpandingActionButton(
-            directionInDegrees: 150,
+            directionInDegrees: 120,
             maxDistance: widget.distance,
             progress: _expandAnimation,
             child: widget.children[2]));
@@ -153,35 +156,66 @@ class _ExpandableFABState extends State<ExpandableFAB>
     return children;
   }
 
-  Widget _buildTapToOpenFAB() {
-    return AnimatedContainer(
-      transformAlignment: Alignment.center,
-      transform: Matrix4.diagonal3Values(
-        _open ? 0.7 : 1.0,
-        _open ? 0.7 : 1.0,
-        1.0,
+  Widget _buildFaceButton() {
+    return IgnorePointer(
+      ignoring: _open,
+      child: AnimatedContainer(
+        transformAlignment: Alignment.center,
+        transform: Matrix4.diagonal3Values(
+          _open ? 0.7 : 1.0,
+          _open ? 0.7 : 1.0,
+          1.0,
+        ),
+        duration: const Duration(milliseconds: 100),
+        curve: const Interval(0.0, 0.5, curve: Curves.easeOut),
+        child: AnimatedOpacity(
+          opacity: _open ? 0.0 : 1.0,
+          curve: const Interval(0.25, 1.0, curve: Curves.easeInOut),
+          duration: const Duration(milliseconds: 100),
+          child: PlatformIconButton(
+              onPressed: _toggle,
+              color: Theme.of(context).colorScheme.tertiary,
+              padding: EdgeInsets.zero,
+              cupertino: (_, __) => CupertinoIconButtonData(
+                  borderRadius: BorderRadius.circular(32), minSize: 56),
+              material: (_, __) => MaterialIconButtonData(
+                    padding: EdgeInsets.all(16),
+                    iconSize: 24,
+                  ),
+              icon: GestureDetector(
+                  onLongPress: widget.onParentLongPressed,
+                  onDoubleTap: widget.onParentDoubleTapped,
+                  child: widget.faceIcon)),
+        ),
       ),
-      duration: const Duration(milliseconds: 250),
-      curve: const Interval(0.0, 0.5, curve: Curves.easeOut),
-      child: PlatformIconButton(
-          onPressed: _toggle,
-          color: Theme.of(context).colorScheme.tertiary,
-          padding: EdgeInsets.zero,
-          cupertino: (_, __) => CupertinoIconButtonData(
-              borderRadius: BorderRadius.circular(32), minSize: 56),
-          material: (_, __) => MaterialIconButtonData(
-                padding: EdgeInsets.all(16),
-                iconSize: 24,
-              ),
-          icon: GestureDetector(
-              onLongPress: widget.onParentLongPressed,
-              onDoubleTap: widget.onParentDoubleTapped,
-              child: widget.faceIcon)),
     );
+  }
+
+  Widget _buildCloseButton() {
+    return PlatformIconButton(
+      padding: EdgeInsets.zero,
+      cupertino: (_, __) => CupertinoIconButtonData(
+          borderRadius: BorderRadius.circular(32), minSize: 56),
+      material: (_, __) => MaterialIconButtonData(
+        padding: EdgeInsets.all(16),
+        iconSize: 24,
+      ),
+      icon: Icon(
+        PlatformIcons(context).clear,
+        color: Theme.of(context).colorScheme.onInverseSurface,
+      ),
+      color: Theme.of(context).colorScheme.inverseSurface,
+      onPressed: _toggle,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CompositedTransformTarget(
+        link: _layerLink, child: _open ? _buildCloseButton() : _buildFaceButton());
   }
 }
 
-@immutable
 class _ExpandingActionButton extends StatelessWidget {
   const _ExpandingActionButton({
     required this.directionInDegrees,
@@ -201,13 +235,13 @@ class _ExpandingActionButton extends StatelessWidget {
       animation: progress,
       builder: (context, child) {
         final offset = Offset.fromDirection(
-          // 180 north of the face widget
-        directionInDegrees * (math.pi / 180.0),
+          directionInDegrees * (math.pi / 180.0),
           progress.value * maxDistance,
         );
+
         return Positioned(
-          right: 4.0 + offset.dx,
-          bottom: 4.0 + offset.dy,
+          right: maxDistance + offset.dx,
+          bottom: maxDistance + offset.dy,
           child: Transform.rotate(
             angle: (1.0 - progress.value) * math.pi / 2,
             child: child!,
@@ -222,30 +256,30 @@ class _ExpandingActionButton extends StatelessWidget {
   }
 }
 
-@immutable
+// Example ActionButton class (you would need to implement this)
 class ActionButton extends StatelessWidget {
   const ActionButton({
     super.key,
-    this.onPressed,
+    required this.onPressed,
     required this.icon,
   });
 
-  final VoidCallback? onPressed;
+  final VoidCallback onPressed;
   final Widget icon;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Material(
-      shape: const CircleBorder(),
-      clipBehavior: Clip.antiAlias,
-      color: theme.colorScheme.onTertiaryFixedVariant,
-      elevation: 4,
-      child: IconButton(
-        onPressed: onPressed,
-        icon: icon,
-        color: theme.colorScheme.tertiaryContainer,
+    return PlatformIconButton(
+      icon: icon,
+      color: theme.colorScheme.primaryContainer,
+      cupertino: (_, __) => CupertinoIconButtonData(
+        color: theme.colorScheme.onPrimaryFixed,
+        padding: EdgeInsets.zero,
+        borderRadius: BorderRadius.circular(32)
       ),
+      onPressed: onPressed,
     );
   }
 }
+

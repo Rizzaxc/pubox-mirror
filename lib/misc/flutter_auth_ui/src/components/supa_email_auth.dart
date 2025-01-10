@@ -320,6 +320,7 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
                   label: Text(localization.enterEmail),
                 ),
                 controller: _emailController,
+                onTapOutside: (event) => _emailFocusNode.unfocus(),
                 onFieldSubmitted: (_) {
                   if (_isRecoveringPassword) {
                     _passwordRecovery();
@@ -355,6 +356,7 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
                   ),
                   obscureText: true,
                   controller: _passwordController,
+                  onTapOutside: (event) => FocusManager.instance.primaryFocus?.unfocus(),
                   onFieldSubmitted: (_) {
                     if (widget.metadataFields == null || _isSigningIn) {
                       _signInSignUp();
@@ -616,7 +618,6 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
         redirectTo: widget.resetPasswordRedirectTo ?? widget.redirectTo,
       );
       widget.onPasswordResetEmailSent?.call();
-      // TODO: use_build_context_synchronously
       if (!mounted) return;
       context.showToast(widget.localization.passwordResetSent, type: ToastificationType.info);
       setState(() {

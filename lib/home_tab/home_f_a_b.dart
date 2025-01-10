@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import 'package:pubox/core/expandable_fab.dart';
+import '../core/anchored_overlay.dart';
+import '../core/expandable_fab.dart';
 
 import '../core/utils.dart';
 
@@ -36,24 +37,20 @@ class HomeFAB extends StatelessWidget {
 
     return ExpandableFAB(
       faceIcon: faceIcon,
-      children: [
+      distance: 72,
+      children: <ActionButton>[
         ActionButton(
-          onPressed: () => context.showToast('location'),
-          icon: const Icon(Icons.pin_drop_outlined),
-        ),
+            onPressed: () => context.showToast('pin'),
+            icon: Icon(Icons.pin_drop_outlined)),
         ActionButton(
-          onPressed: () => context.showToast('schedule'),
-          icon: const Icon(Icons.calendar_month_outlined),
-        ),
+            onPressed: () => context.showToast('cal'),
+            icon: Icon(Icons.calendar_month_outlined)),
         ActionButton(
-          onPressed: () => context.showToast('skill'),
-          icon: const Icon(FontAwesomeIcons.handFist),
-        ),
+            onPressed: () => context.showToast('fist'),
+            icon: Icon(FontAwesomeIcons.handFist)),
       ],
     );
   }
-
-  void _openSubMenu() {}
 
   void _openFullModal() {}
 }

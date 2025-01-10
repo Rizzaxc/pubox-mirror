@@ -156,7 +156,6 @@ class ScaffoldWithNavBar extends StatelessWidget {
       floatingActionButtonLocation:
           FloatingActionButtonLocation.centerDocked,
       floatingActionButton: fabs[navigationShell.currentIndex],
-      // floatingActionButton: fabs[navigationShell.currentIndex],
       extendBody: true,
       bottomNavigationBar: AnimatedBottomNavigationBar(
         activeIndex: navigationShell.currentIndex,
