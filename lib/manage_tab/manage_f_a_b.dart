@@ -1,28 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:provider/provider.dart';
+
+import '../core/pubox_fab.dart';
+import 'manage_remote_fetch_state_provider.dart';
 
 class ManageFAB extends StatelessWidget {
-  const ManageFAB({super.key});
+  ManageFAB({super.key});
+
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onLongPress: () {}, // open fullscreen modal
-      onDoubleTap: () {}, // reload
-      child: PlatformIconButton(
-        onPressed: () {}, // open submenu
-        color: Colors.green.shade600,
-        padding: EdgeInsets.zero,
-        icon: Icon(PlatformIcons(context).add, color: Colors.white, size: 24,),
-        cupertino: (_, __) => CupertinoIconButtonData(
-            borderRadius: BorderRadius.circular(32),
-            minSize: 56
-        ),
-        material: (_, __) => MaterialIconButtonData(
-          padding: EdgeInsets.all(16),
-          iconSize: 24,
-        ),
-      ),
+    return Consumer<ManageRemoteLoadStateProvider>(
+      builder: (context, fetchState, _) {
+        final isLoading = fetchState.isLoading;
+        return PuboxFab(
+          onPressed: context.read<ManageRemoteLoadStateProvider>().startLoading,
+          isLoading: isLoading,
+          icon: Icon(PlatformIcons(context).add,),
+        );
+      },
     );
   }
 }

@@ -17,9 +17,12 @@ import 'package:toastification/toastification.dart';
 
 import 'core/icons/pubox_icons.dart';
 import 'core/player_provider.dart';
+import 'core/remote_load_state_provider_interface.dart';
+import 'home_tab/home_remote_fetch_state_provider.dart';
 import 'health_tab/health_f_a_b.dart';
 import 'home_tab/home_f_a_b.dart';
 import 'manage_tab/manage_f_a_b.dart';
+import 'manage_tab/manage_remote_fetch_state_provider.dart';
 import 'profile_tab/profile_f_a_b.dart';
 import 'router.dart';
 
@@ -83,7 +86,12 @@ class Pubox extends StatelessWidget {
           indicatorSize: TabBarIndicatorSize.tab,
           unselectedLabelColor: Colors.grey.shade800,
           dividerHeight: 0),
+      // menuButtonTheme: MenuButtonThemeData(
+      //   style: ButtonStyle(splashFactory: InkRipple.splashFactory),
+      //     ),
       popupMenuTheme: PopupMenuThemeData(
+
+        position: PopupMenuPosition.over,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
@@ -109,8 +117,15 @@ class Pubox extends StatelessWidget {
           config: const ToastificationConfig(
               alignment: Alignment.topCenter,
               animationDuration: Duration(milliseconds: 250)),
-          child: ChangeNotifierProvider(
-            create: (_) => PlayerProvider(),
+          child: MultiProvider(
+            providers: [
+              ChangeNotifierProvider<PlayerProvider>(create: (_) => PlayerProvider()),
+              ChangeNotifierProvider<HomeRemoteLoadStateProvider>(
+                  create: (_) => HomeRemoteLoadStateProvider()),
+              ChangeNotifierProvider<ManageRemoteLoadStateProvider>(
+                  create: (_) => ManageRemoteLoadStateProvider())
+
+            ],
             child: PlatformApp.router(
               title: 'Pubox',
               routerConfig: puboxRouter,
@@ -145,7 +160,7 @@ class ScaffoldWithNavBar extends StatelessWidget {
   ];
 
   // TODO: move into their own screen
-  static const fabs = [HomeFAB(), ManageFAB(), HealthFAB(), ProfileFAB()];
+  static final fabs = [HomeFAB(), ManageFAB(), HealthFAB(), ProfileFAB()];
 
   @override
   Widget build(BuildContext context) {

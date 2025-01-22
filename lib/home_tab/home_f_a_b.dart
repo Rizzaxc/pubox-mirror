@@ -2,11 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:provider/provider.dart';
 
-import '../core/anchored_overlay.dart';
-import '../core/expandable_fab.dart';
-
+import '../core/pubox_fab.dart';
 import '../core/utils.dart';
+import 'home_remote_fetch_state_provider.dart';
 
 // class HomeFABProvider extends ChangeNotifier {
 //   bool _isFullModalOpen = false;
@@ -25,30 +25,21 @@ import '../core/utils.dart';
 // }
 
 class HomeFAB extends StatelessWidget {
-  const HomeFAB({super.key});
+  HomeFAB({super.key});
+
+
 
   @override
   Widget build(BuildContext context) {
-    final faceIcon = Icon(
-      PlatformIcons(context).search,
-      color: Colors.white,
-      size: 24,
-    );
-
-    return ExpandableFAB(
-      faceIcon: faceIcon,
-      distance: 72,
-      children: <ActionButton>[
-        ActionButton(
-            onPressed: () => context.showToast('pin'),
-            icon: Icon(Icons.pin_drop_outlined)),
-        ActionButton(
-            onPressed: () => context.showToast('cal'),
-            icon: Icon(Icons.calendar_month_outlined)),
-        ActionButton(
-            onPressed: () => context.showToast('fist'),
-            icon: Icon(FontAwesomeIcons.handFist)),
-      ],
+    return Consumer<HomeRemoteLoadStateProvider>(
+      builder: (context, fetchState, _) {
+        final isLoading = fetchState.isLoading;
+        return PuboxFab(
+          onPressed: _openFullModal,
+          isLoading: isLoading,
+          icon: Icon(PlatformIcons(context).search,),
+        );
+      },
     );
   }
 

@@ -60,7 +60,7 @@ class SportSwitcher extends StatelessWidget {
   static const double appBarIconSize = 16;
   static const double menuItemIconSize = 12;
 
-  final labelBoxWidth = Platform.isIOS ? 96.0 : 64.0;
+  final labelBoxWidth = Platform.isIOS ? 96.0 : 72.0;
   Widget _buildMenuOptionChild(Sport sport, String displayName) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -69,8 +69,10 @@ class SportSwitcher extends StatelessWidget {
         _getSportIcon(sport, menuItemIconSize),
         SizedBox(
           width: labelBoxWidth,
+
           child: Text(
             displayName,
+            maxLines: 1,
             textAlign: TextAlign.start,
           ),
         ),
@@ -84,11 +86,14 @@ class SportSwitcher extends StatelessWidget {
       material: (_, __) => MaterialPopupMenuData(
           position: PopupMenuPosition.under,
           padding: EdgeInsets.zero,
+          splashRadius: 32,
+          constraints: BoxConstraints(maxWidth: 128),
           shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(16),
               side: BorderSide(color: Colors.grey.shade200)),
           popUpAnimationStyle: AnimationStyle(
-              curve: Curves.easeOut, duration: const Duration(milliseconds: 250))),
+              curve: Curves.easeOut,
+              duration: const Duration(milliseconds: 250))),
       cupertino: (_, __) => CupertinoPopupMenuData(
         title: const Text(
           'Chuyển Môn',
@@ -99,38 +104,41 @@ class SportSwitcher extends StatelessWidget {
         PopupMenuOption(
           label: 'soccer',
           material: (_, __) => MaterialPopupMenuOptionData(
-            child: _buildMenuOptionChild(Sport.soccer, 'Bóng Đá')),
+              child: _buildMenuOptionChild(Sport.soccer, 'Bóng Đá')),
           cupertino: (_, __) => CupertinoPopupMenuOptionData(
               child: _buildMenuOptionChild(Sport.soccer, 'Bóng Đá')),
-          onTap: (_) => context.read<SelectedSportProvider>().change(Sport.soccer),
+          onTap: (_) =>
+              context.read<SelectedSportProvider>().change(Sport.soccer),
         ),
         PopupMenuOption(
           label: 'basketball',
           material: (_, __) => MaterialPopupMenuOptionData(
-            child: _buildMenuOptionChild(Sport.basketball, 'Bóng Rổ')),
+              child: _buildMenuOptionChild(Sport.basketball, 'Bóng Rổ')),
           cupertino: (_, __) => CupertinoPopupMenuOptionData(
               child: _buildMenuOptionChild(Sport.basketball, 'Bóng Rổ')),
-          onTap: (_) => context.read<SelectedSportProvider>().change(Sport.basketball),
+          onTap: (_) =>
+              context.read<SelectedSportProvider>().change(Sport.basketball),
         ),
         PopupMenuOption(
           label: 'badminton',
           material: (_, __) => MaterialPopupMenuOptionData(
-            child: _buildMenuOptionChild(Sport.badminton, 'Cầu Lông')),
+              child: _buildMenuOptionChild(Sport.badminton, 'Cầu Lông')),
           cupertino: (_, __) => CupertinoPopupMenuOptionData(
               child: _buildMenuOptionChild(Sport.badminton, 'Cầu Lông')),
-          onTap: (_) => context.read<SelectedSportProvider>().change(Sport.badminton),
+          onTap: (_) =>
+              context.read<SelectedSportProvider>().change(Sport.badminton),
         ),
         PopupMenuOption(
           label: 'tennis',
           material: (_, __) => MaterialPopupMenuOptionData(
-            child: _buildMenuOptionChild(Sport.tennis, 'Tennis')),
+              child: _buildMenuOptionChild(Sport.tennis, 'Tennis')),
           cupertino: (_, __) => CupertinoPopupMenuOptionData(
               child: _buildMenuOptionChild(Sport.tennis, 'Tennis')),
-          onTap: (_) => context.read<SelectedSportProvider>().change(Sport.tennis),
+          onTap: (_) =>
+              context.read<SelectedSportProvider>().change(Sport.tennis),
         )
       ],
       icon: PlatformIconButton(
-
         padding: const EdgeInsets.all(8),
         icon: Consumer<SelectedSportProvider>(
             builder: (_, selectedSport, __) =>
