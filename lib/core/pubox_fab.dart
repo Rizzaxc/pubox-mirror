@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:provider/provider.dart';
 
 
 class PuboxFab extends StatelessWidget {
@@ -34,14 +33,14 @@ class PuboxFab extends StatelessWidget {
           material: (_, __) => MaterialElevatedButtonData(
             style: ElevatedButton.styleFrom(
               shape: const CircleBorder(),
-              disabledBackgroundColor: Colors.grey.shade400,
+              disabledBackgroundColor: Colors.blueGrey.shade400,
             ),
           ),
           cupertino: (_, __) => CupertinoElevatedButtonData(
             // padding: const EdgeInsets.all(16),
             borderRadius: BorderRadius.circular(28),
             padding: EdgeInsets.zero,
-            disabledColor: Colors.grey.shade400,
+            disabledColor: Colors.blueGrey.shade400,
             minSize: isLoading ? 52 : 56,
           ),
           color: Colors.green.shade600,

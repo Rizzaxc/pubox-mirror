@@ -78,7 +78,7 @@ class Pubox extends StatelessWidget {
       elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16)))),
+                  borderRadius: BorderRadius.circular(32)))),
       buttonTheme: ButtonThemeData(
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
@@ -102,6 +102,7 @@ class Pubox extends StatelessWidget {
           TargetPlatform.android: ZoomPageTransitionsBuilder()
         },
       ),
+      cupertinoOverrideTheme: NoDefaultCupertinoThemeData()
     );
     final cupertinoTheme =
         MaterialBasedCupertinoThemeData(materialTheme: materialTheme);

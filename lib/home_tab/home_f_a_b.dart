@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import '../core/pubox_fab.dart';
 import '../core/utils.dart';
 import 'home_remote_fetch_state_provider.dart';
+import 'home_search_page.dart';
 
 // class HomeFABProvider extends ChangeNotifier {
 //   bool _isFullModalOpen = false;
@@ -27,21 +28,54 @@ import 'home_remote_fetch_state_provider.dart';
 class HomeFAB extends StatelessWidget {
   HomeFAB({super.key});
 
-
-
   @override
   Widget build(BuildContext context) {
     return Consumer<HomeRemoteLoadStateProvider>(
       builder: (context, fetchState, _) {
         final isLoading = fetchState.isLoading;
         return PuboxFab(
-          onPressed: _openFullModal,
+          onPressed: () => _openFullModal(context),
           isLoading: isLoading,
-          icon: Icon(PlatformIcons(context).search,),
+          icon: Icon(
+            PlatformIcons(context).search,
+          ),
         );
       },
     );
   }
 
-  void _openFullModal() {}
+  void _openFullModal(BuildContext context) {
+    // open a modal
+    showPlatformModalSheet(
+      context: context,
+      material: MaterialModalSheetData(
+        isScrollControlled: true,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+        ),
+      ),
+      cupertino: CupertinoModalSheetData(
+        barrierDismissible: true,
+        semanticsDismissible: true
+      ),
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.65,
+        minChildSize: 0.4,
+        maxChildSize: 0.70,
+        builder: (context, scrollController) => Container(
+          decoration: BoxDecoration(
+              color: Theme.of(context).canvasColor,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
+          padding: EdgeInsets.only(
+              top: 8,
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+              left: 8,
+              right: 8),
+          child: SingleChildScrollView(
+            padding: EdgeInsets.fromLTRB(8, 16, 8, 8),
+            child: HomeSearchPage(), controller: scrollController,),
+        ),
+      ),
+    );
+  }
 }
