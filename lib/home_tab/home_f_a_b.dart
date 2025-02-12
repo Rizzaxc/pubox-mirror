@@ -55,25 +55,24 @@ class HomeFAB extends StatelessWidget {
         ),
       ),
       cupertino: CupertinoModalSheetData(
-        barrierDismissible: true,
-        semanticsDismissible: true
-      ),
+          barrierDismissible: true, semanticsDismissible: true),
       builder: (context) => DraggableScrollableSheet(
         initialChildSize: 0.65,
         minChildSize: 0.4,
-        maxChildSize: 0.70,
+        maxChildSize: 0.7,
         builder: (context, scrollController) => Container(
           decoration: BoxDecoration(
               color: Theme.of(context).canvasColor,
-              borderRadius: BorderRadius.vertical(top: Radius.circular(16))),
+              borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
           padding: EdgeInsets.only(
               top: 8,
-              bottom: MediaQuery.of(context).viewInsets.bottom,
               left: 8,
               right: 8),
           child: SingleChildScrollView(
-            padding: EdgeInsets.fromLTRB(8, 16, 8, 8),
-            child: HomeSearchPage(), controller: scrollController,),
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+            controller: scrollController,
+            child: HomeSearchPage(),
+          ),
         ),
       ),
     );
