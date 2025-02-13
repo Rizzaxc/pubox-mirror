@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import 'icons/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'model/sport.dart';
+import 'model/enum.dart';
 
 class SelectedSportProvider extends ChangeNotifier {
   static const storedSportKey = 'STORED_SPORT_PERSISTENT_KEY';
