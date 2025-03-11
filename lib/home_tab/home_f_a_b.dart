@@ -6,31 +6,15 @@ import 'package:provider/provider.dart';
 
 import '../core/pubox_fab.dart';
 import '../core/utils.dart';
-import 'home_remote_fetch_state_provider.dart';
 import 'home_search_page.dart';
-
-// class HomeFABProvider extends ChangeNotifier {
-//   bool _isFullModalOpen = false;
-//
-//   bool get isFullModalOpen => _isFullModalOpen;
-//
-//   void openFullModal() {
-//     _isFullModalOpen = true;
-//     notifyListeners();
-//   }
-//
-//   void closeFullModal() {
-//     _isFullModalOpen = false;
-//     notifyListeners();
-//   }
-// }
+import 'state_provider.dart';
 
 class HomeFAB extends StatelessWidget {
-  HomeFAB({super.key});
+  const HomeFAB({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<HomeRemoteLoadStateProvider>(
+    return Consumer<HomeStateProvider>(
       builder: (context, fetchState, _) {
         final isLoading = fetchState.isLoading;
         return PuboxFab(
@@ -71,7 +55,10 @@ class HomeFAB extends StatelessWidget {
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
             controller: scrollController,
-            child: HomeSearchPage(),
+            child: HomeSearchPage(
+              city: Provider.of<HomeStateProvider>(context, listen: false).city,
+              districts: Provider.of<HomeStateProvider>(context, listen: false).districts,
+            ),
           ),
         ),
       ),

@@ -61,7 +61,7 @@ class SportSwitcher extends StatelessWidget {
   static const double menuItemIconSize = 12;
 
   final labelBoxWidth = Platform.isIOS ? 96.0 : 72.0;
-  Widget _buildMenuOptionChild(Sport sport, String displayName) {
+  Widget _buildMenuOptionChild(BuildContext context, Sport sport, String displayName) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       spacing: 8,
@@ -69,11 +69,11 @@ class SportSwitcher extends StatelessWidget {
         _getSportIcon(sport, menuItemIconSize),
         SizedBox(
           width: labelBoxWidth,
-
           child: Text(
             displayName,
             maxLines: 1,
             textAlign: TextAlign.start,
+            style: Theme.of(context).textTheme.bodyLarge,
           ),
         ),
       ],
@@ -95,47 +95,54 @@ class SportSwitcher extends StatelessWidget {
               curve: Curves.easeOut,
               duration: const Duration(milliseconds: 250))),
       cupertino: (_, __) => CupertinoPopupMenuData(
-        title: const Text(
-          'Chuyển Môn',
-          style: TextStyle(fontWeight: FontWeight.bold),
-        ),
+        title: Text(
+          'Chuyển Môn', style: TextStyle(fontWeight: FontWeight.bold),),
       ),
       options: [
         PopupMenuOption(
           label: 'soccer',
           material: (_, __) => MaterialPopupMenuOptionData(
-              child: _buildMenuOptionChild(Sport.soccer, 'Bóng Đá')),
+              child: _buildMenuOptionChild(context, Sport.soccer, 'Bóng Đá')),
           cupertino: (_, __) => CupertinoPopupMenuOptionData(
-              child: _buildMenuOptionChild(Sport.soccer, 'Bóng Đá')),
+              child: _buildMenuOptionChild(context, Sport.soccer, 'Bóng Đá')),
           onTap: (_) =>
               context.read<SelectedSportProvider>().change(Sport.soccer),
         ),
         PopupMenuOption(
           label: 'basketball',
           material: (_, __) => MaterialPopupMenuOptionData(
-              child: _buildMenuOptionChild(Sport.basketball, 'Bóng Rổ')),
+              child: _buildMenuOptionChild(context, Sport.basketball, 'Bóng Rổ')),
           cupertino: (_, __) => CupertinoPopupMenuOptionData(
-              child: _buildMenuOptionChild(Sport.basketball, 'Bóng Rổ')),
+              child: _buildMenuOptionChild(context, Sport.basketball, 'Bóng Rổ')),
           onTap: (_) =>
               context.read<SelectedSportProvider>().change(Sport.basketball),
         ),
         PopupMenuOption(
           label: 'badminton',
           material: (_, __) => MaterialPopupMenuOptionData(
-              child: _buildMenuOptionChild(Sport.badminton, 'Cầu Lông')),
+              child: _buildMenuOptionChild(context, Sport.badminton, 'Cầu Lông')),
           cupertino: (_, __) => CupertinoPopupMenuOptionData(
-              child: _buildMenuOptionChild(Sport.badminton, 'Cầu Lông')),
+              child: _buildMenuOptionChild(context, Sport.badminton, 'Cầu Lông')),
           onTap: (_) =>
               context.read<SelectedSportProvider>().change(Sport.badminton),
         ),
         PopupMenuOption(
           label: 'tennis',
           material: (_, __) => MaterialPopupMenuOptionData(
-              child: _buildMenuOptionChild(Sport.tennis, 'Tennis')),
+              child: _buildMenuOptionChild(context, Sport.tennis, 'Tennis')),
           cupertino: (_, __) => CupertinoPopupMenuOptionData(
-              child: _buildMenuOptionChild(Sport.tennis, 'Tennis')),
+              child: _buildMenuOptionChild(context, Sport.tennis, 'Tennis')),
           onTap: (_) =>
               context.read<SelectedSportProvider>().change(Sport.tennis),
+        ),
+        PopupMenuOption(
+          label: 'pickleball',
+          material: (_, __) => MaterialPopupMenuOptionData(
+              child: _buildMenuOptionChild(context, Sport.pickleball, 'Pickleball')),
+          cupertino: (_, __) => CupertinoPopupMenuOptionData(
+              child: _buildMenuOptionChild(context, Sport.pickleball, 'Pickleball')),
+          onTap: (_) =>
+              context.read<SelectedSportProvider>().change(Sport.pickleball),
         )
       ],
       icon: PlatformIconButton(
@@ -158,8 +165,8 @@ Widget _getSportIcon(Sport sport, double size) {
       return SportIcons.badminton(size: size);
     case Sport.tennis:
       return SportIcons.tennis(size: size);
-    // case Sport.pickleball:
-    //   return SportIcons.pickleball(size: size);
+    case Sport.pickleball:
+      return SportIcons.pickleball(size: size);
     case Sport.others:
       return Icon(Icons.question_mark);
   }

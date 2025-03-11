@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../core/sport_switcher.dart';
 import '../core/utils.dart';
@@ -121,10 +122,7 @@ class TeammateSection extends StatefulWidget {
 
 class _TeammateSectionState extends State<TeammateSection>
     with AutomaticKeepAliveClientMixin {
-  static const sectionTitle = Text(
-    'Đồng đội',
-    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
-  );
+  static const sectionTitle = 'Đồng Đội';
 
   final ScrollController _scrollController = ScrollController();
 
@@ -144,7 +142,8 @@ class _TeammateSectionState extends State<TeammateSection>
       controller: _scrollController,
       slivers: <Widget>[
         SliverAppBar(
-          title: sectionTitle,
+          title: Text(sectionTitle, style:
+          Theme.of(context).textTheme.headlineMedium),
           titleSpacing: 4,
           centerTitle: false,
         ),
@@ -176,10 +175,7 @@ class ChallengerSection extends StatefulWidget {
 
 class _ChallengerSectionState extends State<ChallengerSection>
     with AutomaticKeepAliveClientMixin {
-  static const sectionTitle = Text(
-    'Đối thủ',
-    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
-  );
+  static const sectionTitle = 'Đối thủ';
 
   @override
   bool get wantKeepAlive => true;
@@ -199,7 +195,8 @@ class _ChallengerSectionState extends State<ChallengerSection>
       controller: _scrollController,
       slivers: <Widget>[
         SliverAppBar(
-          title: sectionTitle,
+          title: Text(sectionTitle, style:
+          Theme.of(context).textTheme.headlineMedium),
           titleSpacing: 4,
           centerTitle: false,
         ),
@@ -231,10 +228,7 @@ class NeutralSection extends StatefulWidget {
 
 class _NeutralSectionState extends State<NeutralSection>
     with AutomaticKeepAliveClientMixin {
-  static const sectionTitle = Text(
-    'Trung gian',
-    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
-  );
+  static const sectionTitle = 'Trung gian';
 
   @override
   bool get wantKeepAlive => true;
@@ -254,7 +248,8 @@ class _NeutralSectionState extends State<NeutralSection>
       controller: _scrollController,
       slivers: <Widget>[
         SliverAppBar(
-          title: sectionTitle,
+          title: Text(sectionTitle, style:
+          Theme.of(context).textTheme.headlineMedium),
           titleSpacing: 4,
           centerTitle: false,
         ),
@@ -286,10 +281,7 @@ class LocationSection extends StatefulWidget {
 
 class _LocationSectionState extends State<LocationSection>
     with AutomaticKeepAliveClientMixin {
-  static const sectionTitle = Text(
-    'Địa điểm',
-    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 28),
-  );
+  static const sectionTitle = 'Địa điểm';
 
   @override
   bool get wantKeepAlive => true;
@@ -309,7 +301,8 @@ class _LocationSectionState extends State<LocationSection>
       controller: _scrollController,
       slivers: <Widget>[
         SliverAppBar(
-          title: sectionTitle,
+          title: Text(sectionTitle, style:
+          Theme.of(context).textTheme.headlineMedium),
           titleSpacing: 4,
           centerTitle: false,
         ),

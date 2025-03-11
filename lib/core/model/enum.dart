@@ -5,7 +5,7 @@ enum Sport {
   basketball,
   badminton,
   tennis,
-  // pickleball
+  pickleball
 }
 
 enum DayChunk {
@@ -33,4 +33,24 @@ enum StakeUnit {
   game,
   set,
   goal
+}
+
+enum City {
+  hanoi('hn', 'Hà Nội'),
+  hochiminh('hcm', 'Tp Hồ Chí Minh');
+  final String shorthand;
+  final String name;
+
+  const City(this.shorthand, this.name);
+
+  factory City.fromShorthand(String shorthand) {
+    switch (shorthand.toLowerCase()) {
+      case 'hn':
+        return City.hanoi;
+      case 'hcm':
+        return City.hochiminh;
+      default:
+        throw ArgumentError('Invalid city shorthand: $shorthand');
+    }
+  }
 }

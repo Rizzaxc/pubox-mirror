@@ -6,6 +6,7 @@ part 'model.g.dart';
 
 enum TeammateResultType { lobby, individual }
 
+
 @JsonSerializable()
 class TeammateModel {
   final TeammateResultType teammateResultType;

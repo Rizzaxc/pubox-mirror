@@ -10,11 +10,14 @@ class PuboxIconData {
   static const Widget basketball =
       SvgPicture(AssetBytesLoader('./assets/icons/basketball.svg.vec'));
 
+  static const Widget badminton =
+      SvgPicture(AssetBytesLoader('./assets/icons/badminton.svg.vec'));
+
   static const Widget tennis =
       SvgPicture(AssetBytesLoader('./assets/icons/tennis.svg.vec'));
 
-  static const Widget badminton =
-      SvgPicture(AssetBytesLoader('./assets/icons/badminton.svg.vec'));
+  static const Widget pickleball =
+      SvgPicture(AssetBytesLoader('./assets/icons/tennis.svg.vec'));
 
   static const googleRound =
       AssetBytesLoader('./assets/icons/google_round.svg.vec');
@@ -41,4 +44,8 @@ class SportIcons {
         size: Size.fromRadius(size), child: PuboxIconData.badminton);
   }
 
+  static SizedBox pickleball({double size = 16}) {
+    return SizedBox.fromSize(
+        size: Size.fromRadius(size), child: PuboxIconData.pickleball);
+  }
 }

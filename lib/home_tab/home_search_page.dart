@@ -2,190 +2,208 @@ import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'package:multi_dropdown/multi_dropdown.dart';
+import 'package:provider/provider.dart';
 
-class HomeSearchPage extends StatelessWidget {
-  const HomeSearchPage({super.key});
+import '../core/model/enum.dart';
+import 'model.dart';
+import 'state_provider.dart';
+
+class HomeSearchPage extends StatefulWidget {
+  final City city;
+  final List<String> districts;
+
+  const HomeSearchPage({
+    super.key,
+    required this.city,
+    required this.districts,
+  }) : assert(districts.length < 4);
 
   static var borderRadius = BorderRadius.circular(8);
   static const borderRadiusVal = Radius.circular(8);
 
   @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
-      child: ConstrainedBox(
-        constraints: BoxConstraints(minHeight: 512),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Column(
-              spacing: 16,
-              children: [
-                PlatformSearchBar(
-                  keyboardType: TextInputType.text,
-                  hintText: 'Search FriendID hoặc InviteCode',
-                  cupertino: (_, __) => CupertinoSearchBarData(
-                    itemSize: 24,
-                    autocorrect: false,
-                  ),
-                ),
-                Card(
-                  shape: RoundedRectangleBorder(borderRadius: borderRadius),
-                  margin: EdgeInsets.zero,
-                  elevation: 2,
-                  child: SizedBox(
-                    height: 144,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        DropdownMenu(
-                            requestFocusOnTap: true,
-                            // width: double.infinity,
-                            // alignmentOffset: Offset(-8, 0),
-                            expandedInsets: EdgeInsets.zero, // needed to align the menu with the input field
-                            keyboardType: TextInputType.text,
-                            leadingIcon:
-                                Icon(PlatformIcons(context).locationSolid),
-                            label: const Text(
-                              'Khu Vực',
-                            ),
-                            enableSearch: true,
-                            enableFilter: true,
-                            inputDecorationTheme: InputDecorationTheme(
-                                floatingLabelBehavior:
-                                    FloatingLabelBehavior.never,
-                                prefixIconColor: Colors.white,
-                                suffixIconColor: Colors.white,
-                                labelStyle: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white),
-                                filled: true,
-                                fillColor: Colors.blue.shade500,
-                                focusColor: Colors.blue.shade600,
-                                border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.only(
-                                        topLeft: borderRadiusVal,
-                                        topRight: borderRadiusVal),
-                                    borderSide: BorderSide(
-                                        width: 0, style: BorderStyle.none))),
-                            menuStyle: MenuStyle(
-                              maximumSize: WidgetStatePropertyAll<Size>(Size.fromHeight(256)),
-                              padding: WidgetStatePropertyAll(
-                                  EdgeInsets.zero),
-                              // side: WidgetStatePropertyAll<BorderSide>(
-                              //     BorderSide.none),
-                              // shape: WidgetStatePropertyAll<OutlinedBorder>(
-                              //     RoundedRectangleBorder(
-                              //         side: BorderSide(
-                              //             width: 0, style: BorderStyle.none)
-                              //     )
-                              // ),
-                            ),
-                            onSelected: (item) {
-                              FocusManager.instance.primaryFocus?.unfocus();
-                            },
-                            dropdownMenuEntries: <DropdownMenuEntry>[
-                              DropdownMenuEntry(value: 1, label: 'Item 1'),
-                              DropdownMenuEntry(value: 2, label: 'Item 2'),
-                              DropdownMenuEntry(value: 3, label: 'Item 3'),
-                              DropdownMenuEntry(value: 4, label: 'Item 4'),
-                              DropdownMenuEntry(value: 5, label: 'Item 5'),
-                              DropdownMenuEntry(value: 6, label: 'Item 6'),
-                              DropdownMenuEntry(value: 7, label: 'Item 7'),
-                              DropdownMenuEntry(value: 8, label: 'Item 8'),
-                            ])
-                      ],
-                    ),
-                  ),
-                ),
-                Card(
-                  elevation: 2,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8)),
-                  margin: EdgeInsets.zero,
-                  child: SizedBox(
-                    height: 144,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        DropdownMenu(
-                            requestFocusOnTap: true,
-                            expandedInsets: EdgeInsets.zero, // needed to align the menu with the input field
-                            keyboardType: TextInputType.text,
-                            leadingIcon:
-                            Icon(PlatformIcons(context).timeSolid),
-                            label: const Text(
-                              'Thời Gian',
-                            ),
-                            enableSearch: true,
-                            enableFilter: true,
-                            inputDecorationTheme: InputDecorationTheme(
-                                floatingLabelBehavior:
-                                FloatingLabelBehavior.never,
-                                prefixIconColor: Colors.white,
-                                suffixIconColor: Colors.white,
-                                labelStyle: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white),
-                                filled: true,
-                                fillColor: Colors.red.shade500,
-                                focusColor: Colors.red.shade900,
-                                border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.only(
-                                        topLeft: borderRadiusVal,
-                                        topRight: borderRadiusVal),
-                                    borderSide: BorderSide(
-                                        width: 0, style: BorderStyle.none))),
-                            menuStyle: MenuStyle(
-                              maximumSize: WidgetStatePropertyAll<Size>(Size.fromHeight(256)),
-                              padding: WidgetStatePropertyAll(
-                                  EdgeInsets.zero),
-                              // side: WidgetStatePropertyAll<BorderSide>(
-                              //     BorderSide.none),
-                              // shape: WidgetStatePropertyAll<OutlinedBorder>(
-                              //     RoundedRectangleBorder(
-                              //         side: BorderSide(
-                              //             width: 0, style: BorderStyle.none)
-                              //     )
-                              // ),
-                            ),
-                            onSelected: (item) {
-                              FocusManager.instance.primaryFocus?.unfocus();
-                            },
-                            dropdownMenuEntries: <DropdownMenuEntry>[
-                              DropdownMenuEntry(value: 1, label: 'Item 1'),
-                              DropdownMenuEntry(value: 2, label: 'Item 2'),
-                              DropdownMenuEntry(value: 3, label: 'Item 3'),
-                              DropdownMenuEntry(value: 4, label: 'Item 4'),
-                              DropdownMenuEntry(value: 5, label: 'Item 5'),
-                              DropdownMenuEntry(value: 6, label: 'Item 6'),
-                              DropdownMenuEntry(value: 7, label: 'Item 7'),
-                              DropdownMenuEntry(value: 8, label: 'Item 8'),
-                            ])
+  State<HomeSearchPage> createState() => _HomeSearchPageState();
+}
 
-                      ],
+class _HomeSearchPageState extends State<HomeSearchPage> {
+  late City _city;
+  late List<String> _districts;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _city = widget.city;
+    _districts = widget.districts;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      child: GestureDetector(
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        child: ConstrainedBox(
+          constraints: BoxConstraints(minHeight: 512),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                spacing: 32,
+                children: [
+                  PlatformSearchBar(
+                    keyboardType: TextInputType.text,
+                    hintText: 'Search FriendID hoặc InviteCode',
+                    cupertino: (_, __) => CupertinoSearchBarData(
+                      itemSize: 24,
+                      autocorrect: false,
                     ),
                   ),
-                ),
-              ],
-            ),
-            PlatformElevatedButton(
-              onPressed: () {},
-              color: Colors.green.shade600,
-              cupertino: (_, __) => CupertinoElevatedButtonData(
-                  borderRadius: BorderRadius.all(Radius.circular(32))),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('Refresh'),
-                  Icon(PlatformIcons(context).refreshBold),
+                  Column(
+                    spacing: 8,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(PlatformIcons(context).locationSolid),
+                          Text('Khu Vực',
+                              style: Theme.of(context).textTheme.titleMedium),
+                        ],
+                      ),
+                      Card(
+                        child: Column(
+                          children: [
+                            PlatformPopupMenu(
+                                material: (_, __) => MaterialPopupMenuData(
+                                    position: PopupMenuPosition.under,
+                                    padding: EdgeInsets.zero,
+                                    splashRadius: 32,
+                                    constraints: BoxConstraints(maxWidth: 128),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(16),
+                                        side: BorderSide(
+                                            color: Colors.grey.shade200)),
+                                    popUpAnimationStyle: AnimationStyle(
+                                        curve: Curves.easeOut,
+                                        duration:
+                                            const Duration(milliseconds: 250))),
+                                cupertino: (_, __) => CupertinoPopupMenuData(
+                                      title: Text(
+                                        'Thành Phố',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    ),
+                                icon: Container(
+                                  padding: EdgeInsets.symmetric(vertical: 4),
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                      color: Colors.blue.shade600,
+                                      borderRadius: BorderRadius.only(
+                                          topLeft:
+                                              HomeSearchPage.borderRadiusVal,
+                                          topRight:
+                                              HomeSearchPage.borderRadiusVal)),
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 4),
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Icon(Icons.location_city,
+                                            color: Colors.white),
+                                        Text(
+                                          _city.name,
+                                          style: Theme.of(context)
+                                              .textTheme
+                                              .titleMedium
+                                              ?.copyWith(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        Icon(
+                                          Icons.arrow_drop_down,
+                                          color: Colors.white,
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                options: City.values
+                                    .map((each) => PopupMenuOption(
+                                          label: each.shorthand,
+                                          material: (_, __) =>
+                                              MaterialPopupMenuOptionData(
+                                                  child: Text(each.name,
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .bodyLarge)),
+                                          cupertino: (_, __) =>
+                                              CupertinoPopupMenuOptionData(
+                                                  child: Text(each.name,
+                                                      style: Theme.of(context)
+                                                          .textTheme
+                                                          .bodyLarge)),
+                                          onTap: (_) {
+                                            setState(() {
+                                              _city = City.fromShorthand(each.shorthand);
+                                            });
+                                          } ,
+                                        ))
+                                    .toList()),
+                            const SizedBox(height: 8),
+                            StatefulBuilder(builder: (context, setState) {
+                              final districts = [
+                                "Quận 1",
+                                "Quận 2",
+                                "Quận 3",
+                                "Quận 4",
+                                "Quận 5"
+                              ];
+
+                              return Wrap(
+                                spacing: 8,
+                                children: districts.map((district) {
+                                  return ActionChip(
+                                    label: Text(district),
+                                    onPressed: () {
+                                      setState(() {
+                                        districts.remove(district);
+                                        districts.insert(0, district);
+                                      });
+                                    },
+                                  );
+                                }).toList(),
+                              );
+                            }),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
-            ),
-          ],
+              PlatformElevatedButton(
+                onPressed: () {},
+                color: Colors.green.shade600,
+                cupertino: (_, __) => CupertinoElevatedButtonData(
+                    borderRadius: BorderRadius.all(Radius.circular(32))),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    PlatformText(
+                      'Refresh',
+                    ),
+                    Icon(PlatformIcons(context).refreshBold),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

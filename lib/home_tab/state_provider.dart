@@ -5,11 +5,12 @@ import 'package:flutter/widgets.dart';
 import '../core/model/enum.dart';
 import 'model.dart';
 
-class HomeState extends ChangeNotifier {
+class HomeStateProvider extends ChangeNotifier {
 
   // filter state
   String searchVal = '';
-  List<String> locationVal = [];
+  City city = City.hochiminh;
+  List<String> districts = [];
   List<DayOfWeek> dayVal = [];
   List<DayChunk> dayChunkVal = [];
 
@@ -25,7 +26,7 @@ class HomeState extends ChangeNotifier {
   bool _isLoading = false;
   bool get isLoading => _isLoading;
 
-  HomeState();
+  HomeStateProvider();
 
   Future<void> startLoading() async {
     _isLoading = true;

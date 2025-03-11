@@ -21,6 +21,7 @@ import 'core/remote_load_state_provider_interface.dart';
 import 'home_tab/home_remote_fetch_state_provider.dart';
 import 'health_tab/health_f_a_b.dart';
 import 'home_tab/home_f_a_b.dart';
+import 'home_tab/state_provider.dart';
 import 'manage_tab/manage_f_a_b.dart';
 import 'manage_tab/manage_remote_fetch_state_provider.dart';
 import 'profile_tab/profile_f_a_b.dart';
@@ -43,6 +44,7 @@ Future<void> main() async {
 
   // MobileAds.instance.initialize();
 
+  // GoogleFonts.config.allowRuntimeFetching = env == 'local';
   GoogleFonts.config.allowRuntimeFetching = false;
 
   WidgetsFlutterBinding.ensureInitialized();
@@ -74,7 +76,8 @@ class Pubox extends StatelessWidget {
       useMaterial3: true,
       colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.red.shade700, surface: Colors.green.shade50),
-      textTheme: GoogleFonts.bitterTextTheme(),
+      primaryTextTheme: GoogleFonts.notoSerifTextTheme(),
+      textTheme: GoogleFonts.notoSerifTextTheme(),
       elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
               shape: RoundedRectangleBorder(
@@ -102,7 +105,6 @@ class Pubox extends StatelessWidget {
           TargetPlatform.android: ZoomPageTransitionsBuilder()
         },
       ),
-      cupertinoOverrideTheme: NoDefaultCupertinoThemeData()
     );
     final cupertinoTheme =
         MaterialBasedCupertinoThemeData(materialTheme: materialTheme);
@@ -114,6 +116,7 @@ class Pubox extends StatelessWidget {
         themeMode: themeMode,
         materialLightTheme: materialTheme,
         cupertinoLightTheme: cupertinoTheme,
+
         builder: (context) => ToastificationWrapper(
           config: const ToastificationConfig(
               alignment: Alignment.topCenter,
@@ -121,8 +124,8 @@ class Pubox extends StatelessWidget {
           child: MultiProvider(
             providers: [
               ChangeNotifierProvider<PlayerProvider>(create: (_) => PlayerProvider()),
-              ChangeNotifierProvider<HomeRemoteLoadStateProvider>(
-                  create: (_) => HomeRemoteLoadStateProvider()),
+              ChangeNotifierProvider<HomeStateProvider>(
+                  create: (_) => HomeStateProvider()),
               ChangeNotifierProvider<ManageRemoteLoadStateProvider>(
                   create: (_) => ManageRemoteLoadStateProvider())
 
