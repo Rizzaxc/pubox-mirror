@@ -1,12 +1,5 @@
 // follow database ID
-enum Sport {
-  others,
-  soccer,
-  basketball,
-  badminton,
-  tennis,
-  pickleball
-}
+enum Sport { others, soccer, basketball, badminton, tennis, pickleball }
 
 enum DayChunk {
   early, // 4am-9am
@@ -29,15 +22,12 @@ enum DayOfWeek {
   weekend // sat sun
 }
 
-enum StakeUnit {
-  game,
-  set,
-  goal
-}
+enum StakeUnit { game, set, goal }
 
 enum City {
   hanoi('hn', 'Hà Nội'),
   hochiminh('hcm', 'Tp Hồ Chí Minh');
+
   final String shorthand;
   final String name;
 
@@ -53,4 +43,444 @@ enum City {
         throw ArgumentError('Invalid city shorthand: $shorthand');
     }
   }
+}
+
+/// Enum representing district types in Vietnam
+enum VietnamDistrictType {
+  urban('quan', 'Quận'),
+  rural('huyen', 'Huyện'),
+  township('thixa', 'Thị xã'),
+  city('thanhpho', 'Thành phố');
+
+  final String code;
+  final String prefix;
+
+  const VietnamDistrictType(this.code, this.prefix);
+}
+
+/// Class representing a district in Vietnam
+class District {
+  final String id;
+  final String name;
+  final City city;
+  final VietnamDistrictType type;
+  final String? code;
+
+  /// Full name with prefix (e.g., "Quận 1")
+  String get fullName => '${type.prefix} $name';
+
+  /// Full name with city (e.g., "Tp Hồ Chí Minh - Quận 1")
+  String get fullNameWithCity => '${city.name} - ${type.prefix} $name';
+
+  const District({
+    required this.id,
+    required this.name,
+    required this.city,
+    required this.type,
+    this.code,
+  });
+
+  @override
+  String toString() => fullName;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is District && other.id == id;
+  }
+
+  @override
+  int get hashCode => id.hashCode;
+}
+
+/// Class to manage location data in Vietnam
+class VietnamLocationData {
+  VietnamLocationData._();
+
+  /// Singleton instance
+  static final VietnamLocationData instance = VietnamLocationData._();
+
+  /// Get all districts by city
+  Map<City, List<District>> getAllDistricts() {
+    return {
+      City.hochiminh: _hcmcDistricts,
+      City.hanoi: _hanoiDistricts,
+    };
+  }
+
+  /// Get districts for a specific city
+  List<District> getDistrictsByCity(City city) {
+    switch (city) {
+      case City.hochiminh:
+        return _hcmcDistricts;
+      case City.hanoi:
+        return _hanoiDistricts;
+      default:
+        return [];
+    }
+  }
+
+  /// Get districts by type for a specific city
+  List<District> getDistrictsByType(City city, VietnamDistrictType type) {
+    return getDistrictsByCity(city)
+        .where((district) => district.type == type)
+        .toList();
+  }
+
+  /// Find a district by ID
+  District? findDistrictById(String id) {
+    for (var districts in getAllDistricts().values) {
+      for (var district in districts) {
+        if (district.id == id) return district;
+      }
+    }
+    return null;
+  }
+
+  /// Find districts by a search term (case insensitive, partial match)
+  List<District> searchDistricts(String term) {
+    final searchTerm = term.toLowerCase();
+    final result = <District>[];
+
+    for (var districts in getAllDistricts().values) {
+      for (var district in districts) {
+        if (district.name.toLowerCase().contains(searchTerm) ||
+            district.fullName.toLowerCase().contains(searchTerm)) {
+          result.add(district);
+        }
+      }
+    }
+
+    return result;
+  }
+
+  /// Ho Chi Minh City districts list
+  static final List<District> _hcmcDistricts = [
+    // Urban districts
+    District(
+        id: 'hcm_q1',
+        name: '1',
+        city: City.hochiminh,
+        type: VietnamDistrictType.urban,
+        code: 'D1'),
+    District(
+        id: 'hcm_q3',
+        name: '3',
+        city: City.hochiminh,
+        type: VietnamDistrictType.urban,
+        code: 'D3'),
+    District(
+        id: 'hcm_q4',
+        name: '4',
+        city: City.hochiminh,
+        type: VietnamDistrictType.urban,
+        code: 'D4'),
+    District(
+        id: 'hcm_q5',
+        name: '5',
+        city: City.hochiminh,
+        type: VietnamDistrictType.urban,
+        code: 'D5'),
+    District(
+        id: 'hcm_q6',
+        name: '6',
+        city: City.hochiminh,
+        type: VietnamDistrictType.urban,
+        code: 'D6'),
+    District(
+        id: 'hcm_q7',
+        name: '7',
+        city: City.hochiminh,
+        type: VietnamDistrictType.urban,
+        code: 'D7'),
+    District(
+        id: 'hcm_q8',
+        name: '8',
+        city: City.hochiminh,
+        type: VietnamDistrictType.urban,
+        code: 'D8'),
+    District(
+        id: 'hcm_q10',
+        name: '10',
+        city: City.hochiminh,
+        type: VietnamDistrictType.urban,
+        code: 'D10'),
+    District(
+        id: 'hcm_q11',
+        name: '11',
+        city: City.hochiminh,
+        type: VietnamDistrictType.urban,
+        code: 'D11'),
+    District(
+        id: 'hcm_q12',
+        name: '12',
+        city: City.hochiminh,
+        type: VietnamDistrictType.urban,
+        code: 'D12'),
+    District(
+        id: 'hcm_binhthanh',
+        name: 'Bình Thạnh',
+        city: City.hochiminh,
+        type: VietnamDistrictType.urban,
+        code: 'BTH'),
+    District(
+        id: 'hcm_binhtan',
+        name: 'Bình Tân',
+        city: City.hochiminh,
+        type: VietnamDistrictType.urban,
+        code: 'BTN'),
+    District(
+        id: 'hcm_govap',
+        name: 'Gò Vấp',
+        city: City.hochiminh,
+        type: VietnamDistrictType.urban,
+        code: 'GV'),
+    District(
+        id: 'hcm_phunhuan',
+        name: 'Phú Nhuận',
+        city: City.hochiminh,
+        type: VietnamDistrictType.urban,
+        code: 'PN'),
+    District(
+        id: 'hcm_tanbinh',
+        name: 'Tân Bình',
+        city: City.hochiminh,
+        type: VietnamDistrictType.urban,
+        code: 'TB'),
+    District(
+        id: 'hcm_tanphu',
+        name: 'Tân Phú',
+        city: City.hochiminh,
+        type: VietnamDistrictType.urban,
+        code: 'TP'),
+
+    // City inside Ho Chi Minh City
+    District(
+        id: 'hcm_thuduc',
+        name: 'Thủ Đức',
+        city: City.hochiminh,
+        type: VietnamDistrictType.city,
+        code: 'TD'),
+
+    // Rural districts
+    District(
+        id: 'hcm_binhchanh',
+        name: 'Bình Chánh',
+        city: City.hochiminh,
+        type: VietnamDistrictType.rural,
+        code: 'BC'),
+    District(
+        id: 'hcm_cuchi',
+        name: 'Củ Chi',
+        city: City.hochiminh,
+        type: VietnamDistrictType.rural,
+        code: 'CC'),
+    District(
+        id: 'hcm_cangio',
+        name: 'Cần Giờ',
+        city: City.hochiminh,
+        type: VietnamDistrictType.rural,
+        code: 'CG'),
+    District(
+        id: 'hcm_hocmon',
+        name: 'Hóc Môn',
+        city: City.hochiminh,
+        type: VietnamDistrictType.rural,
+        code: 'HM'),
+    District(
+        id: 'hcm_nhabe',
+        name: 'Nhà Bè',
+        city: City.hochiminh,
+        type: VietnamDistrictType.rural,
+        code: 'NB'),
+  ];
+
+  /// Hanoi districts list
+  static final List<District> _hanoiDistricts = [
+    // Urban districts
+    District(
+        id: 'hn_badinh',
+        name: 'Ba Đình',
+        city: City.hanoi,
+        type: VietnamDistrictType.urban,
+        code: 'BD'),
+    District(
+        id: 'hn_hoankiem',
+        name: 'Hoàn Kiếm',
+        city: City.hanoi,
+        type: VietnamDistrictType.urban,
+        code: 'HK'),
+    District(
+        id: 'hn_tayho',
+        name: 'Tây Hồ',
+        city: City.hanoi,
+        type: VietnamDistrictType.urban,
+        code: 'TH'),
+    District(
+        id: 'hn_longbien',
+        name: 'Long Biên',
+        city: City.hanoi,
+        type: VietnamDistrictType.urban,
+        code: 'LB'),
+    District(
+        id: 'hn_caugiay',
+        name: 'Cầu Giấy',
+        city: City.hanoi,
+        type: VietnamDistrictType.urban,
+        code: 'CG'),
+    District(
+        id: 'hn_dongda',
+        name: 'Đống Đa',
+        city: City.hanoi,
+        type: VietnamDistrictType.urban,
+        code: 'DD'),
+    District(
+        id: 'hn_haibatrung',
+        name: 'Hai Bà Trưng',
+        city: City.hanoi,
+        type: VietnamDistrictType.urban,
+        code: 'HBT'),
+    District(
+        id: 'hn_hoangmai',
+        name: 'Hoàng Mai',
+        city: City.hanoi,
+        type: VietnamDistrictType.urban,
+        code: 'HM'),
+    District(
+        id: 'hn_thanhxuan',
+        name: 'Thanh Xuân',
+        city: City.hanoi,
+        type: VietnamDistrictType.urban,
+        code: 'TX'),
+    District(
+        id: 'hn_namtuliem',
+        name: 'Nam Từ Liêm',
+        city: City.hanoi,
+        type: VietnamDistrictType.urban,
+        code: 'NTL'),
+    District(
+        id: 'hn_bactuliem',
+        name: 'Bắc Từ Liêm',
+        city: City.hanoi,
+        type: VietnamDistrictType.urban,
+        code: 'BTL'),
+    District(
+        id: 'hn_hadong',
+        name: 'Hà Đông',
+        city: City.hanoi,
+        type: VietnamDistrictType.urban,
+        code: 'HD'),
+
+    // Rural districts
+    District(
+        id: 'hn_socson',
+        name: 'Sóc Sơn',
+        city: City.hanoi,
+        type: VietnamDistrictType.rural,
+        code: 'SS'),
+    District(
+        id: 'hn_donganh',
+        name: 'Đông Anh',
+        city: City.hanoi,
+        type: VietnamDistrictType.rural,
+        code: 'DA'),
+    District(
+        id: 'hn_gialâm',
+        name: 'Gia Lâm',
+        city: City.hanoi,
+        type: VietnamDistrictType.rural,
+        code: 'GL'),
+    District(
+        id: 'hn_thanhtri',
+        name: 'Thanh Trì',
+        city: City.hanoi,
+        type: VietnamDistrictType.rural,
+        code: 'TT'),
+    District(
+        id: 'hn_melinh',
+        name: 'Mê Linh',
+        city: City.hanoi,
+        type: VietnamDistrictType.rural,
+        code: 'ML'),
+    District(
+        id: 'hn_bavi',
+        name: 'Ba Vì',
+        city: City.hanoi,
+        type: VietnamDistrictType.rural,
+        code: 'BV'),
+    District(
+        id: 'hn_phuctho',
+        name: 'Phúc Thọ',
+        city: City.hanoi,
+        type: VietnamDistrictType.rural,
+        code: 'PT'),
+    District(
+        id: 'hn_danphuong',
+        name: 'Đan Phượng',
+        city: City.hanoi,
+        type: VietnamDistrictType.rural,
+        code: 'DP'),
+    District(
+        id: 'hn_hoaiduc',
+        name: 'Hoài Đức',
+        city: City.hanoi,
+        type: VietnamDistrictType.rural,
+        code: 'HD'),
+    District(
+        id: 'hn_quocoai',
+        name: 'Quốc Oai',
+        city: City.hanoi,
+        type: VietnamDistrictType.rural,
+        code: 'QO'),
+    District(
+        id: 'hn_thachthat',
+        name: 'Thạch Thất',
+        city: City.hanoi,
+        type: VietnamDistrictType.rural,
+        code: 'TT'),
+    District(
+        id: 'hn_chuongmy',
+        name: 'Chương Mỹ',
+        city: City.hanoi,
+        type: VietnamDistrictType.rural,
+        code: 'CM'),
+    District(
+        id: 'hn_thanhoai',
+        name: 'Thanh Oai',
+        city: City.hanoi,
+        type: VietnamDistrictType.rural,
+        code: 'TO'),
+    District(
+        id: 'hn_thuongtin',
+        name: 'Thường Tín',
+        city: City.hanoi,
+        type: VietnamDistrictType.rural,
+        code: 'TT'),
+    District(
+        id: 'hn_phuxuyen',
+        name: 'Phú Xuyên',
+        city: City.hanoi,
+        type: VietnamDistrictType.rural,
+        code: 'PX'),
+    District(
+        id: 'hn_unghoa',
+        name: 'Ứng Hòa',
+        city: City.hanoi,
+        type: VietnamDistrictType.rural,
+        code: 'UH'),
+    District(
+        id: 'hn_myduc',
+        name: 'Mỹ Đức',
+        city: City.hanoi,
+        type: VietnamDistrictType.rural,
+        code: 'MD'),
+
+    // Township
+    District(
+        id: 'hn_sontay',
+        name: 'Sơn Tây',
+        city: City.hanoi,
+        type: VietnamDistrictType.township,
+        code: 'ST'),
+  ];
 }

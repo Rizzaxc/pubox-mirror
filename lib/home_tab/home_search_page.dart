@@ -8,6 +8,7 @@ import 'package:multi_dropdown/multi_dropdown.dart';
 import 'package:provider/provider.dart';
 
 import '../core/model/enum.dart';
+import '../core/tag_carousel.dart';
 import 'model.dart';
 import 'state_provider.dart';
 
@@ -150,36 +151,16 @@ class _HomeSearchPageState extends State<HomeSearchPage> {
                                                           .bodyLarge)),
                                           onTap: (_) {
                                             setState(() {
-                                              _city = City.fromShorthand(each.shorthand);
+                                              _city = City.fromShorthand(
+                                                  each.shorthand);
                                             });
-                                          } ,
+                                          },
                                         ))
                                     .toList()),
                             const SizedBox(height: 8),
-                            StatefulBuilder(builder: (context, setState) {
-                              final districts = [
-                                "Quận 1",
-                                "Quận 2",
-                                "Quận 3",
-                                "Quận 4",
-                                "Quận 5"
-                              ];
-
-                              return Wrap(
-                                spacing: 8,
-                                children: districts.map((district) {
-                                  return ActionChip(
-                                    label: Text(district),
-                                    onPressed: () {
-                                      setState(() {
-                                        districts.remove(district);
-                                        districts.insert(0, district);
-                                      });
-                                    },
-                                  );
-                                }).toList(),
-                              );
-                            }),
+                            TagCarousel(
+                                height: 80,
+                                tagLabels: VietnamLocationData.instance.getDistrictsByCity(_city).map((e) => e.fullName).toList())
                           ],
                         ),
                       ),
