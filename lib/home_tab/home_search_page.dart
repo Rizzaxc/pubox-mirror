@@ -10,6 +10,7 @@ import '../core/model/enum.dart';
 import '../core/tag_carousel.dart';
 import 'model.dart';
 import 'state_provider.dart';
+import 'timeslot_selection.dart';
 
 class HomeSearchPage extends StatelessWidget {
   static var borderRadius = BorderRadius.circular(8);
@@ -157,21 +158,25 @@ class HomeSearchPage extends StatelessWidget {
                           ),
                         ],
                       ),
+                      const TimeslotSelection(), // Add the new TimeSlotSelection widget
                     ],
                   ),
-                  PlatformElevatedButton(
-                    onPressed: () => stateProvider.refreshData(),
-                    color: Colors.green.shade600,
-                    cupertino: (_, __) => CupertinoElevatedButtonData(
-                        borderRadius: BorderRadius.all(Radius.circular(32))),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        PlatformText(
-                          'Refresh',
-                        ),
-                        Icon(PlatformIcons(context).refreshBold),
-                      ],
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    child: PlatformElevatedButton(
+                      onPressed: () => stateProvider.refreshData(),
+                      color: Colors.green.shade600,
+                      cupertino: (_, __) => CupertinoElevatedButtonData(
+                          borderRadius: BorderRadius.all(Radius.circular(32))),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          PlatformText(
+                            'Refresh',
+                          ),
+                          Icon(PlatformIcons(context).refreshBold),
+                        ],
+                      ),
                     ),
                   ),
                 ],

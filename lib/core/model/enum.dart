@@ -5,7 +5,33 @@ enum DayChunk {
   early, // 4am-9am
   midday, // 9am-2pm
   noon, // 2pm-6pm
-  night // 6pm-12pm
+  night; // 6pm-12pm
+
+  String getShortName() {
+    switch (this) {
+      case DayChunk.early:
+        return 'Sáng';
+      case DayChunk.midday:
+        return 'Trưa';
+      case DayChunk.noon:
+        return 'Chiều';
+      case DayChunk.night:
+        return 'Tối';
+    }
+  }
+
+  String getFullName() {
+    switch (this) {
+      case DayChunk.early:
+        return 'Sáng (4h-9h)';
+      case DayChunk.midday:
+        return 'Trưa (9h-14h)';
+      case DayChunk.noon:
+        return 'Chiều (14h-18h)';
+      case DayChunk.night:
+        return 'Tối (18h-24h)';
+    }
+  }
 }
 
 enum DayOfWeek {
@@ -19,7 +45,61 @@ enum DayOfWeek {
   sunday,
   even, // mon wed fri
   odd, // tue thu sat
-  weekend // sat sun
+  weekend; // sat sun
+
+  String getShortName() {
+    switch (this) {
+      case DayOfWeek.everyday:
+        return 'HN';
+      case DayOfWeek.monday:
+        return 'T2';
+      case DayOfWeek.tuesday:
+        return 'T3';
+      case DayOfWeek.wednesday:
+        return 'T4';
+      case DayOfWeek.thursday:
+        return 'T5';
+      case DayOfWeek.friday:
+        return 'T6';
+      case DayOfWeek.saturday:
+        return 'T7';
+      case DayOfWeek.sunday:
+        return 'CN';
+      case DayOfWeek.even:
+        return '246';
+      case DayOfWeek.odd:
+        return '357';
+      case DayOfWeek.weekend:
+        return 'CT';
+    }
+  }
+
+  String getFullName() {
+    switch (this) {
+      case DayOfWeek.everyday:
+        return 'Hàng Ngày';
+      case DayOfWeek.monday:
+        return 'Thứ 2';
+      case DayOfWeek.tuesday:
+        return 'Thứ 3';
+      case DayOfWeek.wednesday:
+        return 'Thứ 4';
+      case DayOfWeek.thursday:
+        return 'Thứ 5';
+      case DayOfWeek.friday:
+        return 'Thứ 6';
+      case DayOfWeek.saturday:
+        return 'Thứ 7';
+      case DayOfWeek.sunday:
+        return 'Chủ Nhật';
+      case DayOfWeek.even:
+        return 'Ngày Chẵn (2,4,6)';
+      case DayOfWeek.odd:
+        return 'Ngày Lẻ (3,5,7)';
+      case DayOfWeek.weekend:
+        return 'Cuối Tuần';
+    }
+  }
 }
 
 enum StakeUnit { game, set, goal }

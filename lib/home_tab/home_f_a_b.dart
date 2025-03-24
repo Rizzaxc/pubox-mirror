@@ -39,9 +39,9 @@ class HomeFAB extends StatelessWidget {
       cupertino: CupertinoModalSheetData(
           barrierDismissible: true, semanticsDismissible: true),
       builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.65,
+        initialChildSize: 0.8,
         minChildSize: 0.4,
-        maxChildSize: 0.7,
+        maxChildSize: 0.8,
         builder: (context, scrollController) => Container(
           decoration: BoxDecoration(
               color: Theme.of(context).canvasColor,

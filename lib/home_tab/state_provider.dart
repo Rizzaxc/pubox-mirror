@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
 import '../core/model/enum.dart';
+import '../core/model/timeslot.dart';
 import 'model.dart';
 
 class HomeStateProvider extends ChangeNotifier {
@@ -27,6 +28,47 @@ class HomeStateProvider extends ChangeNotifier {
     _districts = newDistricts;
     notifyListeners();
   }
+
+  // Time slot selection state
+  final List<Timeslot> _timeSlots = [];
+  DayOfWeek _selectedDayOfWeek = DayOfWeek.everyday;
+  DayChunk _selectedDayChunk = DayChunk.early;
+
+  // Getters
+  List<Timeslot> get timeSlots => _timeSlots;
+  DayOfWeek get selectedDayOfWeek => _selectedDayOfWeek;
+  DayChunk get selectedDayChunk => _selectedDayChunk;
+
+  bool get canAddTimeSlot =>
+      _timeSlots.length < 3 &&
+          !_timeSlots.contains(Timeslot(_selectedDayOfWeek, _selectedDayChunk));
+
+  // Update methods
+  void updateSelectedDayOfWeek(DayOfWeek day) {
+    _selectedDayOfWeek = day;
+    notifyListeners();
+  }
+
+  void updateSelectedDayChunk(DayChunk chunk) {
+    _selectedDayChunk = chunk;
+    notifyListeners();
+  }
+
+  void addCurrentTimeSlotSelection() {
+    if (_timeSlots.length < 3 &&
+        !_timeSlots.contains(Timeslot(_selectedDayOfWeek, _selectedDayChunk))) {
+      _timeSlots.add(Timeslot(_selectedDayOfWeek, _selectedDayChunk));
+      notifyListeners();
+    }
+  }
+
+  void removeTimeSlot(Timeslot slot) {
+    _timeSlots.removeWhere((item) =>
+    item.dayOfWeek == slot.dayOfWeek &&
+        item.dayChunk == slot.dayChunk);
+    notifyListeners();
+  }
+
 
   Future<void> refreshData() async {
     _isLoading = true;

@@ -361,6 +361,7 @@ class _TagCarouselState extends State<TagCarousel> {
             ],
           ),
         ),
+        SizedBox(height: 12,)
       ],
     );
   }
@@ -373,12 +374,12 @@ class TagChip extends StatelessWidget {
   final bool isSelectable;
 
   const TagChip({
-    Key? key,
+    super.key,
     required this.label,
     required this.isSelected,
     required this.onTap,
     this.isSelectable = true,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -388,10 +389,10 @@ class TagChip extends StatelessWidget {
         constraints: const BoxConstraints(minWidth: 60),
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
-          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+          padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
           decoration: BoxDecoration(
             color: isSelected ? Colors.blue : Colors.grey.shade200,
-            borderRadius: BorderRadius.circular(20.0),
+            borderRadius: BorderRadius.circular(24.0),
             border: Border.all(
               color: isSelected ? Colors.blue.shade700 : Colors.grey.shade300,
               width: 1.0,
