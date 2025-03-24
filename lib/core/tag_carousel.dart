@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
 class TagCarousel extends StatefulWidget {
   final List<String> tagLabels;
   final int maxSelected;
   final double height;
+  final Function(Set<String>)? onSelectionChanged;
+  final Set<String> initialSelection;
 
   const TagCarousel({
-    Key? key,
+    super.key,
     required this.tagLabels,
     this.maxSelected = 3,
     this.height = 40,
-  }) : super(key: key);
+    this.onSelectionChanged,
+    this.initialSelection = const {},
+  });
 
   @override
   State<TagCarousel> createState() => _TagCarouselState();
@@ -32,6 +37,17 @@ class _TagCarouselState extends State<TagCarousel> {
     // Initial distribution will be updated in the first build
     _pages = [widget.tagLabels];
 
+    // Initialize with provided initial selection
+    if (widget.initialSelection.isNotEmpty) {
+      // Only add tags that exist in tagLabels and respect maxSelected
+      for (final tag in widget.initialSelection) {
+        if (widget.tagLabels.contains(tag) &&
+            _selectedTags.length < widget.maxSelected) {
+          _selectedTags.add(tag);
+        }
+      }
+    }
+
     // Add post-frame callback to measure and distribute tags
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _distributeTagsIntoPages();
@@ -52,6 +68,11 @@ class _TagCarouselState extends State<TagCarousel> {
       // Redistribute tags when selection changes
       _distributeTagsIntoPages();
     });
+
+    // Notify listener of selection change
+    if (widget.onSelectionChanged != null) {
+      widget.onSelectionChanged!(Set<String>.from(_selectedTags));
+    }
   }
 
   void _distributeTagsIntoPages() {
@@ -59,7 +80,7 @@ class _TagCarouselState extends State<TagCarousel> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       // Get container width
       final RenderBox? renderBox =
-      _containerKey.currentContext?.findRenderObject() as RenderBox?;
+          _containerKey.currentContext?.findRenderObject() as RenderBox?;
       if (renderBox == null) return;
 
       double containerWidth = renderBox.size.width;
@@ -77,7 +98,7 @@ class _TagCarouselState extends State<TagCarousel> {
       int maxRowsPerPage = (widget.height / 36)
           .floor(); // Each tag is approximately 30px high + some margin
       maxRowsPerPage =
-      maxRowsPerPage > 0 ? maxRowsPerPage : 1; // At least one row
+          maxRowsPerPage > 0 ? maxRowsPerPage : 1; // At least one row
 
       List<List<String>> newPages = [];
       List<String> currentPage = [];
@@ -173,6 +194,18 @@ class _TagCarouselState extends State<TagCarousel> {
         widget.height != oldWidget.height) {
       _distributeTagsIntoPages();
     }
+
+    // Update selected tags if initialSelection changed
+    if (widget.initialSelection != oldWidget.initialSelection) {
+      _selectedTags.clear();
+      for (final tag in widget.initialSelection) {
+        if (widget.tagLabels.contains(tag) &&
+            _selectedTags.length < widget.maxSelected) {
+          _selectedTags.add(tag);
+        }
+      }
+      _distributeTagsIntoPages();
+    }
   }
 
   @override
@@ -194,7 +227,7 @@ class _TagCarouselState extends State<TagCarousel> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Selected: ${_selectedTags.length}/${widget.maxSelected}',
+                'Chọn: ${_selectedTags.length}/${widget.maxSelected}',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: _selectedTags.length == widget.maxSelected
@@ -240,8 +273,7 @@ class _TagCarouselState extends State<TagCarousel> {
             ),
           ),
 
-        if (_selectedTags.isNotEmpty)
-          const SizedBox(height: 8),
+        if (_selectedTags.isNotEmpty) const SizedBox(height: 8),
 
         // Unselected tags section
         SizedBox(
@@ -252,17 +284,16 @@ class _TagCarouselState extends State<TagCarousel> {
             children: [
               if (totalPages > 1)
                 IconButton(
-                  icon: const Icon(Icons.arrow_back_ios, size: 16),
+                  icon: Icon(PlatformIcons(context).back, size: 16),
                   padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(maxWidth: 30),
                   visualDensity: VisualDensity.compact,
                   onPressed: _currentPage > 0
                       ? () {
-                    _pageController.previousPage(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                    );
-                  }
+                          _pageController.previousPage(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                        }
                       : null,
                   color: _currentPage > 0 ? Colors.blue : Colors.grey.shade400,
                 ),
@@ -270,56 +301,58 @@ class _TagCarouselState extends State<TagCarousel> {
                 child: _pages.isEmpty
                     ? const SizedBox.shrink()
                     : PageView.builder(
-                  controller: _pageController,
-                  itemCount: _pages.length,
-                  onPageChanged: (page) {
-                    setState(() {
-                      _currentPage = page;
-                    });
-                  },
-                  itemBuilder: (context, pageIndex) {
-                    if (pageIndex >= _pages.length ||
-                        _pages[pageIndex].isEmpty) {
-                      return const SizedBox.shrink();
-                    }
+                        controller: _pageController,
+                        itemCount: _pages.length,
+                        onPageChanged: (page) {
+                          setState(() {
+                            _currentPage = page;
+                          });
+                        },
+                        itemBuilder: (context, pageIndex) {
+                          if (pageIndex >= _pages.length ||
+                              _pages[pageIndex].isEmpty) {
+                            return const SizedBox.shrink();
+                          }
 
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Align(
-                        alignment: Alignment.centerLeft,
-                        child: Wrap(
-                          spacing: 8, // horizontal space between tags
-                          runSpacing: 8, // vertical space between lines
-                          alignment: WrapAlignment.start,
-                          children: _pages[pageIndex].map((tag) {
-                            final isSelected = _selectedTags.contains(tag);
-                            return TagChip(
-                              label: tag,
-                              isSelected: isSelected,
-                              onTap: () => _toggleTag(tag),
-                              isSelectable: !isSelected ||
-                                  _selectedTags.length < widget.maxSelected,
-                            );
-                          }).toList(),
-                        ),
+                          return Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Wrap(
+                                spacing: 8, // horizontal space between tags
+                                runSpacing: 8, // vertical space between lines
+                                alignment: WrapAlignment.start,
+                                children: _pages[pageIndex].map((tag) {
+                                  final isSelected =
+                                      _selectedTags.contains(tag);
+                                  return TagChip(
+                                    label: tag,
+                                    isSelected: isSelected,
+                                    onTap: () => _toggleTag(tag),
+                                    isSelectable: !isSelected ||
+                                        _selectedTags.length <
+                                            widget.maxSelected,
+                                  );
+                                }).toList(),
+                              ),
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
               ),
               if (totalPages > 1)
                 IconButton(
-                  icon: const Icon(Icons.arrow_forward_ios, size: 16),
+                  icon: Icon(PlatformIcons(context).forward, size: 16),
                   padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints(maxWidth: 30),
                   visualDensity: VisualDensity.compact,
                   onPressed: _currentPage < totalPages - 1
                       ? () {
-                    _pageController.nextPage(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                    );
-                  }
+                          _pageController.nextPage(
+                            duration: const Duration(milliseconds: 300),
+                            curve: Curves.easeInOut,
+                          );
+                        }
                       : null,
                   color: _currentPage < totalPages - 1
                       ? Colors.blue

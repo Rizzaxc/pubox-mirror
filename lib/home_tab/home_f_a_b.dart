@@ -1,7 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
 import '../core/pubox_fab.dart';
@@ -15,10 +13,11 @@ class HomeFAB extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<HomeStateProvider>(
-      builder: (context, fetchState, _) {
-        final isLoading = fetchState.isLoading;
+      builder: (context, stateProvider, _) {
+        final isLoading = stateProvider.isLoading;
         return PuboxFab(
           onPressed: () => _openFullModal(context),
+          onLongPressed: stateProvider.refreshData,
           isLoading: isLoading,
           icon: Icon(
             PlatformIcons(context).search,
@@ -29,7 +28,6 @@ class HomeFAB extends StatelessWidget {
   }
 
   void _openFullModal(BuildContext context) {
-    // open a modal
     showPlatformModalSheet(
       context: context,
       material: MaterialModalSheetData(
@@ -55,10 +53,7 @@ class HomeFAB extends StatelessWidget {
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
             controller: scrollController,
-            child: HomeSearchPage(
-              city: Provider.of<HomeStateProvider>(context, listen: false).city,
-              districts: Provider.of<HomeStateProvider>(context, listen: false).districts,
-            ),
+            child: HomeSearchPage(),
           ),
         ),
       ),

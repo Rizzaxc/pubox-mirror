@@ -5,15 +5,19 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 class PuboxFab extends StatelessWidget {
   const PuboxFab({
     super.key,
-    required this.onPressed,
     required this.icon,
+    required this.onPressed,
+    this.onLongPressed,
     this.isLoading = false,
   });
 
   final VoidCallback onPressed;
+  // TODO: refresh data
+  final VoidCallback? onLongPressed;
   final Widget icon;
 
   final bool isLoading;
+
 
   @override
   Widget build(BuildContext context) {

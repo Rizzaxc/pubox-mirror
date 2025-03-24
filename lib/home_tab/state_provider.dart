@@ -1,39 +1,46 @@
+import 'dart:developer';
 
-
-import 'package:flutter/widgets.dart';
-
+import 'package:flutter/foundation.dart';
 import '../core/model/enum.dart';
 import 'model.dart';
 
 class HomeStateProvider extends ChangeNotifier {
-
-  // filter state
-  String searchVal = '';
-  City city = City.hochiminh;
-  List<String> districts = [];
-  List<DayOfWeek> dayVal = [];
-  List<DayChunk> dayChunkVal = [];
-
-  // teammate tab state
-  List<TeammateModel> teammateTabState = [];
-  // challenge tab state
-  List<ChallengeModel> challengeTabState = [];
-  // neutral tab state
-  // List<NeutralModel> neutralTabState = [];
-  // location tab state
-  // List<LocationModel> locationTabState = [];
-
+  City _city = City.hochiminh;
+  Set<String> _districts = {};
   bool _isLoading = false;
-  bool get isLoading => _isLoading;
 
   HomeStateProvider();
 
-  Future<void> startLoading() async {
-    _isLoading = true;
+  City get city => _city;
+  Set<String> get districts => _districts;
+  bool get isLoading => _isLoading;
+
+  void updateCity(City newCity) {
+    if (_city == newCity) return;
+    _city = newCity;
+    _districts = {}; // no cross-city locations
     notifyListeners();
   }
-  Future<void> cancelLoading() async {
-    _isLoading = false;
+
+  void updateDistricts(Set<String> newDistricts) {
+    if (newDistricts.length > 3) return;
+    _districts = newDistricts;
     notifyListeners();
+  }
+
+  Future<void> refreshData() async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      // Implement API call or data refresh logic here
+      log(districts.toString());
+      await Future.delayed(Duration(seconds: 1)); // Simulate network delay
+    } catch (e) {
+      // Handle errors
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
 }
