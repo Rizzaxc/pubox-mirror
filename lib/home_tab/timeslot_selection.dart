@@ -57,7 +57,7 @@ class TimeslotSelection extends StatelessWidget {
                                   padding: const EdgeInsets.only(right: 8.0),
                                   child: _buildTimeSlotChip(
                                     label:
-                                    '${timeSlot.dayChunk.getShortName()} ${timeSlot.dayOfWeek.getShortName()}',
+                                        '${timeSlot.dayChunk.getShortName()} ${timeSlot.dayOfWeek.getShortName()}',
                                     isSelected: true,
                                     onTap: () =>
                                         stateProvider.removeTimeSlot(timeSlot),
@@ -71,7 +71,6 @@ class TimeslotSelection extends StatelessWidget {
 
                     // Selection controls
                     _buildTimeSlotSelectors(context, stateProvider),
-
                   ],
                 ),
               ),
@@ -123,19 +122,23 @@ class TimeslotSelection extends StatelessWidget {
             border: Border.all(color: Colors.grey.shade300),
           ),
           child: DropdownButtonHideUnderline(
+
             child: DropdownButton<DayOfWeek>(
               isExpanded: true,
               value: stateProvider.selectedDayOfWeek,
-              menuMaxHeight: 240,
               padding: const EdgeInsets.symmetric(horizontal: 12),
+              menuMaxHeight: 200,
               borderRadius: BorderRadius.circular(8),
               items: DayOfWeek.values.map((day) {
                 return DropdownMenuItem<DayOfWeek>(
                   value: day,
-                  child: Text(day.getFullName(), style: Theme.of(context).textTheme.labelLarge,),
+                  child: Text(
+                    day.getFullName(),
+                    style: Theme.of(context).textTheme.labelLarge,
+                  ),
                 );
               }).toList(),
-              onChanged: (value) {
+              onChanged: (DayOfWeek? value) {
                 if (value != null) stateProvider.updateSelectedDayOfWeek(value);
               },
             ),
@@ -165,12 +168,15 @@ class TimeslotSelection extends StatelessWidget {
               isExpanded: true,
               value: stateProvider.selectedDayChunk,
               padding: const EdgeInsets.symmetric(horizontal: 12),
-              menuMaxHeight: 240,
+              menuMaxHeight: 200,
               borderRadius: BorderRadius.circular(8),
               items: DayChunk.values.map((chunk) {
                 return DropdownMenuItem<DayChunk>(
                   value: chunk,
-                  child: Text(chunk.getFullName(), style: Theme.of(context).textTheme.labelLarge,),
+                  child: Text(
+                    chunk.getFullName(),
+                    style: Theme.of(context).textTheme.labelLarge,
+                  ),
                 );
               }).toList(),
               onChanged: (value) {

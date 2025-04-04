@@ -175,7 +175,7 @@ class ChallengerSection extends StatefulWidget {
 
 class _ChallengerSectionState extends State<ChallengerSection>
     with AutomaticKeepAliveClientMixin {
-  static const sectionTitle = 'Đối thủ';
+  static const sectionTitle = 'Đối Thủ';
 
   @override
   bool get wantKeepAlive => true;
@@ -228,7 +228,7 @@ class NeutralSection extends StatefulWidget {
 
 class _NeutralSectionState extends State<NeutralSection>
     with AutomaticKeepAliveClientMixin {
-  static const sectionTitle = 'Trung gian';
+  static const sectionTitle = 'Trung Gian';
 
   @override
   bool get wantKeepAlive => true;
@@ -281,7 +281,7 @@ class LocationSection extends StatefulWidget {
 
 class _LocationSectionState extends State<LocationSection>
     with AutomaticKeepAliveClientMixin {
-  static const sectionTitle = 'Địa điểm';
+  static const sectionTitle = 'Địa Điểm';
 
   @override
   bool get wantKeepAlive => true;

@@ -45,7 +45,6 @@ class AuthForm extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                // const SizedBox(height: 32,),
                 SupaEmailAuth(
                     onSignInComplete: (response) {
                       // Should not be null, but just in case

@@ -1,9 +1,6 @@
-import 'package:dropdown_search/dropdown_search.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:multi_dropdown/multi_dropdown.dart';
 import 'package:provider/provider.dart';
 
 import '../core/model/enum.dart';
