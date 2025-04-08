@@ -9,6 +9,7 @@ import 'package:toastification/toastification.dart';
 
 final supabase = Supabase.instance.client;
 
+const genericErrorMessage = 'Something happened. Please try again.';
 
 extension ContextExtension on BuildContext {
   void showToast(String message, {ToastificationType type = ToastificationType.success}) {

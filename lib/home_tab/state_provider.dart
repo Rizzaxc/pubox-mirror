@@ -2,14 +2,17 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../core/model/enum.dart';
 import '../core/model/timeslot.dart';
+import '../core/utils.dart';
 import 'model.dart';
 
 class HomeStateProvider extends ChangeNotifier {
   static const String _prefKey = 'STORED_HOME_STATE_PERSISTENT_KEY';
+  static const _batchSize = 12;
 
   City _city = City.hochiminh;
   Set<String> _districts = {};
@@ -24,8 +27,9 @@ class HomeStateProvider extends ChangeNotifier {
   SharedPreferences? localStorage;
 
   // Teammate data
-  List<TeammateModel> teammateData = [];
+  PagingState<int, TeammateModel> teammatePagingState = PagingState();
   int _teammatePagination = 0;
+
   // Challenger data
   // Neutral data
   // Location data
@@ -45,10 +49,15 @@ class HomeStateProvider extends ChangeNotifier {
 
   // Getters
   City get city => _city;
+
   Set<String> get districts => _districts;
+
   bool get isLoading => _isLoading;
+
   List<Timeslot> get timeSlots => _timeSlots;
+
   DayOfWeek get selectedDayOfWeek => _selectedDayOfWeek;
+
   DayChunk get selectedDayChunk => _selectedDayChunk;
 
   bool get canAddTimeSlot =>
@@ -115,17 +124,24 @@ class HomeStateProvider extends ChangeNotifier {
   }
 
   Future<void> loadTeammate() async {
-
     try {
       // TODO
+      if (teammatePagingState.isLoading) return;
+      teammatePagingState =
+          teammatePagingState.copyWith(isLoading: true, error: null);
+      notifyListeners();
+      await Future.delayed(Duration(seconds: 1));
+      
     } catch (exception, stackTrace) {
       Sentry.captureException(exception, stackTrace: stackTrace);
+      teammatePagingState =
+          teammatePagingState.copyWith(error: genericErrorMessage);
     } finally {
-      notifyListeners();
       _teammatePagination++;
+      teammatePagingState = teammatePagingState.copyWith(isLoading: false);
+      notifyListeners();
     }
   }
-
 
   // Persist current state to SharedPreferences using async API
   Future<void> _persistState() async {

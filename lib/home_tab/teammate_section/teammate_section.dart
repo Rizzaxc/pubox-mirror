@@ -45,7 +45,7 @@ class _TeammateSectionState extends State<TeammateSection>
               centerTitle: false,
             ),
             PagedSliverList<int, TeammateModel>(
-              state: state,
+              state: homeState.teammatePagingState,
               fetchNextPage: Provider.of<HomeStateProvider>(context).loadTeammate,
               builderDelegate: PagedChildBuilderDelegate(
                   itemBuilder: (context, data, index) =>
