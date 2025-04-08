@@ -38,8 +38,8 @@ const _$TeammateResultTypeEnumMap = {
   TeammateResultType.individual: 'individual',
 };
 
-ChallengeModel _$ChallengeModelFromJson(Map<String, dynamic> json) =>
-    ChallengeModel(
+ChallengerModel _$ChallengeModelFromJson(Map<String, dynamic> json) =>
+    ChallengerModel(
       lobbyId: json['lobbyId'] as String,
       playtime: json['playtime'],
       location: json['location'] as String,
@@ -50,7 +50,7 @@ ChallengeModel _$ChallengeModelFromJson(Map<String, dynamic> json) =>
       stakeUnit: $enumDecode(_$StakeUnitEnumMap, json['stakeUnit']),
     );
 
-Map<String, dynamic> _$ChallengeModelToJson(ChallengeModel instance) =>
+Map<String, dynamic> _$ChallengeModelToJson(ChallengerModel instance) =>
     <String, dynamic>{
       'lobbyId': instance.lobbyId,
       'playtime': instance.playtime,

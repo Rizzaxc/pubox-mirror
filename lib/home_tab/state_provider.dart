@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../core/model/enum.dart';
 import '../core/model/timeslot.dart';
@@ -22,13 +23,24 @@ class HomeStateProvider extends ChangeNotifier {
   // SharedPreferences instance
   SharedPreferences? localStorage;
 
+  // Teammate data
+  List<TeammateModel> teammateData = [];
+  int _teammatePagination = 0;
+  // Challenger data
+  // Neutral data
+  // Location data
+
   HomeStateProvider() {
     _initPrefs();
   }
 
   Future<void> _initPrefs() async {
+    // Load stored preferences
     localStorage = await SharedPreferences.getInstance();
     await _loadPersistedState();
+
+    // Load initial data
+    refreshData();
   }
 
   // Getters
@@ -85,11 +97,14 @@ class HomeStateProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
 
+    _teammatePagination = 0;
+
     try {
-      // Implement API call or data refresh logic here
+      // TODO: Load the initial batch of all 4 tabs: teammate, challenger, neutral, location
       await Future.delayed(Duration(seconds: 1)); // Simulate network delay
-    } catch (e) {
+    } catch (exception, stackTrace) {
       // Handle errors
+      Sentry.captureException(exception, stackTrace: stackTrace);
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -98,6 +113,19 @@ class HomeStateProvider extends ChangeNotifier {
       await _persistState();
     }
   }
+
+  Future<void> loadTeammate() async {
+
+    try {
+      // TODO
+    } catch (exception, stackTrace) {
+      Sentry.captureException(exception, stackTrace: stackTrace);
+    } finally {
+      notifyListeners();
+      _teammatePagination++;
+    }
+  }
+
 
   // Persist current state to SharedPreferences using async API
   Future<void> _persistState() async {

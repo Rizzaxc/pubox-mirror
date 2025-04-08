@@ -63,7 +63,7 @@ class TeammateModel {
 }
 
 @JsonSerializable()
-class ChallengeModel {
+class ChallengerModel {
   final String lobbyId;
   final dynamic playtime;
   final String location;
@@ -73,7 +73,7 @@ class ChallengeModel {
   final dynamic stake;
   final StakeUnit stakeUnit;
 
-  ChallengeModel({
+  ChallengerModel({
     required this.lobbyId,
     required this.playtime,
     required this.location,
@@ -84,7 +84,7 @@ class ChallengeModel {
     required this.stakeUnit,
   });
 
-  factory ChallengeModel.fromJson(Map<String, dynamic> json) =>
+  factory ChallengerModel.fromJson(Map<String, dynamic> json) =>
       _$ChallengeModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$ChallengeModelToJson(this);
@@ -94,7 +94,7 @@ class ChallengeModel {
     return 'ChallengeModel(lobbyId: $lobbyId, playtime: $playtime, location: $location, compatScore: $compatScore, fairplayScore: $fairplayScore, records: $records, stake: $stake, stakeUnit: $stakeUnit)';
   }
 
-  ChallengeModel copyWith({
+  ChallengerModel copyWith({
     String? lobbyId,
     dynamic playtime,
     String? location,
@@ -104,7 +104,7 @@ class ChallengeModel {
     dynamic stake,
     StakeUnit? stakeUnit,
   }) {
-    return ChallengeModel(
+    return ChallengerModel(
       lobbyId: lobbyId ?? this.lobbyId,
       playtime: playtime ?? this.playtime,
       location: location ?? this.location,
