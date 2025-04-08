@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
@@ -95,10 +96,13 @@ class TimeslotSelection extends StatelessWidget {
           Expanded(
             child: _buildDayChunkDropdown(context, stateProvider),
           ),
-          IconButton(
+          PlatformIconButton(
+            padding: EdgeInsets.zero,
+            cupertino: (_, __) =>
+                CupertinoIconButtonData(sizeStyle: CupertinoButtonSize.large),
             icon: const Icon(Icons.add_circle, color: Colors.green),
             onPressed: stateProvider.canAddTimeSlot
-                ? () => stateProvider.addCurrentTimeSlotSelection()
+                ? stateProvider.addCurrentTimeSlotSelection
                 : null,
           ),
         ],
@@ -122,7 +126,6 @@ class TimeslotSelection extends StatelessWidget {
             border: Border.all(color: Colors.grey.shade300),
           ),
           child: DropdownButtonHideUnderline(
-
             child: DropdownButton<DayOfWeek>(
               isExpanded: true,
               value: stateProvider.selectedDayOfWeek,
@@ -134,6 +137,7 @@ class TimeslotSelection extends StatelessWidget {
                   value: day,
                   child: Text(
                     day.getFullName(),
+                    maxLines: 2,
                     style: Theme.of(context).textTheme.labelLarge,
                   ),
                 );
@@ -175,6 +179,7 @@ class TimeslotSelection extends StatelessWidget {
                   value: chunk,
                   child: Text(
                     chunk.getFullName(),
+                    maxLines: 2,
                     style: Theme.of(context).textTheme.labelLarge,
                   ),
                 );

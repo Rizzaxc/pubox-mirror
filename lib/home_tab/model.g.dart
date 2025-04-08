@@ -13,8 +13,7 @@ TeammateModel _$TeammateModelFromJson(Map<String, dynamic> json) =>
       resultTitle: json['resultTitle'] as String,
       location:
           (json['location'] as List<dynamic>).map((e) => e as String).toList(),
-      playtime: json['playtime'],
-      availability: json['availability'],
+      playtime: Timeslot.fromJson(json['playtime'] as Map<String, dynamic>),
       details: json['details'],
       compatScore: (json['compatScore'] as num).toDouble(),
       searchableId: json['searchableId'] as String,
@@ -27,7 +26,6 @@ Map<String, dynamic> _$TeammateModelToJson(TeammateModel instance) =>
       'resultTitle': instance.resultTitle,
       'location': instance.location,
       'playtime': instance.playtime,
-      'availability': instance.availability,
       'details': instance.details,
       'compatScore': instance.compatScore,
       'searchableId': instance.searchableId,
@@ -35,13 +33,13 @@ Map<String, dynamic> _$TeammateModelToJson(TeammateModel instance) =>
 
 const _$TeammateResultTypeEnumMap = {
   TeammateResultType.lobby: 'lobby',
-  TeammateResultType.individual: 'individual',
+  TeammateResultType.player: 'player',
 };
 
-ChallengerModel _$ChallengeModelFromJson(Map<String, dynamic> json) =>
+ChallengerModel _$ChallengerModelFromJson(Map<String, dynamic> json) =>
     ChallengerModel(
       lobbyId: json['lobbyId'] as String,
-      playtime: json['playtime'],
+      playtime: Timeslot.fromJson(json['playtime'] as Map<String, dynamic>),
       location: json['location'] as String,
       compatScore: (json['compatScore'] as num).toDouble(),
       fairplayScore: (json['fairplayScore'] as num).toDouble(),
@@ -50,7 +48,7 @@ ChallengerModel _$ChallengeModelFromJson(Map<String, dynamic> json) =>
       stakeUnit: $enumDecode(_$StakeUnitEnumMap, json['stakeUnit']),
     );
 
-Map<String, dynamic> _$ChallengeModelToJson(ChallengerModel instance) =>
+Map<String, dynamic> _$ChallengerModelToJson(ChallengerModel instance) =>
     <String, dynamic>{
       'lobbyId': instance.lobbyId,
       'playtime': instance.playtime,

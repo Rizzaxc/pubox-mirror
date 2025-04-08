@@ -1,11 +1,14 @@
 // follow database ID
+import 'package:json_annotation/json_annotation.dart';
+
 enum Sport { others, soccer, basketball, badminton, tennis, pickleball }
 
+@JsonEnum()
 enum DayChunk {
-  early, // 4am-9am
-  midday, // 9am-2pm
-  noon, // 2pm-6pm
-  night; // 6pm-12pm
+  @JsonValue('early') early, // 4am-9am
+  @JsonValue('midday') midday, // 9am-2pm
+  @JsonValue('noon') noon, // 2pm-6pm
+  @JsonValue('night') night; // 6pm-12pm
 
   String getShortName() {
     switch (this) {
@@ -34,18 +37,19 @@ enum DayChunk {
   }
 }
 
+@JsonEnum()
 enum DayOfWeek {
-  everyday,
-  monday,
-  tuesday,
-  wednesday,
-  thursday,
-  friday,
-  saturday,
-  sunday,
-  even, // mon wed fri
-  odd, // tue thu sat
-  weekend; // sat sun
+  @JsonValue('all') everyday,
+  @JsonValue('mon') monday,
+  @JsonValue('tue') tuesday,
+  @JsonValue('wed') wednesday,
+  @JsonValue('thu') thursday,
+  @JsonValue('fri') friday,
+  @JsonValue('sat') saturday,
+  @JsonValue('sun') sunday,
+  @JsonValue('mwf') even, // mon wed fri
+  @JsonValue('tts') odd, // tue thu sat
+  @JsonValue('wkn') weekend; // sat sun
 
   String getShortName() {
     switch (this) {
@@ -102,7 +106,12 @@ enum DayOfWeek {
   }
 }
 
-enum StakeUnit { game, set, goal }
+@JsonEnum()
+enum StakeUnit {
+  @JsonValue('game') game,
+  @JsonValue('set') set,
+  @JsonValue('goal') goal
+}
 
 enum City {
   hanoi('hn', 'Hà Nội'),

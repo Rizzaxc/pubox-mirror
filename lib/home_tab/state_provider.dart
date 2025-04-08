@@ -28,7 +28,6 @@ class HomeStateProvider extends ChangeNotifier {
 
   // Teammate data
   PagingState<int, TeammateModel> teammatePagingState = PagingState();
-  int _teammatePagination = 0;
 
   // Challenger data
   // Neutral data
@@ -102,20 +101,111 @@ class HomeStateProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  final List<TeammateModel> _mockTeammates = [
+    TeammateModel(
+      teammateResultType: TeammateResultType.player,
+      resultTitle: "GamerPro1999",
+      location: ["Manchester", "UK"],
+      playtime: Timeslot(DayOfWeek.monday, DayChunk.noon),
+      details: {
+        "skill": "Expert",
+        "games": ["Valorant", "CS:GO"]
+      },
+      compatScore: 0.92,
+      searchableId: "gp99_12345",
+    ),
+    TeammateModel(
+      teammateResultType: TeammateResultType.lobby,
+      resultTitle: "Weekend Warriors",
+      location: ["Online", "Global"],
+      playtime: Timeslot(DayOfWeek.saturday, DayChunk.night),
+      details: {
+        "players": 6,
+        "games": ["Apex Legends"]
+      },
+      compatScore: 0.78,
+      searchableId: "ww_lobby_67890",
+    ),
+    TeammateModel(
+      teammateResultType: TeammateResultType.player,
+      resultTitle: "CasualGamer42",
+      location: ["London", "UK"],
+      playtime: Timeslot(DayOfWeek.even, DayChunk.early),
+      details: {
+        "skill": "Intermediate",
+        "games": ["Fortnite", "Rocket League"]
+      },
+      compatScore: 0.65,
+      searchableId: "cg42_54321",
+    ),
+  ];
+
+  final List<TeammateModel> _mockTeammates2 = [
+    TeammateModel(
+      teammateResultType: TeammateResultType.player,
+      resultTitle: "GamerPro1999",
+      location: ["China", "Shanghai"],
+      playtime: Timeslot(DayOfWeek.monday, DayChunk.noon),
+      details: {
+        "skill": "Expert",
+        "games": ["Dota", "PoE"]
+      },
+      compatScore: 0.92,
+      searchableId: "gp99_12345",
+    ),
+    TeammateModel(
+      teammateResultType: TeammateResultType.lobby,
+      resultTitle: "Weekend Warriors",
+      location: ["Online", "Global"],
+      playtime: Timeslot(DayOfWeek.saturday, DayChunk.night),
+      details: {
+        "players": 6,
+        "games": ["Apex Legends"]
+      },
+      compatScore: 0.78,
+      searchableId: "ww_lobby_67890",
+    ),
+    TeammateModel(
+      teammateResultType: TeammateResultType.player,
+      resultTitle: "CasualGamer42",
+      location: ["London", "UK"],
+      playtime: Timeslot(DayOfWeek.even, DayChunk.early),
+      details: {
+        "skill": "Intermediate",
+        "games": ["Fortnite", "Rocket League"]
+      },
+      compatScore: 0.65,
+      searchableId: "cg42_54321",
+    ),
+  ];
+
   Future<void> refreshData() async {
     _isLoading = true;
-    notifyListeners();
-
-    _teammatePagination = 0;
 
     try {
       // TODO: Load the initial batch of all 4 tabs: teammate, challenger, neutral, location
-      await Future.delayed(Duration(seconds: 1)); // Simulate network delay
+      if (teammatePagingState.isLoading) return;
+      teammatePagingState =
+          teammatePagingState.copyWith(isLoading: true, error: null);
+      notifyListeners();
+      teammatePagingState.items?.clear();
+      final freshTeammates = _mockTeammates;
+      final newKey = 1;
+      final isLastPage = freshTeammates.isEmpty;
+
+      teammatePagingState = teammatePagingState.copyWith(
+        pages: [freshTeammates],
+        keys: [...?teammatePagingState.keys, newKey],
+        hasNextPage: !isLastPage,
+        isLoading: false,
+      );
     } catch (exception, stackTrace) {
       // Handle errors
       Sentry.captureException(exception, stackTrace: stackTrace);
     } finally {
       _isLoading = false;
+      teammatePagingState = teammatePagingState.copyWith(isLoading: false);
+
       notifyListeners();
 
       // Persist state to local storage
@@ -124,20 +214,28 @@ class HomeStateProvider extends ChangeNotifier {
   }
 
   Future<void> loadTeammate() async {
+    if (teammatePagingState.isLoading) return;
+
     try {
       // TODO
-      if (teammatePagingState.isLoading) return;
       teammatePagingState =
           teammatePagingState.copyWith(isLoading: true, error: null);
       notifyListeners();
-      await Future.delayed(Duration(seconds: 1));
-      
+
+      await Future.delayed(Duration(seconds: 2));
+      final newKey = (teammatePagingState.keys?.last ?? 0) + 1;
+
+      teammatePagingState = teammatePagingState.copyWith(
+        pages: [...?teammatePagingState.pages, _mockTeammates2],
+        keys: [...?teammatePagingState.keys, newKey],
+        hasNextPage: false,
+        isLoading: false,
+      );
     } catch (exception, stackTrace) {
       Sentry.captureException(exception, stackTrace: stackTrace);
       teammatePagingState =
           teammatePagingState.copyWith(error: genericErrorMessage);
     } finally {
-      _teammatePagination++;
       teammatePagingState = teammatePagingState.copyWith(isLoading: false);
       notifyListeners();
     }

@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 
-import '../core/remote_load_state_provider_interface.dart';
+class ManageRemoteLoadStateProvider extends ChangeNotifier {
+  bool isLoading = false;
 
-class ManageRemoteLoadStateProvider extends RemoteLoadStateProviderInterface {
-
+  Future<void> startLoading() async {
+    isLoading = true;
+    notifyListeners();
+    Future.delayed(Duration(seconds: 1));
+    isLoading = false;
+    notifyListeners();
+  }
 }

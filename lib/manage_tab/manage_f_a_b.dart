@@ -6,7 +6,7 @@ import '../core/pubox_fab.dart';
 import 'manage_remote_fetch_state_provider.dart';
 
 class ManageFAB extends StatelessWidget {
-  ManageFAB({super.key});
+  const ManageFAB({super.key});
 
 
   @override

@@ -1,10 +1,11 @@
 import 'package:json_annotation/json_annotation.dart';
 
 import '../core/model/enum.dart';
+import '../core/model/timeslot.dart';
 
 part 'model.g.dart';
 
-enum TeammateResultType { lobby, individual }
+enum TeammateResultType { lobby, player }
 
 
 @JsonSerializable()
@@ -12,8 +13,7 @@ class TeammateModel {
   final TeammateResultType teammateResultType;
   final String resultTitle;
   final List<String> location;
-  final dynamic playtime;
-  final dynamic availability;
+  final Timeslot playtime;
   final dynamic details;
   final double compatScore;
   final String searchableId;
@@ -23,7 +23,6 @@ class TeammateModel {
     required this.resultTitle,
     required this.location,
     required this.playtime,
-    required this.availability,
     required this.details,
     required this.compatScore,
     required this.searchableId,
@@ -36,15 +35,14 @@ class TeammateModel {
 
   @override
   String toString() {
-    return 'TeammateModel(teammateResultType: $teammateResultType, resultTitle: $resultTitle, location: $location, playtime: $playtime, availability: $availability, details: $details, compatScore: $compatScore, searchableId: $searchableId)';
+    return 'TeammateModel(teammateResultType: $teammateResultType, resultTitle: $resultTitle, location: $location, playtime: $playtime, details: $details, compatScore: $compatScore, searchableId: $searchableId)';
   }
 
   TeammateModel copyWith({
     TeammateResultType? teammateResultType,
     String? resultTitle,
     List<String>? location,
-    dynamic playtime,
-    dynamic availability,
+    Timeslot? playtime,
     dynamic details,
     double? compatScore,
     String? searchableId,
@@ -54,7 +52,6 @@ class TeammateModel {
       resultTitle: resultTitle ?? this.resultTitle,
       location: location ?? this.location,
       playtime: playtime ?? this.playtime,
-      availability: availability ?? this.availability,
       details: details ?? this.details,
       compatScore: compatScore ?? this.compatScore,
       searchableId: searchableId ?? this.searchableId,
@@ -65,7 +62,7 @@ class TeammateModel {
 @JsonSerializable()
 class ChallengerModel {
   final String lobbyId;
-  final dynamic playtime;
+  final Timeslot playtime;
   final String location;
   final double compatScore;
   final double fairplayScore; // rating past opponents give this lobby
@@ -85,9 +82,9 @@ class ChallengerModel {
   });
 
   factory ChallengerModel.fromJson(Map<String, dynamic> json) =>
-      _$ChallengeModelFromJson(json);
+      _$ChallengerModelFromJson(json);
 
-  Map<String, dynamic> toJson() => _$ChallengeModelToJson(this);
+  Map<String, dynamic> toJson() => _$ChallengerModelToJson(this);
 
   @override
   String toString() {

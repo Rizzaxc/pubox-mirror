@@ -13,9 +13,11 @@ class HomeSearchPage extends StatelessWidget {
   static var borderRadius = BorderRadius.circular(8);
   static const borderRadiusVal = Radius.circular(8);
 
-  const HomeSearchPage({
+  HomeSearchPage({
     super.key,
   });
+
+  final searchBarFocusNode = FocusNode();
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +28,15 @@ class HomeSearchPage extends StatelessWidget {
 
         return Material(
           child: GestureDetector(
-            onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+            onTap: () => searchBarFocusNode.hasFocus
+                ? searchBarFocusNode.unfocus()
+                : null,
+            onVerticalDragStart: (_) => searchBarFocusNode.hasFocus
+                ? searchBarFocusNode.unfocus()
+                : null,
+            onHorizontalDragStart: (_) => searchBarFocusNode.hasFocus
+                ? searchBarFocusNode.unfocus()
+                : null,
             child: ConstrainedBox(
               constraints: BoxConstraints(minHeight: 512),
               child: Column(
@@ -37,10 +47,11 @@ class HomeSearchPage extends StatelessWidget {
                     spacing: 32,
                     children: [
                       PlatformSearchBar(
+                        focusNode: searchBarFocusNode,
                         keyboardType: TextInputType.text,
-                        hintText: 'Search FriendID hoặc InviteCode',
+                        hintText: 'FriendID hoặc InviteCode',
                         cupertino: (_, __) => CupertinoSearchBarData(
-                          itemSize: 24,
+                          itemSize: 16,
                           autocorrect: false,
                         ),
                       ),
@@ -51,7 +62,8 @@ class HomeSearchPage extends StatelessWidget {
                             children: [
                               Icon(PlatformIcons(context).locationSolid),
                               Text('Khu Vực',
-                                  style: Theme.of(context).textTheme.titleMedium),
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium),
                             ],
                           ),
                           Card(
@@ -62,38 +74,42 @@ class HomeSearchPage extends StatelessWidget {
                                         position: PopupMenuPosition.under,
                                         padding: EdgeInsets.zero,
                                         splashRadius: 32,
-                                        constraints: BoxConstraints(maxWidth: 128),
+                                        constraints:
+                                            BoxConstraints(maxWidth: 128),
                                         shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(16),
+                                            borderRadius:
+                                                BorderRadius.circular(16),
                                             side: BorderSide(
                                                 color: Colors.grey.shade200)),
                                         popUpAnimationStyle: AnimationStyle(
                                             curve: Curves.easeOut,
-                                            duration:
-                                            const Duration(milliseconds: 250))),
-                                    cupertino: (_, __) => CupertinoPopupMenuData(
-                                      title: Text(
-                                        'Thành Phố',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold),
-                                      ),
-                                    ),
+                                            duration: const Duration(
+                                                milliseconds: 250))),
+                                    cupertino: (_, __) =>
+                                        CupertinoPopupMenuData(
+                                          title: Text(
+                                            'Thành Phố',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
                                     icon: Container(
-                                      padding: EdgeInsets.symmetric(vertical: 4),
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 4),
                                       width: double.infinity,
                                       decoration: BoxDecoration(
                                           color: Colors.blue.shade800,
                                           borderRadius: BorderRadius.only(
-                                              topLeft:
-                                              HomeSearchPage.borderRadiusVal,
-                                              topRight:
-                                              HomeSearchPage.borderRadiusVal)),
+                                              topLeft: HomeSearchPage
+                                                  .borderRadiusVal,
+                                              topRight: HomeSearchPage
+                                                  .borderRadiusVal)),
                                       child: Padding(
                                         padding: const EdgeInsets.symmetric(
                                             horizontal: 4),
                                         child: Row(
                                           mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
+                                              MainAxisAlignment.spaceBetween,
                                           children: [
                                             Icon(Icons.location_city,
                                                 color: Colors.white),
@@ -103,8 +119,9 @@ class HomeSearchPage extends StatelessWidget {
                                                   .textTheme
                                                   .titleMedium
                                                   ?.copyWith(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold),
+                                                      color: Colors.white,
+                                                      fontWeight:
+                                                          FontWeight.bold),
                                               textAlign: TextAlign.center,
                                             ),
                                             Icon(
@@ -117,25 +134,27 @@ class HomeSearchPage extends StatelessWidget {
                                     ),
                                     options: City.values
                                         .map((each) => PopupMenuOption(
-                                      label: each.shorthand,
-                                      material: (_, __) =>
-                                          MaterialPopupMenuOptionData(
-                                              child: Text(each.name,
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .bodyLarge)),
-                                      cupertino: (_, __) =>
-                                          CupertinoPopupMenuOptionData(
-                                              child: Text(each.name,
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .bodyLarge)),
-                                      onTap: (_) {
-                                        stateProvider.updateCity(
-                                            City.fromShorthand(each.shorthand)
-                                        );
-                                      },
-                                    ))
+                                              label: each.shorthand,
+                                              material: (_, __) =>
+                                                  MaterialPopupMenuOptionData(
+                                                      child: Text(each.name,
+                                                          style:
+                                                              Theme.of(context)
+                                                                  .textTheme
+                                                                  .bodyLarge)),
+                                              cupertino: (_, __) =>
+                                                  CupertinoPopupMenuOptionData(
+                                                      child: Text(each.name,
+                                                          style:
+                                                              Theme.of(context)
+                                                                  .textTheme
+                                                                  .bodyLarge)),
+                                              onTap: (_) {
+                                                stateProvider.updateCity(
+                                                    City.fromShorthand(
+                                                        each.shorthand));
+                                              },
+                                            ))
                                         .toList()),
                                 const SizedBox(height: 8),
                                 TagCarousel(
@@ -145,9 +164,9 @@ class HomeSearchPage extends StatelessWidget {
                                       .map((e) => e.fullName)
                                       .toList(),
                                   initialSelection: districts,
-
                                   onSelectionChanged: (selectedDistricts) {
-                                    stateProvider.updateDistricts(selectedDistricts);
+                                    stateProvider
+                                        .updateDistricts(selectedDistricts);
                                   },
                                 )
                               ],
@@ -155,7 +174,7 @@ class HomeSearchPage extends StatelessWidget {
                           ),
                         ],
                       ),
-                      const TimeslotSelection(), // Add the new TimeSlotSelection widget
+                      const TimeslotSelection(),
                     ],
                   ),
                   Padding(
