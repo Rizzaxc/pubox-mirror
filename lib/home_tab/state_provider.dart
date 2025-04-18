@@ -2,32 +2,35 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
-import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
-import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../core/model/enum.dart';
 import '../core/model/timeslot.dart';
-import '../core/utils.dart';
-import 'model.dart';
+import 'teammate_section/teammate_state_provider.dart';
 
 class HomeStateProvider extends ChangeNotifier {
   static const String _prefKey = 'STORED_HOME_STATE_PERSISTENT_KEY';
   static const _batchSize = 12;
 
+  // Current state
   City _city = City.hochiminh;
   Set<String> _districts = {};
-  bool _isLoading = false;
 
   // Time slot selection state
   final List<Timeslot> _timeSlots = [];
   DayOfWeek _selectedDayOfWeek = DayOfWeek.everyday;
   DayChunk _selectedDayChunk = DayChunk.early;
 
+  // Pre-commit state
+  City? _pendingCity;
+  Set<String>? _pendingDistricts;
+  List<Timeslot>? _pendingTimeSlots;
+  DayOfWeek? _pendingSelectedDayOfWeek;
+  DayChunk? _pendingSelectedDayChunk;
+  bool _hasPendingChanges = false;
+
   // SharedPreferences instance
   SharedPreferences? localStorage;
-
-  // Teammate data
-  PagingState<int, TeammateModel> teammatePagingState = PagingState();
 
   // Challenger data
   // Neutral data
@@ -41,9 +44,6 @@ class HomeStateProvider extends ChangeNotifier {
     // Load stored preferences
     localStorage = await SharedPreferences.getInstance();
     await _loadPersistedState();
-
-    // Load initial data
-    refreshData();
   }
 
   // Getters
@@ -51,194 +51,107 @@ class HomeStateProvider extends ChangeNotifier {
 
   Set<String> get districts => _districts;
 
-  bool get isLoading => _isLoading;
-
   List<Timeslot> get timeSlots => _timeSlots;
 
   DayOfWeek get selectedDayOfWeek => _selectedDayOfWeek;
 
   DayChunk get selectedDayChunk => _selectedDayChunk;
 
-  bool get canAddTimeSlot =>
-      _timeSlots.length < 3 &&
-      !_timeSlots.contains(Timeslot(_selectedDayOfWeek, _selectedDayChunk));
+  bool get hasPendingChanges => _hasPendingChanges;
 
-  // Update methods
+  // max 3 slots
+  bool get canAddTimeSlot {
+    final slots = _pendingTimeSlots ?? _timeSlots;
+    final dayOfWeek = _pendingSelectedDayOfWeek ?? _selectedDayOfWeek;
+    final dayChunk = _pendingSelectedDayChunk ?? _selectedDayChunk;
+    final timeslot = Timeslot(dayOfWeek, dayChunk);
+    return slots.length < 3 && !slots.contains(timeslot);
+  }
+
+  // Update methods (pre-commit)
   void updateCity(City newCity) {
-    if (_city == newCity) return;
-    _city = newCity;
-    _districts = {}; // no cross-city locations
-    notifyListeners();
+    if ((_pendingCity ?? _city) == newCity) return;
+    _pendingCity = newCity;
+    // Clear districts when city changes
+    _pendingDistricts = {};
+
+    _hasPendingChanges = true;
   }
 
   void updateDistricts(Set<String> newDistricts) {
     if (newDistricts.length > 3) return;
-    _districts = newDistricts;
-    notifyListeners();
+    if ((_pendingDistricts ?? _districts) == newDistricts) return;
+    _pendingDistricts = newDistricts;
+    _hasPendingChanges = true;
   }
 
   void updateSelectedDayOfWeek(DayOfWeek day) {
-    _selectedDayOfWeek = day;
-    notifyListeners();
+    if ((_pendingSelectedDayOfWeek ?? _selectedDayOfWeek) == day) return;
+    _pendingSelectedDayOfWeek = day;
+    _hasPendingChanges = true;
   }
 
   void updateSelectedDayChunk(DayChunk chunk) {
-    _selectedDayChunk = chunk;
-    notifyListeners();
+    if ((_pendingSelectedDayChunk ?? _selectedDayChunk) == chunk) return;
+    _pendingSelectedDayChunk = chunk;
+    _hasPendingChanges = true;
   }
 
   void addCurrentTimeSlotSelection() {
-    if (_timeSlots.length < 3 &&
-        !_timeSlots.contains(Timeslot(_selectedDayOfWeek, _selectedDayChunk))) {
-      _timeSlots.add(Timeslot(_selectedDayOfWeek, _selectedDayChunk));
-      notifyListeners();
-    }
+    if (!canAddTimeSlot) return;
+    final dayOfWeek = _pendingSelectedDayOfWeek ?? _selectedDayOfWeek;
+    final dayChunk = _pendingSelectedDayChunk ?? _selectedDayChunk;
+    final timeslot = Timeslot(dayOfWeek, dayChunk);
+    _pendingTimeSlots ??= List.from(_timeSlots);
+    _pendingTimeSlots!.add(timeslot);
+    _hasPendingChanges = true;
   }
 
   void removeTimeSlot(Timeslot slot) {
-    _timeSlots.removeWhere((item) =>
+    _pendingTimeSlots ??= List.from(_timeSlots);
+    _pendingTimeSlots!.removeWhere((item) =>
         item.dayOfWeek == slot.dayOfWeek && item.dayChunk == slot.dayChunk);
+    _hasPendingChanges = true;
+  }
+
+  // Commit changes and notify listeners
+  void commit() {
+    if (!_hasPendingChanges) return;
+
+    if (_pendingCity != null) {
+      _city = _pendingCity!;
+      _pendingCity = null;
+    }
+
+    if (_pendingDistricts != null) {
+      _districts = _pendingDistricts!;
+      _pendingDistricts = null;
+    }
+
+    if (_pendingTimeSlots != null) {
+      _timeSlots.clear();
+      _timeSlots.addAll(_pendingTimeSlots!);
+      _pendingTimeSlots = null;
+    }
+
+    // reverts these to defaults
+    _selectedDayOfWeek = DayOfWeek.everyday;
+    _selectedDayChunk = DayChunk.early;
+    _pendingSelectedDayOfWeek = null;
+    _pendingSelectedDayChunk = null;
+    _hasPendingChanges = false;
     notifyListeners();
+    _persistState(); // Persist changes after commit
   }
 
-  final List<TeammateModel> _mockTeammates = [
-    TeammateModel(
-      teammateResultType: TeammateResultType.player,
-      resultTitle: "GamerPro1999",
-      location: ["Manchester", "UK"],
-      playtime: Timeslot(DayOfWeek.monday, DayChunk.noon),
-      details: {
-        "skill": "Expert",
-        "games": ["Valorant", "CS:GO"]
-      },
-      compatScore: 0.92,
-      searchableId: "gp99_12345",
-    ),
-    TeammateModel(
-      teammateResultType: TeammateResultType.lobby,
-      resultTitle: "Weekend Warriors",
-      location: ["Online", "Global"],
-      playtime: Timeslot(DayOfWeek.saturday, DayChunk.night),
-      details: {
-        "players": 6,
-        "games": ["Apex Legends"]
-      },
-      compatScore: 0.78,
-      searchableId: "ww_lobby_67890",
-    ),
-    TeammateModel(
-      teammateResultType: TeammateResultType.player,
-      resultTitle: "CasualGamer42",
-      location: ["London", "UK"],
-      playtime: Timeslot(DayOfWeek.even, DayChunk.early),
-      details: {
-        "skill": "Intermediate",
-        "games": ["Fortnite", "Rocket League"]
-      },
-      compatScore: 0.65,
-      searchableId: "cg42_54321",
-    ),
-  ];
-
-  final List<TeammateModel> _mockTeammates2 = [
-    TeammateModel(
-      teammateResultType: TeammateResultType.player,
-      resultTitle: "GamerPro1999",
-      location: ["China", "Shanghai"],
-      playtime: Timeslot(DayOfWeek.monday, DayChunk.noon),
-      details: {
-        "skill": "Expert",
-        "games": ["Dota", "PoE"]
-      },
-      compatScore: 0.92,
-      searchableId: "gp99_12345",
-    ),
-    TeammateModel(
-      teammateResultType: TeammateResultType.lobby,
-      resultTitle: "Weekend Warriors",
-      location: ["Online", "Global"],
-      playtime: Timeslot(DayOfWeek.saturday, DayChunk.night),
-      details: {
-        "players": 6,
-        "games": ["Apex Legends"]
-      },
-      compatScore: 0.78,
-      searchableId: "ww_lobby_67890",
-    ),
-    TeammateModel(
-      teammateResultType: TeammateResultType.player,
-      resultTitle: "CasualGamer42",
-      location: ["London", "UK"],
-      playtime: Timeslot(DayOfWeek.even, DayChunk.early),
-      details: {
-        "skill": "Intermediate",
-        "games": ["Fortnite", "Rocket League"]
-      },
-      compatScore: 0.65,
-      searchableId: "cg42_54321",
-    ),
-  ];
-
-  Future<void> refreshData() async {
-    _isLoading = true;
-
-    try {
-      // TODO: Load the initial batch of all 4 tabs: teammate, challenger, neutral, location
-      if (teammatePagingState.isLoading) return;
-      teammatePagingState =
-          teammatePagingState.copyWith(isLoading: true, error: null);
-      notifyListeners();
-      teammatePagingState.items?.clear();
-      final freshTeammates = _mockTeammates;
-      final newKey = 1;
-      final isLastPage = freshTeammates.isEmpty;
-
-      teammatePagingState = teammatePagingState.copyWith(
-        pages: [freshTeammates],
-        keys: [...?teammatePagingState.keys, newKey],
-        hasNextPage: !isLastPage,
-        isLoading: false,
-      );
-    } catch (exception, stackTrace) {
-      // Handle errors
-      Sentry.captureException(exception, stackTrace: stackTrace);
-    } finally {
-      _isLoading = false;
-      teammatePagingState = teammatePagingState.copyWith(isLoading: false);
-
-      notifyListeners();
-
-      // Persist state to local storage
-      await _persistState();
-    }
-  }
-
-  Future<void> loadTeammate() async {
-    if (teammatePagingState.isLoading) return;
-
-    try {
-      // TODO
-      teammatePagingState =
-          teammatePagingState.copyWith(isLoading: true, error: null);
-      notifyListeners();
-
-      await Future.delayed(Duration(seconds: 2));
-      final newKey = (teammatePagingState.keys?.last ?? 0) + 1;
-
-      teammatePagingState = teammatePagingState.copyWith(
-        pages: [...?teammatePagingState.pages, _mockTeammates2],
-        keys: [...?teammatePagingState.keys, newKey],
-        hasNextPage: false,
-        isLoading: false,
-      );
-    } catch (exception, stackTrace) {
-      Sentry.captureException(exception, stackTrace: stackTrace);
-      teammatePagingState =
-          teammatePagingState.copyWith(error: genericErrorMessage);
-    } finally {
-      teammatePagingState = teammatePagingState.copyWith(isLoading: false);
-      notifyListeners();
-    }
+  // Discard pending changes
+  void discardChanges() {
+    _pendingCity = null;
+    _pendingDistricts = null;
+    _pendingTimeSlots = null;
+    _pendingSelectedDayOfWeek = null;
+    _pendingSelectedDayChunk = null;
+    _hasPendingChanges = false;
   }
 
   // Persist current state to SharedPreferences using async API
@@ -310,7 +223,6 @@ class HomeStateProvider extends ChangeNotifier {
 
   @override
   void dispose() {
-    // Ensure we persist state when the provider is disposed
     _persistState();
     super.dispose();
   }

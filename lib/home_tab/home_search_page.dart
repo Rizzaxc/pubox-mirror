@@ -4,9 +4,11 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../core/model/enum.dart';
+import '../core/sport_switcher.dart';
 import '../core/tag_carousel.dart';
 import 'model.dart';
 import 'state_provider.dart';
+import 'teammate_section/teammate_state_provider.dart';
 import 'timeslot_selection.dart';
 
 class HomeSearchPage extends StatelessWidget {
@@ -180,7 +182,7 @@ class HomeSearchPage extends StatelessWidget {
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 16.0),
                     child: PlatformElevatedButton(
-                      onPressed: () => stateProvider.refreshData(),
+                      onPressed: () => refreshData(context),
                       color: Colors.green.shade600,
                       cupertino: (_, __) => CupertinoElevatedButtonData(
                           borderRadius: BorderRadius.all(Radius.circular(32))),
@@ -202,5 +204,11 @@ class HomeSearchPage extends StatelessWidget {
         );
       },
     );
+  }
+
+  void refreshData(BuildContext context) {
+    Future.wait([
+      context.read<TeammateStateProvider>().refreshData()
+    ]);
   }
 }

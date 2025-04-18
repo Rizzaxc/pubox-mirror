@@ -66,57 +66,55 @@ class _HomeTabState extends State<HomeTab>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return ChangeNotifierProvider<SelectedSportProvider>.value(
-        value: SelectedSportProvider.instance,
-        child: Scaffold(
-          appBar: AppBar(
-            title: PlatformText('Home'),
-            automaticallyImplyLeading: true,
-            centerTitle: true,
-            scrolledUnderElevation: 0,
-            leading: PlatformIconButton(
-              onPressed: () {},
-              icon: Icon(
-                Icons.notifications_active_outlined,
-                size: 24,
-              ),
-            ),
-            actions: [SportSwitcher.instance],
+    return Scaffold(
+      appBar: AppBar(
+        title: PlatformText('Home'),
+        automaticallyImplyLeading: true,
+        centerTitle: true,
+        scrolledUnderElevation: 0,
+        leading: PlatformIconButton(
+          onPressed: () {},
+          icon: Icon(
+            Icons.notifications_active_outlined,
+            size: 24,
           ),
-          body: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: NestedScrollView(
-              headerSliverBuilder:
-                  (BuildContext context, bool innerBoxIsScrolled) {
-                return [
-                  SliverPadding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    sliver: SliverAppBar(
-                      toolbarHeight: 8,
-                      bottom: TabBar(
-                        controller: _tabController,
-                        tabs: homeSections,
-                        labelColor: Colors.white,
-                        indicatorPadding:
-                            const EdgeInsets.symmetric(horizontal: 1),
-                        splashBorderRadius: BorderRadius.circular(16),
-                        indicator: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16),
-                          color: Colors.red.shade800,
-                        ),
-                      ),
+        ),
+        actions: [SportSwitcher.instance],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8),
+        child: NestedScrollView(
+          headerSliverBuilder:
+              (BuildContext context, bool innerBoxIsScrolled) {
+            return [
+              SliverPadding(
+                padding: const EdgeInsets.only(bottom: 8),
+                sliver: SliverAppBar(
+                  toolbarHeight: 8,
+                  bottom: TabBar(
+                    controller: _tabController,
+                    tabs: homeSections,
+                    labelColor: Colors.white,
+                    indicatorPadding:
+                        const EdgeInsets.symmetric(horizontal: 1),
+                    splashBorderRadius: BorderRadius.circular(16),
+                    indicator: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      color: Colors.red.shade800,
                     ),
                   ),
-                ];
-              },
-              body: TabBarView(controller: _tabController, children: [
-                TeammateSection(),
-                ChallengerSection(),
-                NeutralSection(),
-                LocationSection()
-              ]),
-            ),
-          ),
-        ));
+                ),
+              ),
+            ];
+          },
+          body: TabBarView(controller: _tabController, children: [
+            TeammateSection(),
+            ChallengerSection(),
+            NeutralSection(),
+            LocationSection()
+          ]),
+        ),
+      ),
+    );
   }
 }

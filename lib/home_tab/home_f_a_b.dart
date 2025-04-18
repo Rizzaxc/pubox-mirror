@@ -12,18 +12,11 @@ class HomeFAB extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<HomeStateProvider>(
-      builder: (context, stateProvider, _) {
-        final isLoading = stateProvider.isLoading;
-        return PuboxFab(
-          onPressed: () => _openFullModal(context),
-          onLongPressed: stateProvider.refreshData,
-          isLoading: isLoading,
-          icon: Icon(
-            PlatformIcons(context).search,
-          ),
-        );
-      },
+    return PuboxFab(
+      onPressed: () => _openFullModal(context),
+      icon: Icon(
+        PlatformIcons(context).search,
+      ),
     );
   }
 
@@ -46,10 +39,7 @@ class HomeFAB extends StatelessWidget {
           decoration: BoxDecoration(
               color: Theme.of(context).canvasColor,
               borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
-          padding: EdgeInsets.only(
-              top: 8,
-              left: 8,
-              right: 8),
+          padding: EdgeInsets.only(top: 8, left: 8, right: 8),
           child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
             controller: scrollController,

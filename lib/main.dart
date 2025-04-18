@@ -17,9 +17,11 @@ import 'package:toastification/toastification.dart';
 
 import 'core/icons/pubox_icons.dart';
 import 'core/player_provider.dart';
+import 'core/sport_switcher.dart';
 import 'health_tab/health_f_a_b.dart';
 import 'home_tab/home_f_a_b.dart';
 import 'home_tab/state_provider.dart';
+import 'home_tab/teammate_section/teammate_state_provider.dart';
 import 'manage_tab/manage_f_a_b.dart';
 import 'manage_tab/manage_remote_fetch_state_provider.dart';
 import 'profile_tab/profile_f_a_b.dart';
@@ -122,11 +124,19 @@ class Pubox extends StatelessWidget {
           child: MultiProvider(
             providers: [
               ChangeNotifierProvider<PlayerProvider>(create: (_) => PlayerProvider()),
+
+              ChangeNotifierProvider<SelectedSportProvider>.value(value: SelectedSportProvider.instance,),
+              // Home Screen
               ChangeNotifierProvider<HomeStateProvider>(
                   create: (_) => HomeStateProvider()),
-              ChangeNotifierProvider<ManageRemoteLoadStateProvider>(
-                  create: (_) => ManageRemoteLoadStateProvider())
+              ChangeNotifierProxyProvider2<SelectedSportProvider, HomeStateProvider, TeammateStateProvider>(
+                create: (context) => TeammateStateProvider(context.read<SelectedSportProvider>(), context.read<HomeStateProvider>()),
+                update: (_, selectedSport, homeState, __) => TeammateStateProvider(selectedSport, homeState),
+              ),
 
+              // Manage Screen
+              ChangeNotifierProvider<ManageRemoteLoadStateProvider>(
+                  create: (_) => ManageRemoteLoadStateProvider()),
             ],
             child: PlatformApp.router(
               title: 'Pubox',
