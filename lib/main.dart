@@ -130,8 +130,12 @@ class Pubox extends StatelessWidget {
               ChangeNotifierProvider<HomeStateProvider>(
                   create: (_) => HomeStateProvider()),
               ChangeNotifierProxyProvider2<SelectedSportProvider, HomeStateProvider, TeammateStateProvider>(
-                create: (context) => TeammateStateProvider(context.read<SelectedSportProvider>(), context.read<HomeStateProvider>()),
-                update: (_, selectedSport, homeState, __) => TeammateStateProvider(selectedSport, homeState),
+                create: (context) => TeammateStateProvider(
+                  context.read<SelectedSportProvider>(), 
+                  context.read<HomeStateProvider>()
+                ),
+                update: (_, selectedSport, homeState, previousTeammateState) => 
+                  previousTeammateState!..updateDependencies(selectedSport, homeState),
               ),
 
               // Manage Screen

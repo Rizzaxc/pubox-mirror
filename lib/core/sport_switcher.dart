@@ -28,10 +28,8 @@ class SelectedSportProvider extends ChangeNotifier {
   Sport get self => Sport.values[_id];
 
   Future<void> loadFromStorage() async {
-    final storedSport = await localStorage.getInt(storedSportKey) ?? 1;
-    if (storedSport != _id) {
-      change(Sport.values[storedSport]);
-    }
+    _id = await localStorage.getInt(storedSportKey) ?? 1;
+    notifyListeners();
   }
 
   Future<void> saveToStorage() async {
@@ -44,10 +42,6 @@ class SelectedSportProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  @override
-  Future<void> dispose() async {
-    super.dispose();
-  }
 }
 
 class SportSwitcher extends StatelessWidget {

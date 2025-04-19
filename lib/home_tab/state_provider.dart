@@ -6,11 +6,9 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../core/model/enum.dart';
 import '../core/model/timeslot.dart';
-import 'teammate_section/teammate_state_provider.dart';
 
 class HomeStateProvider extends ChangeNotifier {
   static const String _prefKey = 'STORED_HOME_STATE_PERSISTENT_KEY';
-  static const _batchSize = 12;
 
   // Current state
   City _city = City.hochiminh;
@@ -31,10 +29,6 @@ class HomeStateProvider extends ChangeNotifier {
 
   // SharedPreferences instance
   SharedPreferences? localStorage;
-
-  // Challenger data
-  // Neutral data
-  // Location data
 
   HomeStateProvider() {
     _initPrefs();

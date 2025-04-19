@@ -35,11 +35,10 @@ class _TeammateSectionState extends State<TeammateSection>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    return Consumer<TeammateStateProvider>(
-      builder: (BuildContext context,
-                TeammateStateProvider teammateState, Widget? child) {
+    return Consumer<TeammateStateProvider>(builder: (BuildContext context,
+        TeammateStateProvider teammateState, Widget? child) {
       return RefreshIndicator(
-        onRefresh: () => Provider.of<TeammateStateProvider>(context, listen: false).refreshData(),
+        onRefresh: context.read<TeammateStateProvider>().refreshData,
         child: CustomScrollView(
           controller: _scrollController,
           slivers: <Widget>[
@@ -51,11 +50,17 @@ class _TeammateSectionState extends State<TeammateSection>
             ),
             PagedSliverList<int, TeammateModel>(
               state: teammateState.teammatePagingState,
-              fetchNextPage:
-                  Provider.of<TeammateStateProvider>(context).loadTeammate,
+              fetchNextPage: context.read<TeammateStateProvider>().loadTeammate,
               builderDelegate: PagedChildBuilderDelegate(
-                  itemBuilder: (context, data, index) =>
-                      TeammateResultItem(data: data)),
+                itemBuilder: (context, data, index) =>
+                    TeammateResultItem(data: data),
+                // noItemsFoundIndicatorBuilder: (_) => const Center(
+                //   child: Text('No teammates found'),
+                // ),
+                // firstPageErrorIndicatorBuilder: (_) => const Center(
+                //   child: Text('Error loading teammates'),
+                // ),
+              ),
             ),
             const SliverPadding(
               padding: EdgeInsets.only(bottom: 128),
