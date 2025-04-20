@@ -18,9 +18,17 @@ import 'state_provider.dart';
 import 'teammate_section/teammate_section.dart';
 
 class HomeTab extends StatefulWidget {
-  const HomeTab._();
+  const HomeTab._({this.initialTabIndex = 0}) : assert(initialTabIndex >= 0 && initialTabIndex <= 3, 'initialTabIndex must be between 0 and 3');
+
+  /// The index of the tab to display initially.
+  /// Must be a value between 0 and 3, inclusive.
+  final int initialTabIndex;
 
   static final instance = HomeTab._();
+
+  static HomeTab withInitialTab(int initialTabIndex) {
+    return HomeTab._(initialTabIndex: initialTabIndex);
+  }
 
   @override
   State<HomeTab> createState() => _HomeTabState();
@@ -54,7 +62,11 @@ class _HomeTabState extends State<HomeTab>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 4, vsync: this);
+    _tabController = TabController(
+      length: 4, 
+      vsync: this,
+      initialIndex: widget.initialTabIndex,
+    );
   }
 
   @override

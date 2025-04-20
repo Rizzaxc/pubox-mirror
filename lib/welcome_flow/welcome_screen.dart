@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'auth_form.dart';
 
@@ -47,6 +48,15 @@ class _ContentCarouselState extends State<ContentCarousel>
     _pageViewController = PageController();
     _tabController =
         TabController(length: ContentCarousel.tabCount, vsync: this);
+
+    // Check if user is already logged in and redirect to home if needed
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final supabase = Supabase.instance.client;
+      if (supabase.auth.currentSession != null && 
+          !supabase.auth.currentSession!.isExpired) {
+        context.go('/home');
+      }
+    });
   }
 
   @override

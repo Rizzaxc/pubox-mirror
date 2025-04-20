@@ -23,6 +23,16 @@ final supabase = Supabase.instance.client;
 final GoRouter puboxRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,
   initialLocation: '/welcome',
+  redirect: (context, state) {
+    // Check if user is logged in before any routes are rendered
+    if (supabase.auth.currentSession == null) return null;
+    if (supabase.auth.currentSession!.isExpired) return null;
+    // If the user is trying to access the welcome screen but is already logged in,
+    // redirect them to the home screen
+    if (state.matchedLocation == '/welcome') {
+      return '/home';
+    }
+  },
   routes: <RouteBase>[
     GoRoute(
       path: '/welcome',
@@ -54,26 +64,25 @@ final GoRouter puboxRouter = GoRouter(
               path: '/home',
               builder: (context, state) => HomeTab.instance,
               routes: <RouteBase>[
-                // TODO: 4 tabs
                 GoRoute(
-                    path: '/home/teammate',
+                    path: 'teammate',
                     builder: (context, state) {
-                      return const Center(child: Text('Teammate'));
+                      return HomeTab.withInitialTab(0);
                     }),
                 GoRoute(
-                    path: '/home/challenger',
+                    path: 'challenger',
                     builder: (context, state) {
-                      return const Center(child: Text('Challenger'));
+                      return HomeTab.withInitialTab(1);
                     }),
                 GoRoute(
-                    path: '/home/neutral',
+                    path: 'neutral',
                     builder: (context, state) {
-                      return const Center(child: Text('Neutral'));
+                      return HomeTab.withInitialTab(2);
                     }),
                 GoRoute(
-                    path: '/home/location',
+                    path: 'location',
                     builder: (context, state) {
-                      return const Center(child: Text('Location'));
+                      return HomeTab.withInitialTab(3);
                     }),
               ],
             ),
@@ -107,8 +116,9 @@ final GoRouter puboxRouter = GoRouter(
             GoRoute(
               path: '/profile',
               redirect: (context, state) {
-                if (supabase.auth.currentSession == null)
+                if (supabase.auth.currentSession == null) {
                   return '/profile/auth';
+                }
                 return null;
               },
               builder: (context, state) => ProfileTab(),
