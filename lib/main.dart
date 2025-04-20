@@ -135,7 +135,7 @@ class Pubox extends StatelessWidget {
                   context.read<HomeStateProvider>()
                 ),
                 update: (_, selectedSport, homeState, previousTeammateState) => 
-                  previousTeammateState!..updateDependencies(selectedSport, homeState),
+                  previousTeammateState ?? TeammateStateProvider(selectedSport, homeState),
               ),
 
               // Manage Screen

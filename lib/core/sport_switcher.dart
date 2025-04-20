@@ -9,8 +9,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'model/enum.dart';
 
 class SelectedSportProvider extends ChangeNotifier {
-  static const storedSportKey = 'STORED_SPORT_PERSISTENT_KEY';
+  static const _prefKey = 'STORED_SPORT_PERSISTENT_KEY';
   late final SharedPreferencesAsync localStorage;
+  bool _isInitialized = false;
 
   SelectedSportProvider._() {
     localStorage = SharedPreferencesAsync();
@@ -21,19 +22,22 @@ class SelectedSportProvider extends ChangeNotifier {
 
   static SelectedSportProvider get instance => _instance;
 
-  int _id = 1;
+  int _id = 0;
+
+  bool get isInitialized => _isInitialized;
 
   int get id => _id;
 
   Sport get self => Sport.values[_id];
 
   Future<void> loadFromStorage() async {
-    _id = await localStorage.getInt(storedSportKey) ?? 1;
+    _id = await localStorage.getInt(_prefKey) ?? 0;
+    _isInitialized = true;
     notifyListeners();
   }
 
   Future<void> saveToStorage() async {
-    await localStorage.setInt(storedSportKey, _id);
+    await localStorage.setInt(_prefKey, _id);
   }
 
   void change(Sport sport) {

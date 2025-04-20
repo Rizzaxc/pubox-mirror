@@ -208,7 +208,7 @@ class HomeSearchPage extends StatelessWidget {
 
   void refreshData(BuildContext context) {
     Future.wait([
-      context.read<TeammateStateProvider>().refreshData()
+      context.read<TeammateStateProvider>().loadData()
     ]);
   }
 }

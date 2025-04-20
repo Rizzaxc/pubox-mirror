@@ -38,7 +38,7 @@ class _TeammateSectionState extends State<TeammateSection>
     return Consumer<TeammateStateProvider>(builder: (BuildContext context,
         TeammateStateProvider teammateState, Widget? child) {
       return RefreshIndicator(
-        onRefresh: context.read<TeammateStateProvider>().refreshData,
+        onRefresh: () => context.read<TeammateStateProvider>().loadData(isRefresh: true),
         child: CustomScrollView(
           controller: _scrollController,
           slivers: <Widget>[
@@ -50,7 +50,7 @@ class _TeammateSectionState extends State<TeammateSection>
             ),
             PagedSliverList<int, TeammateModel>(
               state: teammateState.teammatePagingState,
-              fetchNextPage: context.read<TeammateStateProvider>().loadTeammate,
+              fetchNextPage: context.read<TeammateStateProvider>().loadData,
               builderDelegate: PagedChildBuilderDelegate(
                 itemBuilder: (context, data, index) =>
                     TeammateResultItem(data: data),

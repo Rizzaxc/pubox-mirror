@@ -17,7 +17,7 @@ class HomeStateProvider extends ChangeNotifier {
   // Time slot selection state
   final List<Timeslot> _timeSlots = [];
   DayOfWeek _selectedDayOfWeek = DayOfWeek.everyday;
-  DayChunk _selectedDayChunk = DayChunk.early;
+  DayChunk _selectedDayChunk = DayChunk.noon;
 
   // Pre-commit state
   City? _pendingCity;
@@ -26,6 +26,9 @@ class HomeStateProvider extends ChangeNotifier {
   DayOfWeek? _pendingSelectedDayOfWeek;
   DayChunk? _pendingSelectedDayChunk;
   bool _hasPendingChanges = false;
+
+  // Initialization state
+  bool _isInitialized = false;
 
   // SharedPreferences instance
   SharedPreferences? localStorage;
@@ -38,9 +41,15 @@ class HomeStateProvider extends ChangeNotifier {
     // Load stored preferences
     localStorage = await SharedPreferences.getInstance();
     await _loadPersistedState();
+
+    // Mark as initialized and notify listeners
+    _isInitialized = true;
+    notifyListeners();
   }
 
   // Getters
+  bool get isInitialized => _isInitialized;
+
   City get city => _city;
 
   Set<String> get districts => _districts;
@@ -130,7 +139,7 @@ class HomeStateProvider extends ChangeNotifier {
 
     // reverts these to defaults
     _selectedDayOfWeek = DayOfWeek.everyday;
-    _selectedDayChunk = DayChunk.early;
+    _selectedDayChunk = DayChunk.noon;
     _pendingSelectedDayOfWeek = null;
     _pendingSelectedDayChunk = null;
     _hasPendingChanges = false;
@@ -153,21 +162,14 @@ class HomeStateProvider extends ChangeNotifier {
     localStorage ??= await SharedPreferences.getInstance();
 
     try {
-      // Convert timeSlots to a serializable format
-      final timeSlotsList = _timeSlots
-          .map((slot) => {
-                'dayOfWeek': slot.dayOfWeek.index,
-                'dayChunk': slot.dayChunk.index,
-              })
-          .toList();
+      // Convert timeSlots using their built-in JSON serialization
+      final timeSlotsList = _timeSlots.map((slot) => slot.toJson()).toList();
 
       // Create a map of the current state
       final stateMap = {
         'city': _city.index,
         'districts': _districts.toList(),
         'timeSlots': timeSlotsList,
-        'selectedDayOfWeek': _selectedDayOfWeek.index,
-        'selectedDayChunk': _selectedDayChunk.index,
       };
 
       // Save as JSON string using the async API
@@ -199,21 +201,20 @@ class HomeStateProvider extends ChangeNotifier {
       _timeSlots.clear();
       final timeSlotsList = stateMap['timeSlots'] as List;
       for (var slotMap in timeSlotsList) {
-        final dayOfWeek = DayOfWeek.values[slotMap['dayOfWeek'] as int];
-        final dayChunk = DayChunk.values[slotMap['dayChunk'] as int];
-        _timeSlots.add(Timeslot(dayOfWeek, dayChunk));
+        _timeSlots.add(Timeslot.fromJson(Map<String, dynamic>.from(slotMap)));
       }
 
-      // Restore selected values
-      _selectedDayOfWeek =
-          DayOfWeek.values[stateMap['selectedDayOfWeek'] as int];
-      _selectedDayChunk = DayChunk.values[stateMap['selectedDayChunk'] as int];
-
+      log('load persisted home state succeeded');
       notifyListeners();
     } catch (e) {
       log('Failed to load persisted state: $e');
+      localStorage?.remove(_prefKey);
+      _timeSlots.clear();
+      _city = City.hochiminh;
+      _districts.clear();
     }
   }
+  
 
   @override
   void dispose() {
