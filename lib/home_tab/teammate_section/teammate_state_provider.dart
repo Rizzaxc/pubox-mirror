@@ -1,11 +1,14 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/widgets.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../core/model/enum.dart';
+import '../../core/model/timeslot.dart';
 import '../../core/sport_switcher.dart';
 import '../../core/utils.dart';
 import '../model.dart';
@@ -51,9 +54,8 @@ class TeammateStateProvider with ChangeNotifier {
       // Clear existing items if refresh, else progress the key
       final newKey = isRefresh ? 1 : ((teammatePagingState.keys?.last ?? 0) + 1);
 
-      // TODO: Fetch data from database (simulated)
       await Future.delayed(Duration(milliseconds: 500));
-      final List<TeammateModel> data = [];
+      final List<TeammateModel> data = await _executeLoadData();
       final isLastPage = data.isEmpty;
 
       // Update state with new data
@@ -79,5 +81,44 @@ class TeammateStateProvider with ChangeNotifier {
     _sportProvider.removeListener(_onDependenciesChanged);
     _homeStateProvider.removeListener(_onDependenciesChanged);
     super.dispose();
+  }
+
+  Future<List<TeammateModel>> _executeLoadData() async {
+    try {
+      // Use the known private visibility ID (1) directly
+      const int privateVisibilityId = 1;
+
+      // Convert timeslots to JSON for filtering
+      final List<String> timeslotsJsonStrings = _homeStateProvider.timeSlots
+          .map((t) => jsonEncode(t.toJson()))
+          .toList();
+
+      // Join timeslots for the query
+      final String playtimeCondition = timeslotsJsonStrings
+          .map((t) => "playtime::jsonb @> '$t'")
+          .join(' OR ');
+
+
+      // Query lobbies that match our criteria
+      final response = [];
+      // Convert parameters to the format expected by your stored function
+      final params = {
+        'sport_id': _sportProvider.id,
+        'city_id': _homeStateProvider.city.dbIndex,
+        'districts': _homeStateProvider.districts,
+        'timeslots': Timeslot.listToJson(_homeStateProvider.timeSlots),
+      };
+
+      // Call a stored function that handles the complex query
+      final response = await supabase
+          .rpc('home_teammate_data', params: params);
+
+
+      return response as List<TeammateModel>;
+
+    } catch (exception, stackTrace) {
+        Sentry.captureException(exception, stackTrace: stackTrace);
+        return [] as List<TeammateModel>;
+    }
   }
 }

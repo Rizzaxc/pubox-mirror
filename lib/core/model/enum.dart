@@ -114,13 +114,14 @@ enum StakeUnit {
 }
 
 enum City {
-  hanoi('hn', 'Hà Nội'),
-  hochiminh('hcm', 'Tp Hồ Chí Minh');
+  hochiminh('hcm', 'Tp Hồ Chí Minh', 1),
+  hanoi('hn', 'Hà Nội', 2);
 
   final String shorthand;
   final String name;
+  final int dbIndex;
 
-  const City(this.shorthand, this.name);
+  const City(this.shorthand, this.name, this.dbIndex);
 
   factory City.fromShorthand(String shorthand) {
     switch (shorthand.toLowerCase()) {
