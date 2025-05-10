@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:provider/provider.dart';
 
 import '../core/pubox_fab.dart';
-import '../core/utils.dart';
 import 'home_search_page.dart';
-import 'state_provider.dart';
 
 class HomeFAB extends StatelessWidget {
   const HomeFAB({super.key});

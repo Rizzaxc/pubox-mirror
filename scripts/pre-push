@@ -1,0 +1,23 @@
+#!/bin/sh
+# Find all Dart files that are staged for commit
+DART_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '\.dart$')
+
+if [ -n "$DART_FILES" ]; then
+  # Run dart format on the staged files
+  echo "Formatting Dart files..."
+  dart format "$DART_FILES"
+
+  # Run dart fix commands on the staged files
+  echo "Fixing Dart code..."
+  dart fix --apply --code=unnecessary_brace_in_string_interps
+  dart fix --apply --code=unused_element_parameter
+  dart fix --apply --code=missing_dependency
+  dart fix --apply --code=unused_import
+  dart fix --apply --code=unnecessary_this
+
+  # Stage the formatted and fixed files
+  echo "Staging modified files..."
+  echo "$DART_FILES" | xargs git add
+fi
+
+exit 0

@@ -1,13 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:flutter/widgets.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
-import '../../core/model/enum.dart';
 import '../../core/model/timeslot.dart';
 import '../../core/sport_switcher.dart';
 import '../../core/utils.dart';

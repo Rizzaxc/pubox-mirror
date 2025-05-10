@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 import '../core/model/enum.dart';
-import '../core/sport_switcher.dart';
 import '../core/tag_carousel.dart';
-import 'model.dart';
 import 'state_provider.dart';
 import 'teammate_section/teammate_state_provider.dart';
 import 'timeslot_selection.dart';

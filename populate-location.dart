@@ -34,7 +34,7 @@ Future<List<dynamic>> fetchVenuesFromOSM(
   final overpassQuery = '''
     [out:json][timeout:60];
     (
-      ${venueType}(${bounds['south']},${bounds['west']},${bounds['north']},${bounds['east']});
+      $venueType(${bounds['south']},${bounds['west']},${bounds['north']},${bounds['east']});
     );
     out body center;
   ''';
@@ -313,7 +313,7 @@ Future<String> collectVenues() async {
 /// Extension to capitalize the first letter of a string
 extension StringExtension on String {
   String capitalize() {
-    return this.isEmpty ? this : this[0].toUpperCase() + this.substring(1);
+    return isEmpty ? this : this[0].toUpperCase() + substring(1);
   }
 }
 

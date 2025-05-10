@@ -48,7 +48,7 @@ class SelectedSportProvider extends ChangeNotifier {
 }
 
 class SportSwitcher extends StatelessWidget {
-  SportSwitcher._({super.key});
+  SportSwitcher._();
 
   static final _instance = SportSwitcher._();
 

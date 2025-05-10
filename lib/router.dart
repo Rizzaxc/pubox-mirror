@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:toastification/toastification.dart';
-import 'package:wolt_modal_sheet/wolt_modal_sheet.dart';
 
 import 'core/utils.dart';
 import 'health_tab/view.dart';

@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
-import '../../core/model/enum.dart';
-import '../../core/model/timeslot.dart';
 import '../model.dart';
 
 class TeammateResultItem extends StatelessWidget {

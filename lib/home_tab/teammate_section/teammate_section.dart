@@ -2,11 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:provider/provider.dart';
 
-import '../../core/model/enum.dart';
-import '../../core/model/timeslot.dart';
-import '../../core/sport_switcher.dart';
 import '../model.dart';
-import '../state_provider.dart';
 import 'teammate_result_item.dart';
 import 'teammate_state_provider.dart';
 
