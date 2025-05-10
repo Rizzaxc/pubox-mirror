@@ -14,17 +14,17 @@ class HealthFAB extends StatelessWidget {
         // open submenu
         color: Colors.green.shade600,
         padding: EdgeInsets.zero,
-        icon: Icon(Icons.sync, color: Colors.white, size: 24,),
-        cupertino: (_, __) =>
-            CupertinoIconButtonData(
-                borderRadius: BorderRadius.circular(32),
-                minSize: 56
-            ),
-        material: (_, __) =>
-            MaterialIconButtonData(
-              padding: EdgeInsets.all(16),
-              iconSize: 24,
-            ),
+        icon: Icon(
+          Icons.sync,
+          color: Colors.white,
+          size: 24,
+        ),
+        cupertino: (_, __) => CupertinoIconButtonData(
+            borderRadius: BorderRadius.circular(32), minSize: 56),
+        material: (_, __) => MaterialIconButtonData(
+          padding: EdgeInsets.all(16),
+          iconSize: 24,
+        ),
       ),
     );
   }

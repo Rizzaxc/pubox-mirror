@@ -45,7 +45,6 @@ class SelectedSportProvider extends ChangeNotifier {
     saveToStorage();
     notifyListeners();
   }
-
 }
 
 class SportSwitcher extends StatelessWidget {
@@ -59,7 +58,8 @@ class SportSwitcher extends StatelessWidget {
   static const double menuItemIconSize = 12;
 
   final labelBoxWidth = Platform.isIOS ? 96.0 : 72.0;
-  Widget _buildMenuOptionChild(BuildContext context, Sport sport, String displayName) {
+  Widget _buildMenuOptionChild(
+      BuildContext context, Sport sport, String displayName) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       spacing: 8,
@@ -94,7 +94,9 @@ class SportSwitcher extends StatelessWidget {
               duration: const Duration(milliseconds: 250))),
       cupertino: (_, __) => CupertinoPopupMenuData(
         title: Text(
-          'Chuyển Môn', style: TextStyle(fontWeight: FontWeight.bold),),
+          'Chuyển Môn',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
       ),
       options: [
         PopupMenuOption(
@@ -109,18 +111,22 @@ class SportSwitcher extends StatelessWidget {
         PopupMenuOption(
           label: 'basketball',
           material: (_, __) => MaterialPopupMenuOptionData(
-              child: _buildMenuOptionChild(context, Sport.basketball, 'Bóng Rổ')),
+              child:
+                  _buildMenuOptionChild(context, Sport.basketball, 'Bóng Rổ')),
           cupertino: (_, __) => CupertinoPopupMenuOptionData(
-              child: _buildMenuOptionChild(context, Sport.basketball, 'Bóng Rổ')),
+              child:
+                  _buildMenuOptionChild(context, Sport.basketball, 'Bóng Rổ')),
           onTap: (_) =>
               context.read<SelectedSportProvider>().change(Sport.basketball),
         ),
         PopupMenuOption(
           label: 'badminton',
           material: (_, __) => MaterialPopupMenuOptionData(
-              child: _buildMenuOptionChild(context, Sport.badminton, 'Cầu Lông')),
+              child:
+                  _buildMenuOptionChild(context, Sport.badminton, 'Cầu Lông')),
           cupertino: (_, __) => CupertinoPopupMenuOptionData(
-              child: _buildMenuOptionChild(context, Sport.badminton, 'Cầu Lông')),
+              child:
+                  _buildMenuOptionChild(context, Sport.badminton, 'Cầu Lông')),
           onTap: (_) =>
               context.read<SelectedSportProvider>().change(Sport.badminton),
         ),
@@ -136,9 +142,11 @@ class SportSwitcher extends StatelessWidget {
         PopupMenuOption(
           label: 'pickleball',
           material: (_, __) => MaterialPopupMenuOptionData(
-              child: _buildMenuOptionChild(context, Sport.pickleball, 'Pickleball')),
+              child: _buildMenuOptionChild(
+                  context, Sport.pickleball, 'Pickleball')),
           cupertino: (_, __) => CupertinoPopupMenuOptionData(
-              child: _buildMenuOptionChild(context, Sport.pickleball, 'Pickleball')),
+              child: _buildMenuOptionChild(
+                  context, Sport.pickleball, 'Pickleball')),
           onTap: (_) =>
               context.read<SelectedSportProvider>().change(Sport.pickleball),
         )

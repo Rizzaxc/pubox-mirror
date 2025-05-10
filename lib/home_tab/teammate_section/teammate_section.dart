@@ -38,7 +38,8 @@ class _TeammateSectionState extends State<TeammateSection>
     return Consumer<TeammateStateProvider>(builder: (BuildContext context,
         TeammateStateProvider teammateState, Widget? child) {
       return RefreshIndicator(
-        onRefresh: () => context.read<TeammateStateProvider>().loadData(isRefresh: true),
+        onRefresh: () =>
+            context.read<TeammateStateProvider>().loadData(isRefresh: true),
         child: CustomScrollView(
           controller: _scrollController,
           slivers: <Widget>[

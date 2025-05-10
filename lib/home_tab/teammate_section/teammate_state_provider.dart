@@ -20,7 +20,8 @@ class TeammateStateProvider with ChangeNotifier {
   final HomeStateProvider _homeStateProvider;
   final SelectedSportProvider _sportProvider;
 
-  bool get isInitialized => _homeStateProvider.isInitialized && _sportProvider.isInitialized;
+  bool get isInitialized =>
+      _homeStateProvider.isInitialized && _sportProvider.isInitialized;
 
   // Track current dependencies state
   // bool _isInitialized = false;
@@ -40,19 +41,20 @@ class TeammateStateProvider with ChangeNotifier {
     loadData(isRefresh: true);
   }
 
-
   Future<void> loadData({bool isRefresh = false}) async {
     // log('loading data. isRefresh $isRefresh sport ${_sportProvider.self} isInitialized $isInitialized');
     if (!isInitialized) return;
     if (!isRefresh && teammatePagingState.isLoading) return;
 
     // Update loading state
-    teammatePagingState = teammatePagingState.copyWith(isLoading: true, error: null);
+    teammatePagingState =
+        teammatePagingState.copyWith(isLoading: true, error: null);
     notifyListeners();
 
     try {
       // Clear existing items if refresh, else progress the key
-      final newKey = isRefresh ? 1 : ((teammatePagingState.keys?.last ?? 0) + 1);
+      final newKey =
+          isRefresh ? 1 : ((teammatePagingState.keys?.last ?? 0) + 1);
 
       await Future.delayed(Duration(milliseconds: 500));
       final List<TeammateModel> data = await _executeLoadData();
@@ -98,10 +100,8 @@ class TeammateStateProvider with ChangeNotifier {
           .map((t) => "playtime::jsonb @> '$t'")
           .join(' OR ');
 
-
       // Query lobbies that match our criteria
       final response = [];
-      // Convert parameters to the format expected by your stored function
       final params = {
         'sport_id': _sportProvider.id,
         'city_id': _homeStateProvider.city.dbIndex,
@@ -110,15 +110,12 @@ class TeammateStateProvider with ChangeNotifier {
       };
 
       // Call a stored function that handles the complex query
-      final response = await supabase
-          .rpc('home_teammate_data', params: params);
-
+      final response = await supabase.rpc('home_teammate_data', params: params);
 
       return response as List<TeammateModel>;
-
     } catch (exception, stackTrace) {
-        Sentry.captureException(exception, stackTrace: stackTrace);
-        return [] as List<TeammateModel>;
+      Sentry.captureException(exception, stackTrace: stackTrace);
+      return [] as List<TeammateModel>;
     }
   }
 }

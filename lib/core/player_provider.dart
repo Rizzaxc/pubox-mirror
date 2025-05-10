@@ -9,7 +9,6 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'model/player.dart';
 import 'utils.dart';
 
-
 class PlayerProvider extends ChangeNotifier {
   static const storedPlayerKey = 'STORED_PLAYER_PERSISTENT_KEY';
   late final SharedPreferencesAsync localStorage;
@@ -57,7 +56,8 @@ class PlayerProvider extends ChangeNotifier {
 
   Future<void> _loadFromStorage() async {
     final jsonifiedString = await localStorage.getString(storedPlayerKey);
-    final Map<String, dynamic> json = jsonifiedString != null ? jsonDecode(jsonifiedString) : {};
+    final Map<String, dynamic> json =
+        jsonifiedString != null ? jsonDecode(jsonifiedString) : {};
 
     _player = Player.fromJson(json);
   }

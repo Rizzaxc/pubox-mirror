@@ -20,8 +20,7 @@ class SupaEmailAuthLocalization {
     this.enterEmail = 'Email',
     this.validEmailError = 'Email không hợp lệ',
     this.enterPassword = 'Password',
-    this.passwordLengthError =
-        'Password tối thiểu 8 ký tự',
+    this.passwordLengthError = 'Password tối thiểu 8 ký tự',
     this.signIn = 'Đăng nhập',
     this.signUp = 'Đăng ký',
     this.forgotPassword = 'Quên password?',

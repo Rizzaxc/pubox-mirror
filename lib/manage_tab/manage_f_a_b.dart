@@ -8,7 +8,6 @@ import 'manage_remote_fetch_state_provider.dart';
 class ManageFAB extends StatelessWidget {
   const ManageFAB({super.key});
 
-
   @override
   Widget build(BuildContext context) {
     return Consumer<ManageRemoteLoadStateProvider>(
@@ -17,7 +16,9 @@ class ManageFAB extends StatelessWidget {
         return PuboxFab(
           onPressed: context.read<ManageRemoteLoadStateProvider>().startLoading,
           isLoading: isLoading,
-          icon: Icon(PlatformIcons(context).add,),
+          icon: Icon(
+            PlatformIcons(context).add,
+          ),
         );
       },
     );

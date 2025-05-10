@@ -93,7 +93,6 @@ class Pubox extends StatelessWidget {
       //   style: ButtonStyle(splashFactory: InkRipple.splashFactory),
       //     ),
       popupMenuTheme: PopupMenuThemeData(
-
         position: PopupMenuPosition.over,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
@@ -116,26 +115,29 @@ class Pubox extends StatelessWidget {
         themeMode: themeMode,
         materialLightTheme: materialTheme,
         cupertinoLightTheme: cupertinoTheme,
-
         builder: (context) => ToastificationWrapper(
           config: const ToastificationConfig(
               alignment: Alignment.topCenter,
               animationDuration: Duration(milliseconds: 250)),
           child: MultiProvider(
             providers: [
-              ChangeNotifierProvider<PlayerProvider>(create: (_) => PlayerProvider()),
+              ChangeNotifierProvider<PlayerProvider>(
+                  create: (_) => PlayerProvider()),
 
-              ChangeNotifierProvider<SelectedSportProvider>.value(value: SelectedSportProvider.instance,),
+              ChangeNotifierProvider<SelectedSportProvider>.value(
+                value: SelectedSportProvider.instance,
+              ),
               // Home Screen
               ChangeNotifierProvider<HomeStateProvider>(
                   create: (_) => HomeStateProvider()),
-              ChangeNotifierProxyProvider2<SelectedSportProvider, HomeStateProvider, TeammateStateProvider>(
+              ChangeNotifierProxyProvider2<SelectedSportProvider,
+                  HomeStateProvider, TeammateStateProvider>(
                 create: (context) => TeammateStateProvider(
-                  context.read<SelectedSportProvider>(), 
-                  context.read<HomeStateProvider>()
-                ),
-                update: (_, selectedSport, homeState, previousTeammateState) => 
-                  previousTeammateState ?? TeammateStateProvider(selectedSport, homeState),
+                    context.read<SelectedSportProvider>(),
+                    context.read<HomeStateProvider>()),
+                update: (_, selectedSport, homeState, previousTeammateState) =>
+                    previousTeammateState ??
+                    TeammateStateProvider(selectedSport, homeState),
               ),
 
               // Manage Screen
@@ -184,8 +186,7 @@ class ScaffoldWithNavBar extends StatelessWidget {
       // The StatefulNavigationShell from the associated StatefulShellRoute is
       // directly passed as the body of the Scaffold.
       body: navigationShell,
-      floatingActionButtonLocation:
-          FloatingActionButtonLocation.centerDocked,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: fabs[navigationShell.currentIndex],
       extendBody: true,
       bottomNavigationBar: AnimatedBottomNavigationBar(

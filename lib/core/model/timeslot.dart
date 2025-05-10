@@ -53,8 +53,7 @@ class Timeslot {
     }
   }
 
-  static Map<String, List<String>> listToJson(
-      List<Timeslot> timeslots) {
+  static Map<String, List<String>> listToJson(List<Timeslot> timeslots) {
     Map<DayOfWeek, Set<DayChunk>> mappedTimeslots = {};
 
     for (var slot in timeslots) {

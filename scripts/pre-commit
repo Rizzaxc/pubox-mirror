@@ -1,14 +1,11 @@
 #!/bin/sh
-# Find all staged Dart files and ensure they're formatted using the official tool
-DART_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '\.dart$')
-
-# If no Dart files are staged, exit
-if [ -z "$DART_FILES" ]; then
-    exit 0
-fi
-
-# Run dart format on staged files
-eval "$(dart format "$DART_FILES")"
+# Run dart format
+eval "$(dart format lib)"
+eval "$(dart fix --apply --code=unnecessary_brace_in_string_interps)"
+eval "$(dart fix --apply --code=unused_element_parameter)"
+eval "$(dart fix --apply --code=missing_dependency)"
+eval "$(dart fix --apply --code=unused_import)"
+eval "$(dart fix --apply --code=unnecessary_this)"
 
 # Stage the formatted files
 echo "$DART_FILES" | xargs git add

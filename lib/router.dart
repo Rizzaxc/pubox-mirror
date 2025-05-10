@@ -130,12 +130,14 @@ final GoRouter puboxRouter = GoRouter(
                           isDismissible: false,
                           enableDrag: false,
                           constrains: BoxConstraints(
-                              maxHeight: MediaQuery.of(context).size.height < 900
+                              maxHeight: MediaQuery.of(context).size.height <
+                                      900
                                   ? MediaQuery.of(context).size.height * 0.85
                                   : MediaQuery.of(context).size.height * 0.75),
                           builder: (context) {
                             return Padding(
-                              padding: const EdgeInsets.only(bottom: 40, top: 12),
+                              padding:
+                                  const EdgeInsets.only(bottom: 40, top: 12),
                               child: AuthForm.instance,
                             );
                           });

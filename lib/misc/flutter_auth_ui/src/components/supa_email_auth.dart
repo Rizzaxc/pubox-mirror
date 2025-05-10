@@ -356,7 +356,8 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
                   ),
                   obscureText: true,
                   controller: _passwordController,
-                  onTapOutside: (event) => FocusManager.instance.primaryFocus?.unfocus(),
+                  onTapOutside: (event) =>
+                      FocusManager.instance.primaryFocus?.unfocus(),
                   onFieldSubmitted: (_) {
                     if (widget.metadataFields == null || _isSigningIn) {
                       _signInSignUp();
@@ -588,7 +589,8 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
       _emailFocusNode.requestFocus();
     } catch (error) {
       if (widget.onError == null && mounted) {
-        context.showToast(widget.localization.unexpectedError, type: ToastificationType.error);
+        context.showToast(widget.localization.unexpectedError,
+            type: ToastificationType.error);
       } else {
         widget.onError?.call(error);
       }
@@ -619,7 +621,8 @@ class _SupaEmailAuthState extends State<SupaEmailAuth> {
       );
       widget.onPasswordResetEmailSent?.call();
       if (!mounted) return;
-      context.showToast(widget.localization.passwordResetSent, type: ToastificationType.info);
+      context.showToast(widget.localization.passwordResetSent,
+          type: ToastificationType.info);
       setState(() {
         _isRecoveringPassword = false;
       });

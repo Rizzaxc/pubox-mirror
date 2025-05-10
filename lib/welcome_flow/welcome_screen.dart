@@ -16,9 +16,7 @@ class WelcomeScreen extends StatelessWidget {
         title: const Text('Welcome to Pubox'),
         actions: [
           PlatformTextButton(
-              child: const Text(
-                'Skip'),
-              onPressed: () => context.go('/home'))
+              child: const Text('Skip'), onPressed: () => context.go('/home'))
         ],
       ),
       resizeToAvoidBottomInset: false,
@@ -52,7 +50,7 @@ class _ContentCarouselState extends State<ContentCarousel>
     // Check if user is already logged in and redirect to home if needed
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final supabase = Supabase.instance.client;
-      if (supabase.auth.currentSession != null && 
+      if (supabase.auth.currentSession != null &&
           !supabase.auth.currentSession!.isExpired) {
         context.go('/home');
       }
@@ -86,7 +84,8 @@ class _ContentCarouselState extends State<ContentCarousel>
             Center(
               child: Text('Third Page', style: textTheme.titleLarge),
             ),
-            Center(child: Padding(
+            Center(
+                child: Padding(
               padding: const EdgeInsets.only(top: 32.0),
               child: AuthForm.instance,
             )),

@@ -28,9 +28,6 @@ class SimpleFab extends StatelessWidget {
   final VoidCallback onPressed;
   final Widget icon;
 
-
-
-
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(

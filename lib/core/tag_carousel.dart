@@ -361,7 +361,9 @@ class _TagCarouselState extends State<TagCarousel> {
             ],
           ),
         ),
-        SizedBox(height: 12,)
+        SizedBox(
+          height: 12,
+        )
       ],
     );
   }

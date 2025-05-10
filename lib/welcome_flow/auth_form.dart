@@ -45,49 +45,51 @@ class AuthForm extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                SupaEmailAuth(
-                    onSignInComplete: (response) {
-                      // Should not be null, but just in case
-                      if (response.session == null) return;
-                      // return to the triggering tab
-                      if (context.canPop()) {
-                        context.pop() ;
-                      } else {
-                        context.go('/home');
-                      }
-                    },
-                    onSignUpComplete: (response) async {
-                      if (response.session == null) return;
-                      final hasPlayerInitialized = await _awaitPlayerInitialized(context);
+                SupaEmailAuth(onSignInComplete: (response) {
+                  // Should not be null, but just in case
+                  if (response.session == null) return;
+                  // return to the triggering tab
+                  if (context.canPop()) {
+                    context.pop();
+                  } else {
+                    context.go('/home');
+                  }
+                }, onSignUpComplete: (response) async {
+                  if (response.session == null) return;
+                  final hasPlayerInitialized =
+                      await _awaitPlayerInitialized(context);
 
-                      // TODO: show err msg if not initialized
-                      if (!hasPlayerInitialized) return;
-
-                      // happy case
-                      if (context.mounted) {
-                        // return to the triggering tab
-                        if (context.canPop()) {
-                          context.pop() ;
-                        } else {
-                          context.go('/home');
-                        }
-                      }
-                    }),
-                SupaSocialsAuth(socialProviders: [
-                  OAuthProvider.google,
-                  OAuthProvider.apple,
-                  OAuthProvider.facebook
-                ], onSuccess: (session) async {
-                  final hasPlayerInitialized = await _awaitPlayerInitialized(context);
                   // TODO: show err msg if not initialized
                   if (!hasPlayerInitialized) return;
 
                   // happy case
                   if (context.mounted) {
-                    context.go('/home');
-                    return;
+                    // return to the triggering tab
+                    if (context.canPop()) {
+                      context.pop();
+                    } else {
+                      context.go('/home');
+                    }
                   }
                 }),
+                SupaSocialsAuth(
+                    socialProviders: [
+                      OAuthProvider.google,
+                      OAuthProvider.apple,
+                      OAuthProvider.facebook
+                    ],
+                    onSuccess: (session) async {
+                      final hasPlayerInitialized =
+                          await _awaitPlayerInitialized(context);
+                      // TODO: show err msg if not initialized
+                      if (!hasPlayerInitialized) return;
+
+                      // happy case
+                      if (context.mounted) {
+                        context.go('/home');
+                        return;
+                      }
+                    }),
               ],
             ),
           ),

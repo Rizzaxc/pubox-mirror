@@ -13,11 +13,13 @@ class ProfileFAB extends StatelessWidget {
         onPressed: () {}, // open submenu
         color: Colors.green.shade600,
         padding: EdgeInsets.zero,
-        icon: Icon(PlatformIcons(context).checkMark, color: Colors.white, size: 24,),
-        cupertino: (_, __) => CupertinoIconButtonData(
-            borderRadius: BorderRadius.circular(32),
-            minSize: 56
+        icon: Icon(
+          PlatformIcons(context).checkMark,
+          color: Colors.white,
+          size: 24,
         ),
+        cupertino: (_, __) => CupertinoIconButtonData(
+            borderRadius: BorderRadius.circular(32), minSize: 56),
         material: (_, __) => MaterialIconButtonData(
           padding: EdgeInsets.all(16),
           iconSize: 24,

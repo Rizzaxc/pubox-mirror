@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
-
 class PuboxFab extends StatelessWidget {
   const PuboxFab({
     super.key,
@@ -17,7 +16,6 @@ class PuboxFab extends StatelessWidget {
   final Widget icon;
 
   final bool isLoading;
-
 
   @override
   Widget build(BuildContext context) {

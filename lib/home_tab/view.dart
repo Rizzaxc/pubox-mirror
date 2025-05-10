@@ -18,7 +18,9 @@ import 'state_provider.dart';
 import 'teammate_section/teammate_section.dart';
 
 class HomeTab extends StatefulWidget {
-  const HomeTab._({this.initialTabIndex = 0}) : assert(initialTabIndex >= 0 && initialTabIndex <= 3, 'initialTabIndex must be between 0 and 3');
+  const HomeTab._({this.initialTabIndex = 0})
+      : assert(initialTabIndex >= 0 && initialTabIndex <= 3,
+            'initialTabIndex must be between 0 and 3');
 
   /// The index of the tab to display initially.
   /// Must be a value between 0 and 3, inclusive.
@@ -63,7 +65,7 @@ class _HomeTabState extends State<HomeTab>
   void initState() {
     super.initState();
     _tabController = TabController(
-      length: 4, 
+      length: 4,
       vsync: this,
       initialIndex: widget.initialTabIndex,
     );
@@ -96,8 +98,7 @@ class _HomeTabState extends State<HomeTab>
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8),
         child: NestedScrollView(
-          headerSliverBuilder:
-              (BuildContext context, bool innerBoxIsScrolled) {
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return [
               SliverPadding(
                 padding: const EdgeInsets.only(bottom: 8),
@@ -107,8 +108,7 @@ class _HomeTabState extends State<HomeTab>
                     controller: _tabController,
                     tabs: homeSections,
                     labelColor: Colors.white,
-                    indicatorPadding:
-                        const EdgeInsets.symmetric(horizontal: 1),
+                    indicatorPadding: const EdgeInsets.symmetric(horizontal: 1),
                     splashBorderRadius: BorderRadius.circular(16),
                     indicator: BoxDecoration(
                       borderRadius: BorderRadius.circular(16),

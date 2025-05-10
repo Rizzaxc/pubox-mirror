@@ -214,7 +214,6 @@ class HomeStateProvider extends ChangeNotifier {
       _districts.clear();
     }
   }
-  
 
   @override
   void dispose() {
