@@ -5,6 +5,7 @@ import 'package:flutter/widgets.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
+import '../../core/logger.dart';
 import '../../core/model/timeslot.dart';
 import '../../core/sport_switcher.dart';
 import '../../core/utils.dart';
@@ -39,7 +40,7 @@ class TeammateStateProvider with ChangeNotifier {
   }
 
   Future<void> loadData({bool isRefresh = false}) async {
-    // log('loading data. isRefresh $isRefresh sport ${_sportProvider.self} isInitialized $isInitialized');
+    AppLogger.d('loading data. isRefresh $isRefresh sport ${_sportProvider.self} isInitialized $isInitialized');
     if (!isInitialized) return;
     if (!isRefresh && teammatePagingState.isLoading) return;
 
@@ -107,7 +108,7 @@ class TeammateStateProvider with ChangeNotifier {
       };
 
       // Call a stored function that handles the complex query
-      final response = await supabase.rpc('home_teammate_data', params: params);
+      // final response = await supabase.rpc('home_teammate_data', params: params);
 
       return response as List<TeammateModel>;
     } catch (exception, stackTrace) {

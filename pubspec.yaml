@@ -60,10 +60,12 @@ dependencies:
   health: ^12.1.0
   device_info_plus: ^11.3.3
   location: ^8.0.0
+  logger: ^2.5.0
   # awesome_notifications: ^0.10.0
   # google_mobile_ads: ^5.2.0
 
 dev_dependencies:
+  supabase: ^2.7.0
   flutter_test:
     sdk: flutter
 
@@ -77,10 +79,10 @@ dev_dependencies:
   build_runner: ^2.4.15
   lints: ^5.1.1
 
-# For information on the generic Dart part of this file, see the
-# following page: https://dart.dev/tools/pub/pubspec
+  # For information on the generic Dart part of this file, see the
+  # following page: https://dart.dev/tools/pub/pubspec
 
-# The following section is specific to Flutter packages.
+  # The following section is specific to Flutter packages.
   http: any
   intl: any
 flutter:

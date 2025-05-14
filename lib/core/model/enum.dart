@@ -223,9 +223,7 @@ class VietnamLocationData {
         return _hcmcDistricts;
       case City.hanoi:
         return _hanoiDistricts;
-      default:
-        return [];
-    }
+      }
   }
 
   /// Get districts by type for a specific city

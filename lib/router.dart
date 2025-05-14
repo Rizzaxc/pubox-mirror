@@ -30,6 +30,7 @@ final GoRouter puboxRouter = GoRouter(
     if (state.matchedLocation == '/welcome') {
       return '/home';
     }
+    return null;
   },
   routes: <RouteBase>[
     GoRoute(

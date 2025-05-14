@@ -107,7 +107,7 @@ class TeammateResultItem extends StatelessWidget {
     if (avatarUrl != null && avatarUrl!.isNotEmpty) {
       return CircleAvatar(
         radius: size / 2,
-        backgroundColor: color.withOpacity(0.2),
+        backgroundColor: color.withValues(alpha: 0.2),
         backgroundImage: NetworkImage(avatarUrl!),
       );
     }
@@ -119,7 +119,7 @@ class TeammateResultItem extends StatelessWidget {
 
     return CircleAvatar(
       radius: size / 2,
-      backgroundColor: color.withOpacity(0.2),
+      backgroundColor: color.withValues(alpha: 0.2),
       child: Icon(
         icon,
         color: color,
