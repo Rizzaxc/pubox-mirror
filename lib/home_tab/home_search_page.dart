@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 
 import '../core/model/enum.dart';
@@ -14,8 +15,10 @@ class HomeSearchPage extends StatelessWidget {
 
   HomeSearchPage({
     super.key,
+    required this.scrollController,
   });
 
+  final ScrollController scrollController;
   final searchBarFocusNode = FocusNode();
 
   @override
@@ -25,17 +28,12 @@ class HomeSearchPage extends StatelessWidget {
         final city = stateProvider.city;
         final districts = stateProvider.districts;
 
-        return Material(
-          child: GestureDetector(
-            onTap: () => searchBarFocusNode.hasFocus
-                ? searchBarFocusNode.unfocus()
-                : null,
-            onVerticalDragStart: (_) => searchBarFocusNode.hasFocus
-                ? searchBarFocusNode.unfocus()
-                : null,
-            onHorizontalDragStart: (_) => searchBarFocusNode.hasFocus
-                ? searchBarFocusNode.unfocus()
-                : null,
+        return SingleChildScrollView(
+          controller: scrollController,
+          scrollDirection: Axis.vertical,
+          hitTestBehavior: HitTestBehavior.translucent,
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+          child: Material(
             child: ConstrainedBox(
               constraints: BoxConstraints(minHeight: 512),
               child: Column(
@@ -61,29 +59,33 @@ class HomeSearchPage extends StatelessWidget {
                             children: [
                               Icon(PlatformIcons(context).locationSolid),
                               Text('Khu Vực',
-                                  style:
-                                      Theme.of(context).textTheme.titleMedium),
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium),
                             ],
                           ),
                           Card(
                             child: Column(
                               children: [
                                 PlatformPopupMenu(
-                                    material: (_, __) => MaterialPopupMenuData(
-                                        position: PopupMenuPosition.under,
-                                        padding: EdgeInsets.zero,
-                                        splashRadius: 32,
-                                        constraints:
-                                            BoxConstraints(maxWidth: 128),
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(16),
-                                            side: BorderSide(
-                                                color: Colors.grey.shade200)),
-                                        popUpAnimationStyle: AnimationStyle(
-                                            curve: Curves.easeOut,
-                                            duration: const Duration(
-                                                milliseconds: 250))),
+                                    material: (_, __) =>
+                                        MaterialPopupMenuData(
+                                            position: PopupMenuPosition.under,
+                                            padding: EdgeInsets.zero,
+                                            splashRadius: 32,
+                                            constraints:
+                                                BoxConstraints(maxWidth: 128),
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius:
+                                                    BorderRadius.circular(16),
+                                                side: BorderSide(
+                                                    color: Colors
+                                                        .grey.shade200)),
+                                            popUpAnimationStyle:
+                                                AnimationStyle(
+                                                    curve: Curves.easeOut,
+                                                    duration: const Duration(
+                                                        milliseconds: 250))),
                                     cupertino: (_, __) =>
                                         CupertinoPopupMenuData(
                                           title: Text(
@@ -137,17 +139,17 @@ class HomeSearchPage extends StatelessWidget {
                                               material: (_, __) =>
                                                   MaterialPopupMenuOptionData(
                                                       child: Text(each.name,
-                                                          style:
-                                                              Theme.of(context)
-                                                                  .textTheme
-                                                                  .bodyLarge)),
+                                                          style: Theme.of(
+                                                                  context)
+                                                              .textTheme
+                                                              .bodyLarge)),
                                               cupertino: (_, __) =>
                                                   CupertinoPopupMenuOptionData(
                                                       child: Text(each.name,
-                                                          style:
-                                                              Theme.of(context)
-                                                                  .textTheme
-                                                                  .bodyLarge)),
+                                                          style: Theme.of(
+                                                                  context)
+                                                              .textTheme
+                                                              .bodyLarge)),
                                               onTap: (_) {
                                                 stateProvider.updateCity(
                                                     City.fromShorthand(
@@ -157,7 +159,7 @@ class HomeSearchPage extends StatelessWidget {
                                         .toList()),
                                 const SizedBox(height: 8),
                                 TagCarousel(
-                                  height: 80,
+                                  height: 92,
                                   tagLabels: VietnamLocationData.instance
                                       .getDistrictsByCity(city)
                                       .map((e) => e.fullName)
@@ -173,7 +175,9 @@ class HomeSearchPage extends StatelessWidget {
                           ),
                         ],
                       ),
-                      const TimeslotSelection(),
+                      TimeslotSelection(initialSelection: stateProvider.timeSlots, onSelectionChanged: (selectedTimeslots) {
+                        stateProvider.updateTimeslots(selectedTimeslots);
+                      },),
                     ],
                   ),
                   Padding(
@@ -182,7 +186,8 @@ class HomeSearchPage extends StatelessWidget {
                       onPressed: () => refreshData(context),
                       color: Colors.green.shade600,
                       cupertino: (_, __) => CupertinoElevatedButtonData(
-                          borderRadius: BorderRadius.all(Radius.circular(32))),
+                          borderRadius:
+                              BorderRadius.all(Radius.circular(32))),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -204,6 +209,15 @@ class HomeSearchPage extends StatelessWidget {
   }
 
   void refreshData(BuildContext context) {
-    Future.wait([context.read<TeammateStateProvider>().loadData()]);
+    // Commit the selection before calling subtabs' loadData
+    context.read<HomeStateProvider>().commit();
+
+    context.read<TeammateStateProvider>().loadData(isRefresh: true);
+    // TODO:
+    // context.read<ChallengerStateProvider>().loadData(isRefresh: true);
+    // context.read<NeutralStateProvider>().loadData(isRefresh: true);
+    // context.read<LocationStateProvider>().loadData(isRefresh: true);
+
+    context.pop();
   }
 }

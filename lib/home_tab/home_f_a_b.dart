@@ -32,16 +32,13 @@ class HomeFAB extends StatelessWidget {
         initialChildSize: 0.8,
         minChildSize: 0.4,
         maxChildSize: 0.8,
+        snap: true,
         builder: (context, scrollController) => Container(
           decoration: BoxDecoration(
               color: Theme.of(context).canvasColor,
               borderRadius: BorderRadius.vertical(top: Radius.circular(24))),
           padding: EdgeInsets.only(top: 8, left: 8, right: 8),
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
-            controller: scrollController,
-            child: HomeSearchPage(),
-          ),
+          child: HomeSearchPage(scrollController: scrollController),
         ),
       ),
     );

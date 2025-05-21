@@ -44,6 +44,8 @@ class _TeammateSectionState extends State<TeammateSection>
                   style: Theme.of(context).textTheme.headlineMedium),
               titleSpacing: 4,
               centerTitle: false,
+              pinned: false,
+              primary: false,
             ),
             PagedSliverList<int, TeammateModel>(
               state: teammateState.teammatePagingState,
@@ -51,12 +53,81 @@ class _TeammateSectionState extends State<TeammateSection>
               builderDelegate: PagedChildBuilderDelegate(
                 itemBuilder: (context, data, index) =>
                     TeammateResultItem(data: data),
-                // noItemsFoundIndicatorBuilder: (_) => const Center(
-                //   child: Text('No teammates found'),
-                // ),
-                // firstPageErrorIndicatorBuilder: (_) => const Center(
-                //   child: Text('Error loading teammates'),
-                // ),
+                noItemsFoundIndicatorBuilder: (_) => Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      spacing: 16,
+                      children: [
+                        const SizedBox(height: 4,),
+                        Icon(
+                          Icons.people_outline,
+                          size: 64,
+                          color: Colors.grey.shade400,
+                        ),
+                        Text(
+                          'No results found',
+                          style: Theme.of(context).textTheme.titleLarge,
+                          textAlign: TextAlign.center,
+                        ),
+                        Text(
+                          'Try adjusting your preferences or check back later',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Colors.grey.shade600,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 64),
+
+                      ],
+                    ),
+                  ),
+                ),
+                firstPageErrorIndicatorBuilder: (context) => Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      spacing: 16,
+                      children: [
+                        const SizedBox(height: 4,),
+                        Icon(
+                          Icons.error_outline,
+                          size: 64,
+                          color: Colors.red.shade300,
+                        ),
+                        Text(
+                          'Error loading teammates',
+                          style: Theme.of(context).textTheme.titleLarge,
+                          textAlign: TextAlign.center,
+                        ),
+                        Text(
+                          context.read<TeammateStateProvider>().teammatePagingState.error.toString(),
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                            color: Colors.grey.shade600,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        ElevatedButton.icon(
+                          onPressed: () => context.read<TeammateStateProvider>().loadData(isRefresh: true),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Theme.of(context).primaryColor,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(24),
+                            ),
+                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          ),
+                          icon: const Icon(Icons.refresh, size: 16),
+                          label: const Text('Retry'),
+                        ),
+                        const SizedBox(height: 64),
+
+                      ],
+                    ),
+                  ),
+                ),
               ),
             ),
             const SliverPadding(

@@ -1,89 +1,106 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:provider/provider.dart';
 
 import '../core/model/enum.dart';
-import 'state_provider.dart';
+import '../core/model/timeslot.dart';
 
-class TimeslotSelection extends StatelessWidget {
-  const TimeslotSelection({super.key});
+class TimeslotSelection extends StatefulWidget {
+  const TimeslotSelection(
+      {super.key, required this.onSelectionChanged, required this.initialSelection});
+
+  final Function(List<Timeslot>) onSelectionChanged;
+  final List<Timeslot> initialSelection;
+
+  @override
+  State<TimeslotSelection> createState() => _TimeslotSelectionState();
+}
+
+class _TimeslotSelectionState extends State<TimeslotSelection> {
+
+  final List<Timeslot> _selectedTimeslots = [];
+  DayChunk _selectedDayChunk = DayChunk.noon;
+  DayOfWeek _selectedDayOfWeek = DayOfWeek.everyday;
+
+  @override
+  void initState() {
+    _selectedTimeslots.addAll(widget.initialSelection);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<HomeStateProvider>(
-      builder: (context, stateProvider, _) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: 8,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 8,
+      children: [
+        Row(
           children: [
-            Row(
+            Icon(PlatformIcons(context).timeSolid),
+            Text('Thời Gian',
+                style: Theme.of(context).textTheme.titleMedium),
+          ],
+        ),
+        Card(
+          child: Padding(
+            padding:
+            const EdgeInsets.symmetric(vertical: 12.0, horizontal: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(PlatformIcons(context).timeSolid),
-                Text('Thời Gian',
-                    style: Theme.of(context).textTheme.titleMedium),
-              ],
-            ),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Selection status indicator
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4),
-                      child: Text(
-                        'Chọn: ${stateProvider.timeSlots.length}/3',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: stateProvider.timeSlots.length < 3
-                              ? Colors.black87
-                              : Colors.red,
+                // Selection status indicator
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Text(
+                    'Chọn: ${_selectedTimeslots.length}/3',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: _selectedTimeslots.length < 3
+                          ? Colors.black87
+                          : Colors.red,
+                    ),
+                  ),
+                ),
+
+                // Selected timeslots display - shown only when there are selections
+                if (_selectedTimeslots.isNotEmpty)
+                  SizedBox(
+                    height: 40,
+                    child: Center(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: _selectedTimeslots
+                              .map((timeSlot) {
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 8.0),
+                              child: _buildTimeSlotChip(
+                                label:
+                                '${timeSlot.dayChunk.getShortName()} ${timeSlot.dayOfWeek.getShortName()}',
+                                isSelected: true,
+                                onTap: () => removeTimeSlot(timeSlot),
+                              ),
+                            );
+                          }).toList(),
                         ),
                       ),
                     ),
+                  ),
 
-                    // Selected timeslots display - shown only when there are selections
-                    if (stateProvider.timeSlots.isNotEmpty)
-                      SizedBox(
-                        height: 40,
-                        child: Center(
-                          child: SingleChildScrollView(
-                            scrollDirection: Axis.horizontal,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: stateProvider.timeSlots.map((timeSlot) {
-                                return Padding(
-                                  padding: const EdgeInsets.only(right: 8.0),
-                                  child: _buildTimeSlotChip(
-                                    label:
-                                        '${timeSlot.dayChunk.getShortName()} ${timeSlot.dayOfWeek.getShortName()}',
-                                    isSelected: true,
-                                    onTap: () =>
-                                        stateProvider.removeTimeSlot(timeSlot),
-                                  ),
-                                );
-                              }).toList(),
-                            ),
-                          ),
-                        ),
-                      ),
-
-                    // Selection controls
-                    _buildTimeSlotSelectors(context, stateProvider),
-                  ],
-                ),
-              ),
+                // Selection controls
+                _buildTimeSlotSelectors(context),
+              ],
             ),
-          ],
-        );
-      },
+          ),
+        ),
+      ],
     );
+
   }
 
   Widget _buildTimeSlotSelectors(
-      BuildContext context, HomeStateProvider stateProvider) {
+      BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(
@@ -91,19 +108,17 @@ class TimeslotSelection extends StatelessWidget {
         spacing: 8,
         children: [
           Expanded(
-            child: _buildDayOfWeekDropdown(context, stateProvider),
+            child: _buildDayOfWeekDropdown(context),
           ),
           Expanded(
-            child: _buildDayChunkDropdown(context, stateProvider),
+            child: _buildDayChunkDropdown(context),
           ),
           PlatformIconButton(
             padding: EdgeInsets.zero,
             cupertino: (_, __) =>
                 CupertinoIconButtonData(sizeStyle: CupertinoButtonSize.large),
             icon: const Icon(Icons.add_circle, color: Colors.green),
-            onPressed: stateProvider.canAddTimeSlot
-                ? stateProvider.addCurrentTimeSlotSelection
-                : null,
+            onPressed: () => addTimeSlot()
           ),
         ],
       ),
@@ -111,7 +126,7 @@ class TimeslotSelection extends StatelessWidget {
   }
 
   Widget _buildDayOfWeekDropdown(
-      BuildContext context, HomeStateProvider stateProvider) {
+      BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -128,7 +143,7 @@ class TimeslotSelection extends StatelessWidget {
           child: DropdownButtonHideUnderline(
             child: DropdownButton<DayOfWeek>(
               isExpanded: true,
-              value: stateProvider.selectedDayOfWeek,
+              value: _selectedDayOfWeek,
               padding: const EdgeInsets.symmetric(horizontal: 12),
               menuMaxHeight: 200,
               borderRadius: BorderRadius.circular(8),
@@ -143,7 +158,10 @@ class TimeslotSelection extends StatelessWidget {
                 );
               }).toList(),
               onChanged: (DayOfWeek? value) {
-                if (value != null) stateProvider.updateSelectedDayOfWeek(value);
+                if (value == null) return;
+                setState(() {
+                  _selectedDayOfWeek = value;
+                });
               },
             ),
           ),
@@ -153,7 +171,7 @@ class TimeslotSelection extends StatelessWidget {
   }
 
   Widget _buildDayChunkDropdown(
-      BuildContext context, HomeStateProvider stateProvider) {
+      BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -170,7 +188,7 @@ class TimeslotSelection extends StatelessWidget {
           child: DropdownButtonHideUnderline(
             child: DropdownButton<DayChunk>(
               isExpanded: true,
-              value: stateProvider.selectedDayChunk,
+              value: _selectedDayChunk,
               padding: const EdgeInsets.symmetric(horizontal: 12),
               menuMaxHeight: 200,
               borderRadius: BorderRadius.circular(8),
@@ -185,7 +203,10 @@ class TimeslotSelection extends StatelessWidget {
                 );
               }).toList(),
               onChanged: (value) {
-                if (value != null) stateProvider.updateSelectedDayChunk(value);
+                if (value == null) return;
+                setState(() {
+                  _selectedDayChunk = value;
+                });
               },
             ),
           ),
@@ -233,4 +254,22 @@ class TimeslotSelection extends StatelessWidget {
       ),
     );
   }
+
+  void removeTimeSlot(Timeslot timeSlot) {
+    setState(() {
+      _selectedTimeslots.remove(timeSlot);
+      widget.onSelectionChanged(_selectedTimeslots);
+    });
+  }
+
+  void addTimeSlot() {
+    if (_selectedTimeslots.length > 3) return;
+    final toAdd = Timeslot(_selectedDayOfWeek, _selectedDayChunk);
+    if (_selectedTimeslots.contains(toAdd)) return;
+    setState(() {
+      _selectedTimeslots.add(toAdd);
+      widget.onSelectionChanged(_selectedTimeslots);
+    });
+  }
+
 }

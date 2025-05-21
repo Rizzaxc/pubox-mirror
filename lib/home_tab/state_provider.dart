@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../core/logger.dart';
 import '../core/model/enum.dart';
 import '../core/model/timeslot.dart';
 
@@ -15,15 +16,13 @@ class HomeStateProvider extends ChangeNotifier {
 
   // Time slot selection state
   final List<Timeslot> _timeSlots = [];
-  DayOfWeek _selectedDayOfWeek = DayOfWeek.everyday;
-  DayChunk _selectedDayChunk = DayChunk.noon;
+
 
   // Pre-commit state
   City? _pendingCity;
   Set<String>? _pendingDistricts;
   List<Timeslot>? _pendingTimeSlots;
-  DayOfWeek? _pendingSelectedDayOfWeek;
-  DayChunk? _pendingSelectedDayChunk;
+
   bool _hasPendingChanges = false;
 
   // Initialization state
@@ -55,19 +54,12 @@ class HomeStateProvider extends ChangeNotifier {
 
   List<Timeslot> get timeSlots => _timeSlots;
 
-  DayOfWeek get selectedDayOfWeek => _selectedDayOfWeek;
-
-  DayChunk get selectedDayChunk => _selectedDayChunk;
-
   bool get hasPendingChanges => _hasPendingChanges;
 
   // max 3 slots
-  bool get canAddTimeSlot {
+  bool canAddTimeSlot(Timeslot toAdd) {
     final slots = _pendingTimeSlots ?? _timeSlots;
-    final dayOfWeek = _pendingSelectedDayOfWeek ?? _selectedDayOfWeek;
-    final dayChunk = _pendingSelectedDayChunk ?? _selectedDayChunk;
-    final timeslot = Timeslot(dayOfWeek, dayChunk);
-    return slots.length < 3 && !slots.contains(timeslot);
+    return slots.length < 3 && !slots.contains(toAdd);
   }
 
   // Update methods (pre-commit)
@@ -82,39 +74,25 @@ class HomeStateProvider extends ChangeNotifier {
 
   void updateDistricts(Set<String> newDistricts) {
     if (newDistricts.length > 3) return;
-    if ((_pendingDistricts ?? _districts) == newDistricts) return;
+    // if ((_pendingDistricts ?? _districts) == newDistricts) return;
     _pendingDistricts = newDistricts;
     _hasPendingChanges = true;
   }
 
-  void updateSelectedDayOfWeek(DayOfWeek day) {
-    if ((_pendingSelectedDayOfWeek ?? _selectedDayOfWeek) == day) return;
-    _pendingSelectedDayOfWeek = day;
+  void updateTimeslots(List<Timeslot> newTimeslots) {
+    if (newTimeslots.length > 3) return;
+    // if ((_pendingTimeSlots ?? _timeSlots) == newTimeslots) return;
+    _pendingTimeSlots = newTimeslots;
     _hasPendingChanges = true;
   }
 
-  void updateSelectedDayChunk(DayChunk chunk) {
-    if ((_pendingSelectedDayChunk ?? _selectedDayChunk) == chunk) return;
-    _pendingSelectedDayChunk = chunk;
-    _hasPendingChanges = true;
-  }
-
-  void addCurrentTimeSlotSelection() {
-    if (!canAddTimeSlot) return;
-    final dayOfWeek = _pendingSelectedDayOfWeek ?? _selectedDayOfWeek;
-    final dayChunk = _pendingSelectedDayChunk ?? _selectedDayChunk;
-    final timeslot = Timeslot(dayOfWeek, dayChunk);
-    _pendingTimeSlots ??= List.from(_timeSlots);
-    _pendingTimeSlots!.add(timeslot);
-    _hasPendingChanges = true;
-  }
-
-  void removeTimeSlot(Timeslot slot) {
-    _pendingTimeSlots ??= List.from(_timeSlots);
-    _pendingTimeSlots!.removeWhere((item) =>
-        item.dayOfWeek == slot.dayOfWeek && item.dayChunk == slot.dayChunk);
-    _hasPendingChanges = true;
-  }
+  // void removeTimeSlot(Timeslot slot) {
+  //   _pendingTimeSlots ??= List.from(_timeSlots);
+  //   _pendingTimeSlots!.removeWhere((item) =>
+  //       item.dayOfWeek == slot.dayOfWeek && item.dayChunk == slot.dayChunk);
+  //   _hasPendingChanges = true;
+  //
+  // }
 
   // Commit changes and notify listeners
   void commit() {
@@ -136,11 +114,6 @@ class HomeStateProvider extends ChangeNotifier {
       _pendingTimeSlots = null;
     }
 
-    // reverts these to defaults
-    _selectedDayOfWeek = DayOfWeek.everyday;
-    _selectedDayChunk = DayChunk.noon;
-    _pendingSelectedDayOfWeek = null;
-    _pendingSelectedDayChunk = null;
     _hasPendingChanges = false;
     notifyListeners();
     _persistState(); // Persist changes after commit
@@ -151,8 +124,7 @@ class HomeStateProvider extends ChangeNotifier {
     _pendingCity = null;
     _pendingDistricts = null;
     _pendingTimeSlots = null;
-    _pendingSelectedDayOfWeek = null;
-    _pendingSelectedDayChunk = null;
+
     _hasPendingChanges = false;
   }
 

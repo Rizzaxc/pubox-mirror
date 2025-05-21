@@ -33,6 +33,8 @@ class _ChallengerSectionState extends State<ChallengerSection>
               style: Theme.of(context).textTheme.headlineMedium),
           titleSpacing: 4,
           centerTitle: false,
+          pinned: false,
+          primary: false,
         ),
         SliverList.list(
           children: [

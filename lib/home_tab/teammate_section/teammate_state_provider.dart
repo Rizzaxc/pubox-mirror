@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:async/async.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter/foundation.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
 
@@ -28,6 +30,9 @@ class TeammateStateProvider with ChangeNotifier {
   // Teammate data
   PagingState<int, TeammateModel> teammatePagingState = PagingState();
 
+  // Wrapper for the execute function
+  CancelableOperation<List<TeammateModel>>? _cancelableExecuteLoad;
+
   TeammateStateProvider(this._sportProvider, this._homeStateProvider) {
     // Special handlers for sport changes vs general home state changes
     _sportProvider.addListener(_onDependenciesChanged);
@@ -42,7 +47,15 @@ class TeammateStateProvider with ChangeNotifier {
   Future<void> loadData({bool isRefresh = false}) async {
     AppLogger.d('loading data. isRefresh $isRefresh sport ${_sportProvider.self} isInitialized $isInitialized');
     if (!isInitialized) return;
+
+    // If not a complete refresh and a request is already fired
     if (!isRefresh && teammatePagingState.isLoading) return;
+
+    // If force refresh, cancel any existing request
+    if (isRefresh) {
+      _cancelableExecuteLoad?.cancel();
+      _cancelableExecuteLoad = null;
+    }
 
     // Update loading state
     teammatePagingState =
@@ -54,8 +67,13 @@ class TeammateStateProvider with ChangeNotifier {
       final newKey =
           isRefresh ? 1 : ((teammatePagingState.keys?.last ?? 0) + 1);
 
-      await Future.delayed(Duration(milliseconds: 500));
-      final List<TeammateModel> data = await _executeLoadData();
+      _cancelableExecuteLoad = CancelableOperation.fromFuture(
+        _executeLoadData(), onCancel: () {}
+      );
+
+      await Future.delayed(Duration(seconds: 1));
+
+      final List<TeammateModel> data = await _cancelableExecuteLoad?.value ?? [];
       final isLastPage = data.isEmpty;
 
       // Update state with new data
@@ -99,7 +117,7 @@ class TeammateStateProvider with ChangeNotifier {
           .join(' OR ');
 
       // Query lobbies that match our criteria
-      final response = [];
+      final List<TeammateModel> response = [];
       final params = {
         'sport_id': _sportProvider.id,
         'city_id': _homeStateProvider.city.dbIndex,
@@ -110,9 +128,11 @@ class TeammateStateProvider with ChangeNotifier {
       // Call a stored function that handles the complex query
       // final response = await supabase.rpc('home_teammate_data', params: params);
 
-      return response as List<TeammateModel>;
+      return response;
     } catch (exception, stackTrace) {
       Sentry.captureException(exception, stackTrace: stackTrace);
+      AppLogger.d(exception.toString());
+
       return [] as List<TeammateModel>;
     }
   }
