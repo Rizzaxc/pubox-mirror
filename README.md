@@ -1,16 +1,40 @@
 # pubox
 
-A new Flutter project.
+Next gen casual sport portal
 
-## Getting Started
+## Stack
+DB: Postgres/ Supabase
+Frontend: Flutter
+Complex operations are done at SQL functions and called using Supabase
 
-This project is a starting point for a Flutter application.
+## Flow
+User will choose a "context sport" (frontend variable). The app will help them
+find teammates, parties ("lobby"), organize play, hire coaches/ referees etc
 
-A few resources to get you started if this is your first Flutter project:
+4 Main Tabs:
+- Home: split into 4 subtabs
+  - Teammates: find people/ lobbies to play with
+  - Challengers: put up your lobby for challengers or look for them
+  - Neutrals: hire coaches, referees, etc for your sport
+  - Locations: find available venues according to criteria
+- Manage:
+  - the user's schedule
+  - their lobbies' activities: view, accept/ reject play invite, split bill, inspect history etc
+- Health: integrate with user's wearables
+  - capture data during activities
+  - gamify and encourage further interactions (goals/ achievements etc)
+- Profile:
+  - general account bookkeeping
+  - misc info/ preference on any particular sport: skill level, fitness level, play position
+  - their consistent schedule for matchmaking
+  - network and industry: allow user to choose from preset choices and improve matchmaking
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Coding Guidelines
+- Organize code by their screen
+- If a feature involves multiple screens, make a folder in each screen
+- Generic, omni-present features or models go into /core
+- Avoid nesting, prefer a flat folder structure
+- Use Provider for state management, but use StatefulWidgets for ephemeral states
+- Use SharedPreferences to persist important app states
+- Use PlatformWidgets whenever possible
+- Use Vietnamese for UI/ messages but do not translate jargon

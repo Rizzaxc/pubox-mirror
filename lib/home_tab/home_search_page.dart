@@ -59,33 +59,29 @@ class HomeSearchPage extends StatelessWidget {
                             children: [
                               Icon(PlatformIcons(context).locationSolid),
                               Text('Khu Vực',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleMedium),
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium),
                             ],
                           ),
                           Card(
                             child: Column(
                               children: [
                                 PlatformPopupMenu(
-                                    material: (_, __) =>
-                                        MaterialPopupMenuData(
-                                            position: PopupMenuPosition.under,
-                                            padding: EdgeInsets.zero,
-                                            splashRadius: 32,
-                                            constraints:
-                                                BoxConstraints(maxWidth: 128),
-                                            shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(16),
-                                                side: BorderSide(
-                                                    color: Colors
-                                                        .grey.shade200)),
-                                            popUpAnimationStyle:
-                                                AnimationStyle(
-                                                    curve: Curves.easeOut,
-                                                    duration: const Duration(
-                                                        milliseconds: 250))),
+                                    material: (_, __) => MaterialPopupMenuData(
+                                        position: PopupMenuPosition.under,
+                                        padding: EdgeInsets.zero,
+                                        splashRadius: 32,
+                                        constraints:
+                                            BoxConstraints(maxWidth: 128),
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(16),
+                                            side: BorderSide(
+                                                color: Colors.grey.shade200)),
+                                        popUpAnimationStyle: AnimationStyle(
+                                            curve: Curves.easeOut,
+                                            duration: const Duration(
+                                                milliseconds: 250))),
                                     cupertino: (_, __) =>
                                         CupertinoPopupMenuData(
                                           title: Text(
@@ -139,17 +135,17 @@ class HomeSearchPage extends StatelessWidget {
                                               material: (_, __) =>
                                                   MaterialPopupMenuOptionData(
                                                       child: Text(each.name,
-                                                          style: Theme.of(
-                                                                  context)
-                                                              .textTheme
-                                                              .bodyLarge)),
+                                                          style:
+                                                              Theme.of(context)
+                                                                  .textTheme
+                                                                  .bodyLarge)),
                                               cupertino: (_, __) =>
                                                   CupertinoPopupMenuOptionData(
                                                       child: Text(each.name,
-                                                          style: Theme.of(
-                                                                  context)
-                                                              .textTheme
-                                                              .bodyLarge)),
+                                                          style:
+                                                              Theme.of(context)
+                                                                  .textTheme
+                                                                  .bodyLarge)),
                                               onTap: (_) {
                                                 stateProvider.updateCity(
                                                     City.fromShorthand(
@@ -175,9 +171,12 @@ class HomeSearchPage extends StatelessWidget {
                           ),
                         ],
                       ),
-                      TimeslotSelection(initialSelection: stateProvider.timeSlots, onSelectionChanged: (selectedTimeslots) {
-                        stateProvider.updateTimeslots(selectedTimeslots);
-                      },),
+                      TimeslotSelection(
+                        initialSelection: stateProvider.timeSlots,
+                        onSelectionChanged: (selectedTimeslots) {
+                          stateProvider.updateTimeslots(selectedTimeslots);
+                        },
+                      ),
                     ],
                   ),
                   Padding(
@@ -186,8 +185,7 @@ class HomeSearchPage extends StatelessWidget {
                       onPressed: () => refreshData(context),
                       color: Colors.green.shade600,
                       cupertino: (_, __) => CupertinoElevatedButtonData(
-                          borderRadius:
-                              BorderRadius.all(Radius.circular(32))),
+                          borderRadius: BorderRadius.all(Radius.circular(32))),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
