@@ -19,36 +19,33 @@ class _HealthTabState extends State<HealthTab> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<SelectedSportProvider>.value(
-      value: SelectedSportProvider.instance,
-      child: Scaffold(
-        appBar: AppBar(
-          title: PlatformText('Health'),
-          automaticallyImplyLeading: true,
-          centerTitle: true,
-          scrolledUnderElevation: 0,
-          leading: PlatformIconButton(
-            onPressed: () {},
-            icon: Icon(
-              Icons.notifications_active_outlined,
-              size: 24,
-            ),
+    return Scaffold(
+      appBar: AppBar(
+        title: PlatformText('Health'),
+        automaticallyImplyLeading: true,
+        centerTitle: true,
+        scrolledUnderElevation: 0,
+        leading: PlatformIconButton(
+          onPressed: () {},
+          icon: Icon(
+            Icons.notifications_active_outlined,
+            size: 24,
           ),
-          actions: [SportSwitcher.instance],
         ),
-        // TODO: provide context & redirect to /profile/auth
+        actions: [SportSwitcher.instance],
+      ),
+      // TODO: provide context & redirect to /profile/auth
 
-        body: Consumer<PlayerProvider>(
-          builder: (context, playerProvider, child) {
-            final player = playerProvider.player;
-            if (player.id == null) {
-              // TODO: provide context & redirect to /profile/auth
-              return const Placeholder();
-            }
-            return Center(
-                child: Text('Welcome ${player.username}@${player.tagNumber}'));
-          },
-        ),
+      body: Consumer<PlayerProvider>(
+        builder: (context, playerProvider, child) {
+          final player = playerProvider.player;
+          if (player.id == null) {
+            // TODO: provide context & redirect to /profile/auth
+            return const Placeholder();
+          }
+          return Center(
+              child: Text('Welcome ${player.username}@${player.tagNumber}'));
+        },
       ),
     );
   }

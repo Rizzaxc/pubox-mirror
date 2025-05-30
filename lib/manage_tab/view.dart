@@ -21,34 +21,31 @@ class _ManageTabState extends State<ManageTab> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<SelectedSportProvider>.value(
-      value: SelectedSportProvider.instance,
-      child: Scaffold(
-        appBar: AppBar(
-          title: PlatformText('Quản Lý'),
-          automaticallyImplyLeading: true,
-          centerTitle: true,
-          scrolledUnderElevation: 0,
-          leading: PlatformIconButton(
-            onPressed: () {},
-            icon: Icon(
-              Icons.notifications_active_outlined,
-              size: 24,
-            ),
+    return Scaffold(
+      appBar: AppBar(
+        title: PlatformText('Quản Lý'),
+        automaticallyImplyLeading: true,
+        centerTitle: true,
+        scrolledUnderElevation: 0,
+        leading: PlatformIconButton(
+          onPressed: () {},
+          icon: Icon(
+            Icons.notifications_active_outlined,
+            size: 24,
           ),
-          actions: [SportSwitcher.instance],
         ),
-        body: Consumer<PlayerProvider>(
-          builder: (context, playerProvider, _) {
-            final player = playerProvider.player;
-            if (player.id == null) {
-              // TODO: provide context & redirect to /profile/auth
-              return const EmptyPage();
-            }
-            return Center(
-                child: Text('Welcome ${player.username}@${player.tagNumber}'));
-          },
-        ),
+        actions: [SportSwitcher.instance],
+      ),
+      body: Consumer<PlayerProvider>(
+        builder: (context, playerProvider, _) {
+          final player = playerProvider.player;
+          if (player.id == null) {
+            // TODO: provide context & redirect to /profile/auth
+            return const EmptyPage();
+          }
+          return Center(
+              child: Text('Welcome ${player.username}@${player.tagNumber}'));
+        },
       ),
     );
   }

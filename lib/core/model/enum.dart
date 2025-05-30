@@ -132,7 +132,9 @@ enum StakeUnit {
 }
 
 enum City {
+  @JsonValue('1')
   hochiminh('hcm', 'Tp Hồ Chí Minh', 1),
+  @JsonValue('2')
   hanoi('hn', 'Hà Nội', 2);
 
   final String shorthand;
@@ -589,4 +591,17 @@ class VietnamLocationData {
         type: VietnamDistrictType.township,
         code: 'ST'),
   ];
+}
+
+@JsonEnum()
+enum AgeGroup {
+  @JsonValue('student')
+  student,
+
+  @JsonValue('mature')
+  mature,
+
+  @JsonValue('middle_age')
+  middleAge
+
 }
