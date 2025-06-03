@@ -116,6 +116,20 @@ COMMENT ON EXTENSION pg_graphql IS 'pg_graphql: GraphQL support';
 
 
 --
+-- Name: pg_jsonschema; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS pg_jsonschema WITH SCHEMA extensions;
+
+
+--
+-- Name: EXTENSION pg_jsonschema; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION pg_jsonschema IS 'pg_jsonschema';
+
+
+--
 -- Name: pg_stat_statements; Type: EXTENSION; Schema: -; Owner: -
 --
 
@@ -261,6 +275,29 @@ CREATE TYPE public.gender AS ENUM (
 
 
 --
+-- Name: lobby_befriend_interaction; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.lobby_befriend_interaction AS ENUM (
+    'request',
+    'invite',
+    'pair'
+);
+
+
+--
+-- Name: lobby_befriend_status; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.lobby_befriend_status AS ENUM (
+    'pending',
+    'accepted',
+    'declined',
+    'cancelled'
+);
+
+
+--
 -- Name: lobby_visibility; Type: TYPE; Schema: public; Owner: -
 --
 
@@ -268,6 +305,30 @@ CREATE TYPE public.lobby_visibility AS ENUM (
     'private',
     'discoverable',
     'public'
+);
+
+
+--
+-- Name: professional_booking_status; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.professional_booking_status AS ENUM (
+    'requested',
+    'rejected',
+    'confirmed',
+    'cancelled_by_client',
+    'cancelled_by_pro',
+    'completed'
+);
+
+
+--
+-- Name: professional_role; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public.professional_role AS ENUM (
+    'coach',
+    'referee'
 );
 
 
@@ -736,6 +797,185 @@ CREATE FUNCTION pgbouncer.get_auth(p_usename text) RETURNS TABLE(username text, 
 
 
 --
+-- Name: calculate_profile_compat_score(uuid, uuid, bigint); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.calculate_profile_compat_score(p_user_id uuid, p_target_id uuid, p_sport_id bigint) RETURNS numeric
+    LANGUAGE plpgsql
+    AS $$
+DECLARE
+    score NUMERIC := 0;
+    max_raw_score NUMERIC := 8; -- Maximum possible raw score before rescaling
+    max_final_score NUMERIC := 5; -- Desired maximum score after rescaling
+    min_score NUMERIC := 1;
+    is_user BOOLEAN;
+    host_id UUID;
+    user_details JSONB;
+    target_details JSONB;
+    sport_id_text TEXT;
+    shared_network_count INTEGER := 0;
+    active_shared_network_count INTEGER := 0;
+    shared_industry_count INTEGER := 0;
+    lobby_members_with_shared_network INTEGER := 0;
+    total_lobby_members INTEGER := 0;
+    lobby_members_with_same_skill INTEGER := 0;
+    user_skill_level INTEGER;
+    has_active_shared_member BOOLEAN := FALSE;
+BEGIN
+    -- Convert sport ID to text for accessing JSON
+    sport_id_text := p_sport_id::TEXT;
+
+    -- Determine if target is a user or a lobby
+    SELECT EXISTS(SELECT 1 FROM "user" WHERE id = p_target_id) INTO is_user;
+
+    -- Get user details
+    SELECT details INTO user_details FROM "user" WHERE id = p_user_id;
+
+    -- Extract user's skill level for the context sport - adjusted to match schema
+    IF user_details->'sport' ? sport_id_text AND user_details->'sport'->sport_id_text ? 'skill' THEN
+        user_skill_level := (user_details->'sport'->sport_id_text->>'skill')::INTEGER;
+    ELSE
+        user_skill_level := NULL;
+    END IF;
+
+    IF is_user THEN
+        -- =============================================
+        -- USER-TO-USER COMPATIBILITY CALCULATION
+        -- =============================================
+
+        -- Get target user details
+        SELECT details INTO target_details FROM "user" WHERE id = p_target_id;
+
+        -- Check if they share at least one network (+3)
+        SELECT COUNT(*) INTO shared_network_count
+        FROM user_network un1
+                 JOIN user_network un2 ON un1.network_id = un2.network_id
+        WHERE un1.user_id = p_user_id AND un2.user_id = p_target_id;
+
+        IF shared_network_count > 0 THEN
+            score := score + 3;
+
+            -- Check if they're both currently members of a shared network (not alumni) (+2)
+            SELECT COUNT(*) INTO active_shared_network_count
+            FROM user_network un1
+                     JOIN user_network un2 ON un1.network_id = un2.network_id
+            WHERE un1.user_id = p_user_id
+              AND un2.user_id = p_target_id
+              AND NOT un1.alumni
+              AND NOT un2.alumni;
+
+            IF active_shared_network_count > 0 THEN
+                score := score + 2;
+            END IF;
+        ELSE
+            -- If they don't share a network, check if they share an industry (+2)
+            SELECT COUNT(*) INTO shared_industry_count
+            FROM user_industry ui1
+                     JOIN user_industry ui2 ON ui1.industry_id = ui2.industry_id
+            WHERE ui1.user_id = p_user_id AND ui2.user_id = p_target_id;
+
+            IF shared_industry_count > 0 THEN
+                score := score + 2;
+            END IF;
+        END IF;
+
+        -- Check if they are at the same skill level for the context sport (+2)
+        -- Updated to match the JSON schema structure
+        IF user_skill_level IS NOT NULL AND
+           target_details->'sport' ? sport_id_text AND
+           target_details->'sport'->sport_id_text ? 'skill' AND
+           user_skill_level = (target_details->'sport'->sport_id_text->>'skill')::INTEGER THEN
+            score := score + 2;
+        END IF;
+
+    ELSE
+        -- =============================================
+        -- USER-TO-LOBBY COMPATIBILITY CALCULATION
+        -- =============================================
+
+        -- Get lobby details and count members
+        SELECT COUNT(*) INTO total_lobby_members
+        FROM lobby_member
+        WHERE lobby_id = p_target_id;
+
+        -- Get the lobby host/captain ID
+        SELECT captain_id INTO host_id
+        FROM lobby
+        WHERE id = p_target_id;
+
+        -- If there's only one member (the host), treat as user-to-user interaction
+        IF total_lobby_members = 1 AND host_id IS NOT NULL THEN
+            -- Recursive call with the host's ID
+            RETURN calculate_profile_compat_score(p_user_id, host_id, p_sport_id);
+        END IF;
+
+        -- Count lobby members who share a network with the user
+        SELECT COUNT(DISTINCT lm.user_id) INTO lobby_members_with_shared_network
+        FROM lobby_member lm
+                 JOIN user_network un_member ON lm.user_id = un_member.user_id
+                 JOIN user_network un_user ON un_member.network_id = un_user.network_id
+        WHERE lm.lobby_id = p_target_id
+          AND un_user.user_id = p_user_id;
+
+        -- Check if at least one lobby member shares a network with the user
+        -- and is not an alumni (+1 for shared network, +1 for active member)
+        IF lobby_members_with_shared_network >= 1 THEN
+            -- Check if they have at least 3 shared members (+4)
+            IF lobby_members_with_shared_network >= 3 THEN
+                score := score + 4;
+            ELSE
+                -- If less than 3 shared members, give +1 for at least one shared network
+                score := score + 1;
+
+                -- Check if any of the shared members are active (both user and member are not alumni)
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM lobby_member lm
+                             JOIN user_network un_member ON lm.user_id = un_member.user_id
+                             JOIN user_network un_user ON un_member.network_id = un_user.network_id
+                    WHERE lm.lobby_id = p_target_id
+                      AND un_user.user_id = p_user_id
+                      AND NOT un_member.alumni
+                      AND NOT un_user.alumni
+                ) INTO has_active_shared_member;
+
+                IF has_active_shared_member THEN
+                    score := score + 1;
+                END IF;
+            END IF;
+        END IF;
+
+        -- Count lobby members with the same skill level as the user
+        -- Updated to match the JSON schema structure
+        IF user_skill_level IS NOT NULL THEN
+            SELECT COUNT(DISTINCT lm.user_id) INTO lobby_members_with_same_skill
+            FROM lobby_member lm
+                     JOIN "user" u ON lm.user_id = u.id
+            WHERE lm.lobby_id = p_target_id
+              AND u.details->'sport' ? sport_id_text
+              AND u.details->'sport'->sport_id_text ? 'skill'
+              AND (u.details->'sport'->sport_id_text->>'skill')::INTEGER = user_skill_level;
+
+            -- If at least half of the lobby members are at the same skill level as the user (+4)
+            IF lobby_members_with_same_skill >= (total_lobby_members / 2) THEN
+                score := score + 4;
+            END IF;
+        END IF;
+    END IF;
+
+    -- Properly rescale score to range from min_score to max_final_score
+    -- Formula: rescaled = min + (score/max_raw_score) * (max_final_score - min_score)
+    score := min_score + (score / max_raw_score) * (max_final_score - min_score);
+
+    -- Ensure we don't go below minimum
+    score := GREATEST(min_score, score);
+
+    RETURN score;
+END;
+$$;
+
+
+--
 -- Name: calculate_timeslot_compat_score(jsonb, jsonb); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -771,6 +1011,49 @@ BEGIN
         END LOOP;
 
     RETURN total_score;
+END;
+$$;
+
+
+--
+-- Name: home_teammate_lobby_data(bigint, jsonb, integer, character varying[], integer, integer); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.home_teammate_lobby_data(p_sport_id bigint, p_timeslots jsonb, p_city integer, p_districts character varying[], p_page_size integer DEFAULT 10, p_page_number integer DEFAULT 1) RETURNS TABLE(id uuid, name character varying, homeground_name character varying, playtime jsonb, details jsonb, visibility public.lobby_visibility, timeslot_compat_score integer, profile_compat_score numeric)
+    LANGUAGE plpgsql
+    AS $$
+BEGIN
+    RETURN QUERY
+        SELECT
+            l.id,
+            l.name,
+            loc.name AS homeground_name,
+            l.playtime,
+            l.details,
+            l.visibility,
+            ts_score AS timeslot_compat_score,
+            profile_score AS profile_compat_score
+        FROM
+            lobby l
+                JOIN
+            location loc ON l.home_ground = loc.id
+                CROSS JOIN LATERAL (
+                SELECT calculate_timeslot_compat_score(p_timeslots, l.playtime) AS ts_score
+                ) ts
+                CROSS JOIN LATERAL (
+                SELECT calculate_profile_compat_score(auth.uid(), l.id, l.sport_id) AS profile_score
+                ) ps
+        WHERE
+            l.sport_id = p_sport_id
+          AND l.visibility != 'private'
+          AND loc.city_cluster = p_city
+          AND loc.district = ANY(p_districts)
+          AND ts.ts_score >= 4
+        ORDER BY
+            profile_compat_score DESC,
+            timeslot_compat_score DESC
+        LIMIT p_page_size
+            OFFSET (p_page_number - 1) * p_page_size;
 END;
 $$;
 
@@ -826,6 +1109,48 @@ begin
             substring(split_part(new.email, '@', 1), 1, 16));
     return new;
 end;
+$$;
+
+
+--
+-- Name: professional_booking_review_updated_trigger_fn(); Type: FUNCTION; Schema: public; Owner: -
+--
+
+CREATE FUNCTION public.professional_booking_review_updated_trigger_fn() RETURNS trigger
+    LANGUAGE plpgsql SECURITY DEFINER
+    AS $$
+BEGIN
+    IF (TG_OP = 'INSERT' OR TG_OP = 'UPDATE') THEN
+        UPDATE public.professional
+        SET
+            average_rating = (
+                SELECT COALESCE(AVG(rating), 0.00)
+                FROM public.professional_booking_review
+                WHERE professional_id = NEW.professional_id
+            ),
+            review_count = (
+                SELECT COUNT(*)
+                FROM public.professional_booking_review
+                WHERE professional_id = NEW.professional_id
+            )
+        WHERE id = NEW.professional_id;
+    ELSIF (TG_OP = 'DELETE') THEN
+        UPDATE public.professional
+        SET
+            average_rating = (
+                SELECT COALESCE(AVG(rating), 0.00)
+                FROM public.professional_booking_review
+                WHERE professional_id = OLD.professional_id
+            ),
+            review_count = (
+                SELECT COUNT(*)
+                FROM public.professional_booking_review
+                WHERE professional_id = OLD.professional_id
+            )
+        WHERE id = OLD.professional_id;
+    END IF;
+    RETURN NULL;
+END;
 $$;
 
 
@@ -2247,6 +2572,16 @@ COMMENT ON COLUMN auth.users.is_sso_user IS 'Auth: Set this column to true when 
 
 
 --
+-- Name: booking_additional_users; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.booking_additional_users (
+    booking_id uuid NOT NULL,
+    user_id uuid NOT NULL
+);
+
+
+--
 -- Name: industry; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2290,6 +2625,26 @@ CREATE TABLE public.lobby (
     details jsonb,
     home_ground uuid,
     visibility public.lobby_visibility DEFAULT 'discoverable'::public.lobby_visibility
+);
+
+
+--
+-- Name: lobby_befriend_record; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.lobby_befriend_record (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    initiator_user_id uuid NOT NULL,
+    target_user_id uuid,
+    target_lobby_id uuid,
+    interaction_type public.lobby_befriend_interaction NOT NULL,
+    status public.lobby_befriend_status DEFAULT 'pending'::public.lobby_befriend_status NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now(),
+    details jsonb,
+    CONSTRAINT befriend_record_invite_conditions CHECK (((interaction_type <> 'invite'::public.lobby_befriend_interaction) OR (target_user_id IS NOT NULL))),
+    CONSTRAINT befriend_record_pair_conditions CHECK (((interaction_type <> 'pair'::public.lobby_befriend_interaction) OR ((target_user_id IS NOT NULL) AND (target_lobby_id IS NULL) AND (initiator_user_id <> target_user_id)))),
+    CONSTRAINT befriend_record_request_conditions CHECK (((interaction_type <> 'request'::public.lobby_befriend_interaction) OR ((target_user_id IS NULL) AND (target_lobby_id IS NOT NULL))))
 );
 
 
@@ -2393,6 +2748,94 @@ ALTER TABLE public.network ALTER COLUMN id ADD GENERATED BY DEFAULT AS IDENTITY 
 
 
 --
+-- Name: professional; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.professional (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    linked_user_id uuid,
+    professional_role public.professional_role NOT NULL,
+    display_name text NOT NULL,
+    bio text,
+    contact_details jsonb,
+    certifications jsonb,
+    schedule jsonb,
+    schedule_note text,
+    is_verified boolean DEFAULT false NOT NULL,
+    sports bigint[] NOT NULL,
+    experience_years integer,
+    average_rating numeric(3,2) DEFAULT 0.00,
+    review_count integer DEFAULT 0,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT professional_experience_years_check CHECK ((experience_years >= 0)),
+    CONSTRAINT professional_sports_check CHECK ((array_length(sports, 1) > 0))
+);
+
+
+--
+-- Name: professional_booking; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.professional_booking (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    client_user_id uuid NOT NULL,
+    service_id uuid NOT NULL,
+    professional_id uuid NOT NULL,
+    event_id uuid,
+    location_id uuid,
+    booking_time_start timestamp with time zone NOT NULL,
+    booking_time_end timestamp with time zone NOT NULL,
+    agreed_rate numeric(10,2),
+    status public.professional_booking_status DEFAULT 'requested'::public.professional_booking_status NOT NULL,
+    client_notes text,
+    professional_notes text,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT booking_times_validity CHECK ((booking_time_end > booking_time_start)),
+    CONSTRAINT professional_booking_agreed_rate_check CHECK ((agreed_rate >= (0)::numeric)),
+    CONSTRAINT professional_booking_status_check CHECK ((status <> 'completed'::public.professional_booking_status))
+);
+
+
+--
+-- Name: professional_booking_review; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.professional_booking_review (
+    booking_id uuid NOT NULL,
+    reviewer_user_id uuid NOT NULL,
+    professional_id uuid NOT NULL,
+    rating numeric(2,1) NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT professional_booking_review_rating_check CHECK (((rating >= 0.5) AND (rating <= 5.0) AND ((rating * (2)::numeric) = floor((rating * (2)::numeric)))))
+);
+
+
+--
+-- Name: professional_service; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.professional_service (
+    id uuid DEFAULT gen_random_uuid() NOT NULL,
+    professional_id uuid NOT NULL,
+    sport_id bigint NOT NULL,
+    service_type text NOT NULL,
+    service_description text,
+    hourly_rate numeric(10,2),
+    min_duration_minutes integer,
+    max_participants integer,
+    is_active boolean DEFAULT true NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    updated_at timestamp with time zone DEFAULT now() NOT NULL,
+    CONSTRAINT professional_service_hourly_rate_check CHECK ((hourly_rate >= (0)::numeric)),
+    CONSTRAINT professional_service_max_participants_check CHECK ((max_participants >= 1)),
+    CONSTRAINT professional_service_min_duration_minutes_check CHECK ((min_duration_minutes > 0))
+);
+
+
+--
 -- Name: sport; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -2449,8 +2892,89 @@ CREATE TABLE public."user" (
     id uuid DEFAULT auth.uid() NOT NULL,
     username character varying(16) DEFAULT public.nanoid(16) NOT NULL,
     tag_number character varying(4) DEFAULT lpad((((floor((random() * (10000)::double precision)))::integer)::character varying)::text, 4, '0'::text) NOT NULL,
-    playtime jsonb,
-    details jsonb
+    details jsonb,
+    CONSTRAINT user_details_schema CHECK (extensions.jsonb_matches_schema('{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Freeform data for user profile",
+  "type": "object",
+  "properties": {
+    "gender": {
+      "type": "string"
+    },
+    "age_group": {
+      "type": "string"
+    },
+    "playtime": {
+      "type": "array"
+    },
+    "location": {
+      "type": "object",
+      "properties": {
+        "city": {
+          "type": "integer"
+        },
+        "districts": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "required": ["city", "districts"]
+      }
+    },
+    "sport": {
+      "description": "Sport profile for the user",
+      "type": "object",
+      "properties": {
+        "1": {
+          "title": "Soccer",
+          "type": "object",
+          "properties": {
+            "skill": {
+              "type": "integer"
+            }
+          }
+        },
+        "2": {
+          "title": "Basketball",
+          "type": "object",
+          "properties": {
+            "skill": {
+              "type": "integer"
+            }
+          }
+        },
+        "3": {
+          "title": "Badminton",
+          "type": "object",
+          "properties": {
+            "skill": {
+              "type": "integer"
+            }
+          }
+        },
+        "4": {
+          "title": "Tennis",
+          "type": "object",
+          "properties": {
+            "skill": {
+              "type": "integer"
+            }
+          }
+        },
+        "5": {
+          "title": "Pickleball",
+          "type": "object",
+          "properties": {
+            "skill": {
+              "type": "integer"
+            }
+          }
+        }
+      }
+    }
+  }
+}'::json, details))
 );
 
 
@@ -2886,6 +3410,14 @@ ALTER TABLE ONLY auth.users
 
 
 --
+-- Name: booking_additional_users booking_additional_users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.booking_additional_users
+    ADD CONSTRAINT booking_additional_users_pkey PRIMARY KEY (booking_id, user_id);
+
+
+--
 -- Name: industry industry_name_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -2899,6 +3431,14 @@ ALTER TABLE ONLY public.industry
 
 ALTER TABLE ONLY public.industry
     ADD CONSTRAINT industry_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: lobby_befriend_record lobby_befriend_record_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.lobby_befriend_record
+    ADD CONSTRAINT lobby_befriend_record_pkey PRIMARY KEY (id);
 
 
 --
@@ -2955,6 +3495,46 @@ ALTER TABLE ONLY public.network
 
 ALTER TABLE ONLY public.network
     ADD CONSTRAINT network_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: professional_booking professional_booking_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.professional_booking
+    ADD CONSTRAINT professional_booking_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: professional_booking_review professional_booking_review_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.professional_booking_review
+    ADD CONSTRAINT professional_booking_review_pkey PRIMARY KEY (booking_id);
+
+
+--
+-- Name: professional professional_linked_user_id_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.professional
+    ADD CONSTRAINT professional_linked_user_id_key UNIQUE (linked_user_id);
+
+
+--
+-- Name: professional professional_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.professional
+    ADD CONSTRAINT professional_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: professional_service professional_service_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.professional_service
+    ADD CONSTRAINT professional_service_pkey PRIMARY KEY (id);
 
 
 --
@@ -3382,6 +3962,125 @@ CREATE INDEX users_is_anonymous_idx ON auth.users USING btree (is_anonymous);
 
 
 --
+-- Name: idx_bookings_client_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_bookings_client_user_id ON public.professional_booking USING btree (client_user_id);
+
+
+--
+-- Name: idx_bookings_professional_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_bookings_professional_id ON public.professional_booking USING btree (professional_id);
+
+
+--
+-- Name: idx_bookings_service_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_bookings_service_id ON public.professional_booking USING btree (service_id);
+
+
+--
+-- Name: idx_bookings_status; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_bookings_status ON public.professional_booking USING btree (status);
+
+
+--
+-- Name: idx_listed_professionals_is_verified; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_listed_professionals_is_verified ON public.professional USING btree (is_verified);
+
+
+--
+-- Name: idx_listed_professionals_linked_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_listed_professionals_linked_user_id ON public.professional USING btree (linked_user_id) WHERE (linked_user_id IS NOT NULL);
+
+
+--
+-- Name: idx_listed_professionals_role; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_listed_professionals_role ON public.professional USING btree (professional_role);
+
+
+--
+-- Name: idx_lobby_befriend_record_initiator; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_lobby_befriend_record_initiator ON public.lobby_befriend_record USING btree (initiator_user_id);
+
+
+--
+-- Name: idx_lobby_befriend_record_interaction_type; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_lobby_befriend_record_interaction_type ON public.lobby_befriend_record USING btree (interaction_type);
+
+
+--
+-- Name: idx_lobby_befriend_record_status; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_lobby_befriend_record_status ON public.lobby_befriend_record USING btree (status);
+
+
+--
+-- Name: idx_lobby_befriend_record_target_lobby; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_lobby_befriend_record_target_lobby ON public.lobby_befriend_record USING btree (target_lobby_id);
+
+
+--
+-- Name: idx_lobby_befriend_record_target_user; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_lobby_befriend_record_target_user ON public.lobby_befriend_record USING btree (target_user_id);
+
+
+--
+-- Name: idx_professional_review_professional_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_professional_review_professional_id ON public.professional_booking_review USING btree (professional_id);
+
+
+--
+-- Name: idx_professional_review_reviewer_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_professional_review_reviewer_user_id ON public.professional_booking_review USING btree (reviewer_user_id);
+
+
+--
+-- Name: idx_professional_services_is_active; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_professional_services_is_active ON public.professional_service USING btree (is_active);
+
+
+--
+-- Name: idx_professional_services_listed_professional_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_professional_services_listed_professional_id ON public.professional_service USING btree (professional_id);
+
+
+--
+-- Name: idx_professional_services_sport_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_professional_services_sport_id ON public.professional_service USING btree (sport_id);
+
+
+--
 -- Name: ix_realtime_subscription_entity; Type: INDEX; Schema: realtime; Owner: -
 --
 
@@ -3435,6 +4134,13 @@ CREATE INDEX name_prefix_search ON storage.objects USING btree (name text_patter
 --
 
 CREATE TRIGGER on_auth_user_created AFTER INSERT ON auth.users FOR EACH ROW EXECUTE FUNCTION public.new_user_created_trigger_fn();
+
+
+--
+-- Name: professional_booking_review professional_review_stats_trigger; Type: TRIGGER; Schema: public; Owner: -
+--
+
+CREATE TRIGGER professional_review_stats_trigger AFTER INSERT OR DELETE OR UPDATE ON public.professional_booking_review FOR EACH ROW EXECUTE FUNCTION public.professional_booking_review_updated_trigger_fn();
 
 
 --
@@ -3540,6 +4246,46 @@ ALTER TABLE ONLY auth.sso_domains
 
 
 --
+-- Name: booking_additional_users booking_additional_users_booking_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.booking_additional_users
+    ADD CONSTRAINT booking_additional_users_booking_id_fkey FOREIGN KEY (booking_id) REFERENCES public.professional_booking(id) ON DELETE CASCADE;
+
+
+--
+-- Name: booking_additional_users booking_additional_users_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.booking_additional_users
+    ADD CONSTRAINT booking_additional_users_user_id_fkey FOREIGN KEY (user_id) REFERENCES public."user"(id) ON DELETE CASCADE;
+
+
+--
+-- Name: lobby_befriend_record lobby_befriend_record_initiator_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.lobby_befriend_record
+    ADD CONSTRAINT lobby_befriend_record_initiator_user_id_fkey FOREIGN KEY (initiator_user_id) REFERENCES public."user"(id) ON UPDATE CASCADE;
+
+
+--
+-- Name: lobby_befriend_record lobby_befriend_record_target_lobby_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.lobby_befriend_record
+    ADD CONSTRAINT lobby_befriend_record_target_lobby_id_fkey FOREIGN KEY (target_lobby_id) REFERENCES public.lobby(id) ON UPDATE CASCADE;
+
+
+--
+-- Name: lobby_befriend_record lobby_befriend_record_target_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.lobby_befriend_record
+    ADD CONSTRAINT lobby_befriend_record_target_user_id_fkey FOREIGN KEY (target_user_id) REFERENCES public."user"(id) ON UPDATE CASCADE;
+
+
+--
 -- Name: lobby lobby_captain_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -3585,6 +4331,86 @@ ALTER TABLE ONLY public.lobby
 
 ALTER TABLE ONLY public.location
     ADD CONSTRAINT location_city_cluster_fkey FOREIGN KEY (city_cluster) REFERENCES public.supported_city_cluster(id);
+
+
+--
+-- Name: professional_booking professional_booking_client_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.professional_booking
+    ADD CONSTRAINT professional_booking_client_user_id_fkey FOREIGN KEY (client_user_id) REFERENCES public."user"(id) ON DELETE CASCADE;
+
+
+--
+-- Name: professional_booking professional_booking_location_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.professional_booking
+    ADD CONSTRAINT professional_booking_location_id_fkey FOREIGN KEY (location_id) REFERENCES public.location(id);
+
+
+--
+-- Name: professional_booking professional_booking_professional_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.professional_booking
+    ADD CONSTRAINT professional_booking_professional_id_fkey FOREIGN KEY (professional_id) REFERENCES public.professional(id);
+
+
+--
+-- Name: professional_booking_review professional_booking_review_booking_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.professional_booking_review
+    ADD CONSTRAINT professional_booking_review_booking_id_fkey FOREIGN KEY (booking_id) REFERENCES public.professional_booking(id) ON DELETE RESTRICT;
+
+
+--
+-- Name: professional_booking_review professional_booking_review_professional_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.professional_booking_review
+    ADD CONSTRAINT professional_booking_review_professional_id_fkey FOREIGN KEY (professional_id) REFERENCES public.professional(id) ON DELETE CASCADE;
+
+
+--
+-- Name: professional_booking_review professional_booking_review_reviewer_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.professional_booking_review
+    ADD CONSTRAINT professional_booking_review_reviewer_user_id_fkey FOREIGN KEY (reviewer_user_id) REFERENCES public."user"(id) ON DELETE RESTRICT;
+
+
+--
+-- Name: professional_booking professional_booking_service_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.professional_booking
+    ADD CONSTRAINT professional_booking_service_id_fkey FOREIGN KEY (service_id) REFERENCES public.professional_service(id);
+
+
+--
+-- Name: professional professional_linked_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.professional
+    ADD CONSTRAINT professional_linked_user_id_fkey FOREIGN KEY (linked_user_id) REFERENCES public."user"(id) ON DELETE SET NULL;
+
+
+--
+-- Name: professional_service professional_service_professional_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.professional_service
+    ADD CONSTRAINT professional_service_professional_id_fkey FOREIGN KEY (professional_id) REFERENCES public.professional(id) ON DELETE CASCADE;
+
+
+--
+-- Name: professional_service professional_service_sport_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.professional_service
+    ADD CONSTRAINT professional_service_sport_id_fkey FOREIGN KEY (sport_id) REFERENCES public.sport(id);
 
 
 --
@@ -3756,6 +4582,40 @@ ALTER TABLE auth.sso_providers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE auth.users ENABLE ROW LEVEL SECURITY;
 
 --
+-- Name: booking_additional_users Additional users can see bookings they are part of; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Additional users can see bookings they are part of" ON public.booking_additional_users FOR SELECT USING ((user_id = auth.uid()));
+
+
+--
+-- Name: booking_additional_users Client can manage additional users for their bookings; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Client can manage additional users for their bookings" ON public.booking_additional_users USING ((EXISTS ( SELECT 1
+   FROM public.professional_booking pb
+  WHERE ((pb.id = booking_additional_users.booking_id) AND (pb.client_user_id = auth.uid()))))) WITH CHECK ((EXISTS ( SELECT 1
+   FROM public.professional_booking pb
+  WHERE ((pb.id = booking_additional_users.booking_id) AND (pb.client_user_id = auth.uid())))));
+
+
+--
+-- Name: professional_booking_review Clients can create reviews for their completed bookings; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Clients can create reviews for their completed bookings" ON public.professional_booking_review FOR INSERT WITH CHECK (((reviewer_user_id = auth.uid()) AND (EXISTS ( SELECT 1
+   FROM public.professional_booking pb
+  WHERE ((pb.id = professional_booking_review.booking_id) AND (pb.client_user_id = auth.uid()) AND (pb.status = 'completed'::public.professional_booking_status) AND (pb.professional_id = pb.professional_id))))));
+
+
+--
+-- Name: professional_booking Clients can manage their own bookings; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Clients can manage their own bookings" ON public.professional_booking USING ((auth.uid() = client_user_id)) WITH CHECK ((auth.uid() = client_user_id));
+
+
+--
 -- Name: lobby Enable insert for authenticated users only; Type: POLICY; Schema: public; Owner: -
 --
 
@@ -3826,11 +4686,110 @@ CREATE POLICY "Enable read access for authenticated users" ON public.user_networ
 
 
 --
+-- Name: professional Enable read access for verified professional profiles; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Enable read access for verified professional profiles" ON public.professional FOR SELECT USING ((is_verified = true));
+
+
+--
+-- Name: professional_service Enable read for active services by verified professionals; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Enable read for active services by verified professionals" ON public.professional_service FOR SELECT USING (((is_active = true) AND (EXISTS ( SELECT 1
+   FROM public.professional p
+  WHERE ((p.id = professional_service.professional_id) AND (p.is_verified = true))))));
+
+
+--
 -- Name: user Enable user to update their own profile; Type: POLICY; Schema: public; Owner: -
 --
 
 CREATE POLICY "Enable user to update their own profile" ON public."user" FOR UPDATE TO authenticated USING ((auth.uid() = id)) WITH CHECK ((auth.uid() = id));
 
+
+--
+-- Name: professional_booking Linked professionals can manage their bookings; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Linked professionals can manage their bookings" ON public.professional_booking USING ((EXISTS ( SELECT 1
+   FROM public.professional p
+  WHERE ((p.id = professional_booking.professional_id) AND (p.linked_user_id = auth.uid()))))) WITH CHECK ((EXISTS ( SELECT 1
+   FROM public.professional p
+  WHERE ((p.id = professional_booking.professional_id) AND (p.linked_user_id = auth.uid())))));
+
+
+--
+-- Name: professional_service Linked professionals can manage their own services; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Linked professionals can manage their own services" ON public.professional_service USING ((EXISTS ( SELECT 1
+   FROM public.professional lp
+  WHERE ((lp.id = professional_service.professional_id) AND (lp.linked_user_id = auth.uid()))))) WITH CHECK ((EXISTS ( SELECT 1
+   FROM public.professional p
+  WHERE ((p.id = professional_service.professional_id) AND (p.linked_user_id = auth.uid())))));
+
+
+--
+-- Name: professional Linked users can manage their own professional profile; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Linked users can manage their own professional profile" ON public.professional USING ((auth.uid() = linked_user_id)) WITH CHECK ((auth.uid() = linked_user_id));
+
+
+--
+-- Name: lobby_befriend_record Lobby members can see befriend records for their lobbies; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Lobby members can see befriend records for their lobbies" ON public.lobby_befriend_record FOR SELECT TO authenticated USING ((target_lobby_id IN ( SELECT lobby_member.lobby_id
+   FROM public.lobby_member
+  WHERE (lobby_member.user_id = auth.uid()))));
+
+
+--
+-- Name: lobby_befriend_record Prevent requests to join private lobbies; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Prevent requests to join private lobbies" ON public.lobby_befriend_record FOR INSERT TO authenticated WITH CHECK (((interaction_type <> 'request'::public.lobby_befriend_interaction) OR (NOT (EXISTS ( SELECT 1
+   FROM public.lobby
+  WHERE ((lobby.id = lobby_befriend_record.target_lobby_id) AND (lobby.visibility = 'private'::public.lobby_visibility)))))));
+
+
+--
+-- Name: lobby_befriend_record Users can create befriend records; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Users can create befriend records" ON public.lobby_befriend_record FOR INSERT TO authenticated WITH CHECK (true);
+
+
+--
+-- Name: lobby_befriend_record Users can see befriend records targeted at them; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Users can see befriend records targeted at them" ON public.lobby_befriend_record FOR SELECT TO authenticated USING ((auth.uid() = target_user_id));
+
+
+--
+-- Name: lobby_befriend_record Users can see their own initiated befriend records; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Users can see their own initiated befriend records" ON public.lobby_befriend_record FOR SELECT TO authenticated USING ((auth.uid() = initiator_user_id));
+
+
+--
+-- Name: lobby_befriend_record Users involved can update befriend record status; Type: POLICY; Schema: public; Owner: -
+--
+
+CREATE POLICY "Users involved can update befriend record status" ON public.lobby_befriend_record FOR UPDATE TO authenticated USING (((auth.uid() = initiator_user_id) OR (auth.uid() = target_user_id) OR ((target_lobby_id IS NOT NULL) AND (target_lobby_id IN ( SELECT lobby.id
+   FROM public.lobby
+  WHERE (lobby.captain_id = auth.uid())))))) WITH CHECK (true);
+
+
+--
+-- Name: booking_additional_users; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.booking_additional_users ENABLE ROW LEVEL SECURITY;
 
 --
 -- Name: industry; Type: ROW SECURITY; Schema: public; Owner: -
@@ -3843,6 +4802,12 @@ ALTER TABLE public.industry ENABLE ROW LEVEL SECURITY;
 --
 
 ALTER TABLE public.lobby ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: lobby_befriend_record; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.lobby_befriend_record ENABLE ROW LEVEL SECURITY;
 
 --
 -- Name: lobby_member; Type: ROW SECURITY; Schema: public; Owner: -
@@ -3861,6 +4826,30 @@ ALTER TABLE public.location ENABLE ROW LEVEL SECURITY;
 --
 
 ALTER TABLE public.network ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: professional; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.professional ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: professional_booking; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.professional_booking ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: professional_booking_review; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.professional_booking_review ENABLE ROW LEVEL SECURITY;
+
+--
+-- Name: professional_service; Type: ROW SECURITY; Schema: public; Owner: -
+--
+
+ALTER TABLE public.professional_service ENABLE ROW LEVEL SECURITY;
 
 --
 -- Name: sport; Type: ROW SECURITY; Schema: public; Owner: -
