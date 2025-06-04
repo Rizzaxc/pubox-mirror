@@ -23,8 +23,7 @@
           "items": {
             "type": "string"
           }
-        },
-        "required": ["city", "districts"]
+        }
       }
     },
     "sport": {

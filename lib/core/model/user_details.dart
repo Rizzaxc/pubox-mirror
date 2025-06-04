@@ -9,7 +9,7 @@ part 'user_details.g.dart';
 @JsonSerializable(explicitToJson: true)
 class UserDetails {
   @JsonKey(name: 'gender')
-  String? gender;
+  Gender? gender;
 
   @JsonKey(name: 'age_group')
   AgeGroup? ageGroup;

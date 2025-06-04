@@ -3,7 +3,6 @@ import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../core/logger.dart';
 import '../core/model/enum.dart';
 import '../core/model/timeslot.dart';
 
@@ -74,7 +73,6 @@ class HomeStateProvider extends ChangeNotifier {
 
   void updateDistricts(Set<String> newDistricts) {
     if (newDistricts.length > 3) return;
-    // if ((_pendingDistricts ?? _districts) == newDistricts) return;
     _pendingDistricts = newDistricts;
     _hasPendingChanges = true;
   }

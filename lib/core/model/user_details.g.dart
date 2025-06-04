@@ -17,17 +17,22 @@ UserDetails _$UserDetailsFromJson(Map<String, dynamic> json) => UserDetails(
           ? null
           : UserSportProfile.fromJson(json['sport'] as Map<String, dynamic>),
     )
-      ..gender = json['gender'] as String?
+      ..gender = $enumDecodeNullable(_$GenderEnumMap, json['gender'])
       ..ageGroup = $enumDecodeNullable(_$AgeGroupEnumMap, json['age_group']);
 
 Map<String, dynamic> _$UserDetailsToJson(UserDetails instance) =>
     <String, dynamic>{
-      'gender': instance.gender,
+      'gender': _$GenderEnumMap[instance.gender],
       'age_group': _$AgeGroupEnumMap[instance.ageGroup],
       'playtime': instance.playtime?.map((e) => e.toJson()).toList(),
       'location': instance.location?.toJson(),
       'sport': instance.sport?.toJson(),
     };
+
+const _$GenderEnumMap = {
+  Gender.male: 'male',
+  Gender.female: 'female',
+};
 
 const _$AgeGroupEnumMap = {
   AgeGroup.student: 'student',

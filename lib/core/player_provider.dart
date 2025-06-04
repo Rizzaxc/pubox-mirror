@@ -6,7 +6,9 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'logger.dart';
 import 'model/player.dart';
+import 'model/user_details.dart';
 import 'utils.dart';
 
 class PlayerProvider extends ChangeNotifier {
@@ -26,6 +28,8 @@ class PlayerProvider extends ChangeNotifier {
   @override
   void dispose() {
     _authStateSubscription.cancel();
+    _saveToStorage();
+
     super.dispose();
   }
 
@@ -34,12 +38,14 @@ class PlayerProvider extends ChangeNotifier {
     localStorage = SharedPreferencesAsync();
 
     _player = Player.instance;
-    // _loadFromStorage();
 
     if (supabase.auth.currentUser != null) {
       _player.id = supabase.auth.currentUser!.id;
       _loadFromServer();
+    } else {
+      _loadFromStorage();
     }
+
     _authStateSubscription =
         supabase.auth.onAuthStateChange.listen((data) async {
       final event = data.event;
@@ -56,13 +62,16 @@ class PlayerProvider extends ChangeNotifier {
 
   Future<void> _loadFromStorage() async {
     final jsonifiedString = await localStorage.getString(storedPlayerKey);
-    final Map<String, dynamic> json =
-        jsonifiedString != null ? jsonDecode(jsonifiedString) : {};
+    if (jsonifiedString == null) return;
+
+    final Map<String, dynamic> json = jsonDecode(jsonifiedString);
 
     _player = Player.fromJson(json);
+    notifyListeners();
   }
 
   Future<void> _saveToStorage() async {
+    if (_player.id == null) return;
     await localStorage.setString(storedPlayerKey, jsonEncode(_player.toJson()));
   }
 
@@ -92,18 +101,29 @@ class PlayerProvider extends ChangeNotifier {
     try {
       final data = await supabase
           .from('user')
-          .select('username, tag_number')
+          .select('username, tag_number, details')
           .eq('id', _player.id!)
           .maybeSingle();
 
       // Should not happen, because hasInitialized() is called by the signUp logic
       if (data == null || data.isEmpty) {
+        _loading = false;
+        notifyListeners();
         return;
       }
 
-      _player.username = data['username'];
-      _player.tagNumber = data['tag_number'];
+      _player.username = data['username'] ?? Player.defaultUsername;
+      _player.tagNumber = data['tag_number'] ?? Player.defaultTagNumber;
+      if (data['details'] != null) {
+        _player.update(
+            details:
+                UserDetails.fromJson(data['details'] as Map<String, dynamic>));
+      } else {
+        _player.update(details: null);
+      }
     } on PostgrestException catch (exception, stackTrace) {
+      AppLogger.d(exception.message);
+
       Sentry.captureException(
         exception,
         stackTrace: stackTrace,
@@ -118,6 +138,7 @@ class PlayerProvider extends ChangeNotifier {
     _player.username = Player.defaultUsername;
     _player.tagNumber = Player.defaultTagNumber;
     _player.id = null;
+    _player.details = UserDetails();
 
     notifyListeners();
   }

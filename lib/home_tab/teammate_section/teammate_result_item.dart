@@ -24,7 +24,6 @@ class TeammateResultItem extends StatelessWidget {
       elevation: 4,
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
         side: BorderSide(
           color: Colors.transparent,
           width: 2,

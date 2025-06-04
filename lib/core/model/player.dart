@@ -69,4 +69,6 @@ class Player {
     if (tagNumber != null) _instance.tagNumber = tagNumber;
     if (details != null) _instance.details = details;
   }
+
+
 }

@@ -1,13 +1,23 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:toastification/toastification.dart';
 
+import '../core/model/enum.dart';
+import '../core/model/user_details.dart';
 import '../core/player_provider.dart';
 import '../core/sport_switcher.dart';
-import '../core/utils.dart'; // Assuming this imports supabase and context.showToast
+import '../core/utils.dart';
+import 'profile_state_provider.dart';
+import 'widget/age_group_selection.dart';
+import 'widget/fitness_selection.dart';
+import 'widget/gender_selection.dart';
+import 'widget/position_selection.dart';
+import 'widget/skill_selection.dart';
 
 class ProfileTab extends StatefulWidget {
   const ProfileTab({super.key});
@@ -22,25 +32,36 @@ class _ProfileTabState extends State<ProfileTab> {
     return Card(
       margin: const EdgeInsets.all(8.0),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Account', style: Theme.of(context).textTheme.headlineSmall),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4),
+              child: Text('Account',
+                  style: Theme.of(context).textTheme.headlineSmall),
+            ),
             const Divider(),
             ListTile(
-              leading: const Icon(Icons.person_outline),
-              title: Text('Username: ${player.username}#${player.tagNumber}'),
-              // TODO: Add onTap to edit username
-            ),
+                leading: const Icon(Icons.person_outline),
+                title: Text('${player.username}#${player.tagNumber}'),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12))
+
+                // TODO: Add onTap to edit username
+                ),
             ListTile(
               leading: const Icon(Icons.email_outlined),
               title: Text(supabase.auth.currentUser?.email ?? 'No Email'),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
               // TODO: Add onTap to change email
             ),
             ListTile(
               leading: const Icon(Icons.lock_outline),
-              title: const Text('Change Password'),
+              title: const Text('Đổi Password'),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
               onTap: () {
                 // TODO: Navigate to change password screen
                 context.showToast('Navigate to change password screen',
@@ -51,6 +72,8 @@ class _ProfileTabState extends State<ProfileTab> {
               leading: Icon(Icons.logout, color: Colors.red.shade700),
               title: Text('Sign Out',
                   style: TextStyle(color: Colors.red.shade700)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
               onTap: () async {
                 await supabase.auth.signOut();
                 if (context.mounted) {
@@ -66,67 +89,63 @@ class _ProfileTabState extends State<ProfileTab> {
 
   Widget _buildProfileSection(BuildContext context) {
     final selectedSport = context.watch<SelectedSportProvider>().self;
+
     return Card(
       margin: const EdgeInsets.all(8.0),
       child: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Profile ${selectedSport.name}',
-                    style: Theme.of(context).textTheme.headlineSmall),
-              ],
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4),
+              child: Text('Profile ${selectedSport.name.capitalize()}',
+                  style: Theme.of(context).textTheme.headlineSmall),
             ),
             const Divider(),
-            ListTile(
-              leading: const Icon(Icons.male),
-              title: Text('Gender'),
-              subtitle: const Text('Male'),
-              onTap: () {
-                // TODO: Edit
-              },
-            ),
-            ListTile(
-              leading: const Icon(FontAwesomeIcons.handFist),
-              title: Text('Age Group'),
-              subtitle: const Text('Mature'),
-              onTap: () {
-                // TODO: Edit
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.star),
-              title: Text('Skill'),
-              subtitle: const Text('Not set'),
-              onTap: () {
-                // TODO: Edit
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.fitness_center),
-              title: Text('Fitness'),
-              subtitle: const Text('Not set'),
-              onTap: () {
-                // TODO: Edit
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.group_work),
-              title: Text('Position'),
-              subtitle: const Text('Not set'),
-              onTap: () {
-                // TODO: Edit preferred position
-              },
-            ),
+            const GenderSelection(),
+            const AgeGroupSelection(),
+            const SkillSelection(),
+            const FitnessSelection(),
+            const PositionSelection(),
             ListTile(
               leading: const Icon(Icons.schedule),
-              title: Text('Playtime'),
+              title: const Text('Playtime'),
               subtitle: const Text('Not set'),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
               onTap: () {
-                // TODO: Edit
+                // TODO: Create a PlaytimeSelection widget
+              },
+            ),
+            // Add save/cancel buttons if there are pending changes
+            Consumer<ProfileStateProvider>(
+              builder: (context, profileState, child) {
+                if (!profileState.hasPendingChanges) return const SizedBox.shrink();
+
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
+                        onPressed: () {
+                          profileState.discardChanges();
+                        },
+                        child: const Text('Cancel'),
+                      ),
+                      const SizedBox(width: 16),
+                      ElevatedButton(
+                        onPressed: () {
+                          profileState.commit();
+                          context.showToast('Profile updated',
+                              type: ToastificationType.success);
+                        },
+                        child: const Text('Save Changes'),
+                      ),
+                    ],
+                  ),
+                );
               },
             ),
           ],
@@ -139,17 +158,22 @@ class _ProfileTabState extends State<ProfileTab> {
     return Card(
       margin: const EdgeInsets.all(8.0),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(8.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Network & Industry',
-                style: Theme.of(context).textTheme.headlineSmall),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4),
+              child: Text('Network & Industry',
+                  style: Theme.of(context).textTheme.headlineSmall),
+            ),
             const Divider(),
             ListTile(
               leading: const Icon(Icons.work_outline),
               title: const Text('Industry'),
               subtitle: const Text('Not set'),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
               onTap: () {
                 // TODO: Edit industry
               },
@@ -158,6 +182,8 @@ class _ProfileTabState extends State<ProfileTab> {
               leading: const Icon(Icons.school_outlined),
               title: const Text('Networks (School, Company)'),
               subtitle: const Text('Not set'),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
               onTap: () {
                 // TODO: Edit networks
               },
@@ -169,19 +195,25 @@ class _ProfileTabState extends State<ProfileTab> {
   }
 
   Widget _buildMainContent(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            _buildAccountSection(context),
-            const SizedBox(height: 16),
-            _buildProfileSection(context),
-            const SizedBox(height: 16),
-            _buildNetworkSection(context),
-            const SizedBox(height: 120), // For FAB spacing
-          ],
+    final playerProvider = context.read<PlayerProvider>();
+    final sportProvider = context.read<SelectedSportProvider>();
+
+    return ChangeNotifierProvider(
+      create: (context) => ProfileStateProvider(playerProvider, sportProvider),
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              _buildAccountSection(context),
+              const SizedBox(height: 16),
+              _buildProfileSection(context),
+              const SizedBox(height: 16),
+              _buildNetworkSection(context),
+              const SizedBox(height: 120), // For FAB spacing
+            ],
+          ),
         ),
       ),
     );
@@ -199,7 +231,11 @@ class _ProfileTabState extends State<ProfileTab> {
       if (playerProvider.player.id == null && !playerProvider.loading) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
-            final currentRoute = GoRouter.of(context).routerDelegate.currentConfiguration.uri.toString();
+            final currentRoute = GoRouter.of(context)
+                .routerDelegate
+                .currentConfiguration
+                .uri
+                .toString();
             if (currentRoute != '/profile/auth' && currentRoute != '/welcome') {
               context.go('/profile/auth');
             }

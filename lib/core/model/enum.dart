@@ -605,3 +605,12 @@ enum AgeGroup {
   middleAge
 
 }
+
+@JsonEnum()
+enum Gender {
+  @JsonValue('male')
+  male,
+
+  @JsonValue('female')
+  female
+}

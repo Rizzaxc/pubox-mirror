@@ -87,7 +87,6 @@ class SportSwitcher extends StatelessWidget {
           splashRadius: 32,
           constraints: BoxConstraints(maxWidth: 128),
           shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
               side: BorderSide(color: Colors.grey.shade200)),
           popUpAnimationStyle: AnimationStyle(
               curve: Curves.easeOut,

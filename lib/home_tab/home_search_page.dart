@@ -10,8 +10,8 @@ import 'teammate_section/teammate_state_provider.dart';
 import 'timeslot_selection.dart';
 
 class HomeSearchPage extends StatelessWidget {
-  static var borderRadius = BorderRadius.circular(8);
-  static const borderRadiusVal = Radius.circular(8);
+  static var borderRadius = BorderRadius.circular(16);
+  static const borderRadiusVal = Radius.circular(16);
 
   HomeSearchPage({
     super.key,
@@ -52,125 +52,7 @@ class HomeSearchPage extends StatelessWidget {
                           autocorrect: false,
                         ),
                       ),
-                      Column(
-                        spacing: 8,
-                        children: [
-                          Row(
-                            children: [
-                              Icon(PlatformIcons(context).locationSolid),
-                              Text('Khu Vực',
-                                  style:
-                                      Theme.of(context).textTheme.titleMedium),
-                            ],
-                          ),
-                          Card(
-                            child: Column(
-                              children: [
-                                PlatformPopupMenu(
-                                    material: (_, __) => MaterialPopupMenuData(
-                                        position: PopupMenuPosition.under,
-                                        padding: EdgeInsets.zero,
-                                        splashRadius: 32,
-                                        constraints:
-                                            BoxConstraints(maxWidth: 128),
-                                        shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(16),
-                                            side: BorderSide(
-                                                color: Colors.grey.shade200)),
-                                        popUpAnimationStyle: AnimationStyle(
-                                            curve: Curves.easeOut,
-                                            duration: const Duration(
-                                                milliseconds: 250))),
-                                    cupertino: (_, __) =>
-                                        CupertinoPopupMenuData(
-                                          title: Text(
-                                            'Thành Phố',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ),
-                                    icon: Container(
-                                      padding:
-                                          EdgeInsets.symmetric(vertical: 4),
-                                      width: double.infinity,
-                                      decoration: BoxDecoration(
-                                          color: Colors.blue.shade800,
-                                          borderRadius: BorderRadius.only(
-                                              topLeft: HomeSearchPage
-                                                  .borderRadiusVal,
-                                              topRight: HomeSearchPage
-                                                  .borderRadiusVal)),
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 4),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Icon(Icons.location_city,
-                                                color: Colors.white),
-                                            Text(
-                                              city.name,
-                                              style: Theme.of(context)
-                                                  .textTheme
-                                                  .titleMedium
-                                                  ?.copyWith(
-                                                      color: Colors.white,
-                                                      fontWeight:
-                                                          FontWeight.bold),
-                                              textAlign: TextAlign.center,
-                                            ),
-                                            Icon(
-                                              Icons.arrow_drop_down,
-                                              color: Colors.white,
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    options: City.values
-                                        .map((each) => PopupMenuOption(
-                                              label: each.shorthand,
-                                              material: (_, __) =>
-                                                  MaterialPopupMenuOptionData(
-                                                      child: Text(each.name,
-                                                          style:
-                                                              Theme.of(context)
-                                                                  .textTheme
-                                                                  .bodyLarge)),
-                                              cupertino: (_, __) =>
-                                                  CupertinoPopupMenuOptionData(
-                                                      child: Text(each.name,
-                                                          style:
-                                                              Theme.of(context)
-                                                                  .textTheme
-                                                                  .bodyLarge)),
-                                              onTap: (_) {
-                                                stateProvider.updateCity(
-                                                    City.fromShorthand(
-                                                        each.shorthand));
-                                              },
-                                            ))
-                                        .toList()),
-                                const SizedBox(height: 8),
-                                TagCarousel(
-                                  height: 92,
-                                  tagLabels: VietnamLocationData.instance
-                                      .getDistrictsByCity(city)
-                                      .map((e) => e.fullName)
-                                      .toList(),
-                                  initialSelection: districts,
-                                  onSelectionChanged: (selectedDistricts) {
-                                    stateProvider
-                                        .updateDistricts(selectedDistricts);
-                                  },
-                                )
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
+                      LocationSelection(),
                       TimeslotSelection(
                         initialSelection: stateProvider.timeSlots,
                         onSelectionChanged: (selectedTimeslots) {
@@ -217,5 +99,143 @@ class HomeSearchPage extends StatelessWidget {
     // context.read<LocationStateProvider>().loadData(isRefresh: true);
 
     context.pop();
+  }
+}
+
+
+class LocationSelection extends StatefulWidget {
+  const LocationSelection({super.key});
+
+  @override
+  State<LocationSelection> createState() => _LocationSelectionState();
+}
+
+class _LocationSelectionState extends State<LocationSelection> {
+  late City _selectedCity;
+  late Set<String> _selectedDistricts;
+  late HomeStateProvider _stateProvider;
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize local state from the provider's current committed state.
+    // Note: Using context.read here as initState runs once.
+    _stateProvider = context.read<HomeStateProvider>();
+    _selectedCity = _stateProvider.city; // Reads committed city
+    _selectedDistricts = Set<String>.from(_stateProvider.districts); // Reads committed districts
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 8,
+      children: [
+        Row(
+          children: [
+            Icon(PlatformIcons(context).locationSolid),
+            Text('Khu Vực', style: Theme.of(context).textTheme.titleMedium),
+          ],
+        ),
+        Card(
+          child: Column(
+            children: [
+              PlatformPopupMenu(
+                material: (_, __) => MaterialPopupMenuData(
+                    position: PopupMenuPosition.under,
+                    padding: EdgeInsets.zero,
+                    splashRadius: 32,
+                    constraints: BoxConstraints(maxWidth: 128), // Adjust width as needed
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        side: BorderSide(color: Colors.grey.shade200)),
+                    popUpAnimationStyle: AnimationStyle(
+                        curve: Curves.easeOut,
+                        duration: const Duration(milliseconds: 250))),
+                cupertino: (_, __) => CupertinoPopupMenuData(
+                  title: Text(
+                    'Thành Phố',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+                icon: Container(
+                  padding: EdgeInsets.symmetric(vertical: 4),
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                      color: Colors.blue.shade800,
+                      borderRadius: BorderRadius.only(
+                          topLeft: HomeSearchPage.borderRadiusVal,
+                          topRight: HomeSearchPage.borderRadiusVal)),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Icon(Icons.location_city, color: Colors.white),
+                        Text(
+                          _selectedCity.name, // Use local state for display
+                          style: Theme.of(context)
+                              .textTheme
+                              .titleMedium
+                              ?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold),
+                          textAlign: TextAlign.center,
+                        ),
+                        Icon(
+                          Icons.arrow_drop_down,
+                          color: Colors.white,
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                options: City.values
+                    .map((eachCity) => PopupMenuOption(
+                  label: eachCity.shorthand,
+                  material: (_, __) => MaterialPopupMenuOptionData(
+                      child: Text(eachCity.name,
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyLarge)),
+                  cupertino: (_, __) => CupertinoPopupMenuOptionData(
+                      child: Text(eachCity.name,
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyLarge)),
+                  onTap: (_) {
+                    if (_selectedCity != eachCity) {
+                      setState(() {
+                        _selectedCity = eachCity;
+                        _selectedDistricts = {}; // Clear districts when city changes
+                      });
+                      // Update the provider with the pending city change
+                      _stateProvider.updateCity(eachCity);
+                    }
+                  },
+                ))
+                    .toList(),
+              ),
+              const SizedBox(height: 8),
+              TagCarousel(
+                height: 92,
+                tagLabels: VietnamLocationData.instance
+                    .getDistrictsByCity(_selectedCity) // Use local state for district list
+                    .map((e) => e.fullName)
+                    .toList(),
+                initialSelection: _selectedDistricts, // Use local state
+                onSelectionChanged: (selectedDistrictsFromCarousel) {
+                  setState(() {
+                    _selectedDistricts = selectedDistrictsFromCarousel;
+                  });
+                  // Update the provider with the pending district change
+                  _stateProvider.updateDistricts(selectedDistrictsFromCarousel);
+                },
+              )
+            ],
+          ),
+        ),
+      ],
+    );
   }
 }
