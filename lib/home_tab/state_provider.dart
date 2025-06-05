@@ -78,19 +78,11 @@ class HomeStateProvider extends ChangeNotifier {
   }
 
   void updateTimeslots(List<Timeslot> newTimeslots) {
-    if (newTimeslots.length > 3) return;
+    if (newTimeslots.length >= 3) return;
     // if ((_pendingTimeSlots ?? _timeSlots) == newTimeslots) return;
     _pendingTimeSlots = newTimeslots;
     _hasPendingChanges = true;
   }
-
-  // void removeTimeSlot(Timeslot slot) {
-  //   _pendingTimeSlots ??= List.from(_timeSlots);
-  //   _pendingTimeSlots!.removeWhere((item) =>
-  //       item.dayOfWeek == slot.dayOfWeek && item.dayChunk == slot.dayChunk);
-  //   _hasPendingChanges = true;
-  //
-  // }
 
   // Commit changes and notify listeners
   void commit() {
@@ -173,10 +165,8 @@ class HomeStateProvider extends ChangeNotifier {
         _timeSlots.add(Timeslot.fromJson(Map<String, dynamic>.from(slotMap)));
       }
 
-      log('load persisted home state succeeded');
       notifyListeners();
     } catch (e) {
-      log('Failed to load persisted state: $e');
       localStorage?.remove(_prefKey);
       _timeSlots.clear();
       _city = City.hochiminh;

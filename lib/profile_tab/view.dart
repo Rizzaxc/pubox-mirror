@@ -7,17 +7,12 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:toastification/toastification.dart';
 
-import '../core/model/enum.dart';
-import '../core/model/user_details.dart';
 import '../core/player_provider.dart';
 import '../core/sport_switcher.dart';
 import '../core/utils.dart';
-import 'profile_state_provider.dart';
 import 'widget/age_group_selection.dart';
-import 'widget/fitness_selection.dart';
 import 'widget/gender_selection.dart';
-import 'widget/position_selection.dart';
-import 'widget/skill_selection.dart';
+
 
 class ProfileTab extends StatefulWidget {
   const ProfileTab({super.key});
@@ -90,68 +85,51 @@ class _ProfileTabState extends State<ProfileTab> {
   Widget _buildProfileSection(BuildContext context) {
     final selectedSport = context.watch<SelectedSportProvider>().self;
 
-    return Card(
-      margin: const EdgeInsets.all(8.0),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4),
-              child: Text('Profile ${selectedSport.name.capitalize()}',
-                  style: Theme.of(context).textTheme.headlineSmall),
-            ),
-            const Divider(),
-            const GenderSelection(),
-            const AgeGroupSelection(),
-            const SkillSelection(),
-            const FitnessSelection(),
-            const PositionSelection(),
-            ListTile(
-              leading: const Icon(Icons.schedule),
-              title: const Text('Playtime'),
-              subtitle: const Text('Not set'),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-              onTap: () {
-                // TODO: Create a PlaytimeSelection widget
-              },
-            ),
-            // Add save/cancel buttons if there are pending changes
-            Consumer<ProfileStateProvider>(
-              builder: (context, profileState, child) {
-                if (!profileState.hasPendingChanges) return const SizedBox.shrink();
+    // Conditionally render iOS or Android UI based on the current platform
+    if (isCupertino(context)) {
+      // iOS UI
+      return CupertinoListSection.insetGrouped(
+        header: const Text('General'),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        children: [
+          const GenderSelection(),
+          const AgeGroupSelection(),
+        ],
+      );
+    } else {
+      // Android UI
+      return Card(
+        margin: const EdgeInsets.all(8.0),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4),
+                child: Text('Profile ${selectedSport.name.capitalize()}',
+                    style: Theme.of(context).textTheme.headlineSmall),
+              ),
+              const Divider(),
+              const GenderSelection(),
+              const AgeGroupSelection(),
 
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 16.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      TextButton(
-                        onPressed: () {
-                          profileState.discardChanges();
-                        },
-                        child: const Text('Cancel'),
-                      ),
-                      const SizedBox(width: 16),
-                      ElevatedButton(
-                        onPressed: () {
-                          profileState.commit();
-                          context.showToast('Profile updated',
-                              type: ToastificationType.success);
-                        },
-                        child: const Text('Save Changes'),
-                      ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          ],
+              ListTile(
+                leading: const Icon(Icons.schedule),
+                title: const Text('Playtime'),
+                subtitle: const Text('Not set'),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+                onTap: () {
+                  // TODO: Create a PlaytimeSelection widget
+                },
+              ),
+              // Save/cancel buttons removed - now handled by FAB
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
 
   Widget _buildNetworkSection(BuildContext context) {
@@ -195,11 +173,9 @@ class _ProfileTabState extends State<ProfileTab> {
   }
 
   Widget _buildMainContent(BuildContext context) {
-    final playerProvider = context.read<PlayerProvider>();
-    final sportProvider = context.read<SelectedSportProvider>();
 
-    return ChangeNotifierProvider(
-      create: (context) => ProfileStateProvider(playerProvider, sportProvider),
+    return RefreshIndicator(
+      onRefresh: () => context.read<PlayerProvider>().refreshData(),
       child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -270,6 +246,7 @@ class _ProfileTabState extends State<ProfileTab> {
         ],
       ),
       body: body, // Use the determined body widget
+
     );
   }
 }

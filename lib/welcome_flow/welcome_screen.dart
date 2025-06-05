@@ -3,8 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
+import '../core/utils.dart';
+import '../misc/flutter_auth_ui/src/localizations/supa_socials_auth_localization.dart';
 import 'auth_form.dart';
+import 'first_page.dart';
+import 'second_page.dart';
+import 'third_page.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});
@@ -40,6 +44,9 @@ class _ContentCarouselState extends State<ContentCarousel>
   late TabController _tabController;
   int _currentPageIndex = 0;
 
+  final SupaSocialsAuthLocalization localization = const SupaSocialsAuthLocalization();
+
+
   @override
   void initState() {
     super.initState();
@@ -49,9 +56,9 @@ class _ContentCarouselState extends State<ContentCarousel>
 
     // Check if user is already logged in and redirect to home if needed
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final supabase = Supabase.instance.client;
       if (supabase.auth.currentSession != null &&
           !supabase.auth.currentSession!.isExpired) {
+        context.showToast(localization.successSignInMessage);
         context.go('/home');
       }
     });
@@ -75,15 +82,9 @@ class _ContentCarouselState extends State<ContentCarousel>
           controller: _pageViewController,
           onPageChanged: _handlePageViewChanged,
           children: <Widget>[
-            Center(
-              child: Text('First Page', style: textTheme.titleLarge),
-            ),
-            Center(
-              child: Text('Second Page', style: textTheme.titleLarge),
-            ),
-            Center(
-              child: Text('Third Page', style: textTheme.titleLarge),
-            ),
+            const FirstPage(),
+            const SecondPage(),
+            const ThirdPage(),
             Center(
                 child: Padding(
               padding: const EdgeInsets.only(top: 32.0),
@@ -107,6 +108,12 @@ class _ContentCarouselState extends State<ContentCarousel>
     setState(() {
       _currentPageIndex = currentPageIndex;
     });
+
+    // Check if user is already logged in and redirect to home
+    if (supabase.auth.currentSession != null &&
+        !supabase.auth.currentSession!.isExpired) {
+      context.go('/home');
+    }
   }
 
   void _updateCurrentPageIndex(int index) {
@@ -116,6 +123,14 @@ class _ContentCarouselState extends State<ContentCarousel>
       duration: const Duration(milliseconds: 360),
       curve: Curves.easeInOut,
     );
+
+    // Check if user is already logged in and redirect to home
+    // This ensures redirection works when using tab indicators or arrows
+    if (supabase.auth.currentSession != null &&
+        !supabase.auth.currentSession!.isExpired) {
+      context.showToast(localization.successSignInMessage);
+      context.go('/home');
+    }
   }
 
   bool get _isOnDesktopAndWeb {

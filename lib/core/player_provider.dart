@@ -134,6 +134,11 @@ class PlayerProvider extends ChangeNotifier {
     }
   }
 
+  // Public method to refresh player data from server
+  Future<void> refreshData() async {
+    await _loadFromServer();
+  }
+
   Future<void> _clearUserData() async {
     _player.username = Player.defaultUsername;
     _player.tagNumber = Player.defaultTagNumber;

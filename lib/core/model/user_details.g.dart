@@ -22,11 +22,13 @@ UserDetails _$UserDetailsFromJson(Map<String, dynamic> json) => UserDetails(
 
 Map<String, dynamic> _$UserDetailsToJson(UserDetails instance) =>
     <String, dynamic>{
-      'gender': _$GenderEnumMap[instance.gender],
-      'age_group': _$AgeGroupEnumMap[instance.ageGroup],
-      'playtime': instance.playtime?.map((e) => e.toJson()).toList(),
-      'location': instance.location?.toJson(),
-      'sport': instance.sport?.toJson(),
+      if (_$GenderEnumMap[instance.gender] case final value?) 'gender': value,
+      if (_$AgeGroupEnumMap[instance.ageGroup] case final value?)
+        'age_group': value,
+      if (instance.playtime?.map((e) => e.toJson()).toList() case final value?)
+        'playtime': value,
+      if (instance.location?.toJson() case final value?) 'location': value,
+      if (instance.sport?.toJson() case final value?) 'sport': value,
     };
 
 const _$GenderEnumMap = {
@@ -79,11 +81,11 @@ UserSportProfile _$UserSportProfileFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$UserSportProfileToJson(UserSportProfile instance) =>
     <String, dynamic>{
-      '1': instance.soccer?.toJson(),
-      '2': instance.basketball?.toJson(),
-      '3': instance.badminton?.toJson(),
-      '4': instance.tennis?.toJson(),
-      '5': instance.pickleball?.toJson(),
+      if (instance.soccer?.toJson() case final value?) '1': value,
+      if (instance.basketball?.toJson() case final value?) '2': value,
+      if (instance.badminton?.toJson() case final value?) '3': value,
+      if (instance.tennis?.toJson() case final value?) '4': value,
+      if (instance.pickleball?.toJson() case final value?) '5': value,
     };
 
 SoccerProfile _$SoccerProfileFromJson(Map<String, dynamic> json) =>

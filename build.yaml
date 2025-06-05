@@ -1,0 +1,19 @@
+targets:
+  $default:
+    builders:
+      json_serializable:
+        options:
+          # Options configure how source code is generated for every
+          # `@JsonSerializable` annotation in your project.
+          #
+          # Looking for more information? Visit the documentation:
+          # https://pub.dev/packages/json_serializable#build-configuration
+          #
+          # For a list of all options, see `example/build.yaml` in the
+          # json_serializable PTransformub package.
+          #
+          # global_options also support per-builder configuration.
+          # See `builders` below.
+          # nullable: false # Example of another global option
+          include_if_null: false
+          explicit_to_json: true # Often useful globally

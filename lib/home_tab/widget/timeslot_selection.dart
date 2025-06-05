@@ -2,8 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
-import '../core/model/enum.dart';
-import '../core/model/timeslot.dart';
+import '../../core/model/enum.dart';
+import '../../core/model/timeslot.dart';
 
 class TimeslotSelection extends StatefulWidget {
   const TimeslotSelection(
@@ -263,7 +263,7 @@ class _TimeslotSelectionState extends State<TimeslotSelection> {
   }
 
   void addTimeSlot() {
-    if (_selectedTimeslots.length > 3) return;
+    if (_selectedTimeslots.length >= 3) return;
     final toAdd = Timeslot(_selectedDayOfWeek, _selectedDayChunk);
     if (_selectedTimeslots.contains(toAdd)) return;
     setState(() {

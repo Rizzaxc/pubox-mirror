@@ -33,10 +33,10 @@ class TeammateStateProvider with ChangeNotifier {
   // Wrapper for the execute function
   CancelableOperation<List<TeammateModel>>? _cancelableExecuteLoad;
 
-  TeammateStateProvider(this._sportProvider, this._homeStateProvider) {
-    // Special handlers for sport changes vs general home state changes
-    _sportProvider.addListener(_onDependenciesChanged);
+  TeammateStateProvider(this._homeStateProvider, this._sportProvider) {
     _homeStateProvider.addListener(_onDependenciesChanged);
+
+    _sportProvider.addListener(_onDependenciesChanged);
   }
 
   void _onDependenciesChanged() {

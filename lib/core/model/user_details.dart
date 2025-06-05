@@ -6,7 +6,7 @@ import 'timeslot.dart';
 
 part 'user_details.g.dart';
 
-@JsonSerializable(explicitToJson: true)
+@JsonSerializable()
 class UserDetails {
   @JsonKey(name: 'gender')
   Gender? gender;
@@ -35,7 +35,7 @@ class UserDetails {
   Map<String, dynamic> toJson() => _$UserDetailsToJson(this);
 }
 
-@JsonSerializable(explicitToJson: true)
+@JsonSerializable()
 class UserLocation {
   @JsonKey(name: 'city')
   City? city;
@@ -54,7 +54,7 @@ class UserLocation {
   Map<String, dynamic> toJson() => _$UserLocationToJson(this);
 }
 
-@JsonSerializable(explicitToJson: true)
+@JsonSerializable()
 class UserSportProfile {
   @JsonKey(name: '1')
   SoccerProfile? soccer;

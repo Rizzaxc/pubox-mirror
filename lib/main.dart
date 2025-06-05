@@ -25,6 +25,7 @@ import 'home_tab/teammate_section/teammate_state_provider.dart';
 import 'manage_tab/manage_f_a_b.dart';
 import 'manage_tab/manage_remote_fetch_state_provider.dart';
 import 'profile_tab/profile_f_a_b.dart';
+import 'profile_tab/profile_state_provider.dart';
 import 'router.dart';
 
 Future<void> main() async {
@@ -140,19 +141,34 @@ class Pubox extends StatelessWidget {
               // Home Screen
               ChangeNotifierProvider<HomeStateProvider>(
                   create: (_) => HomeStateProvider()),
-              ChangeNotifierProxyProvider2<SelectedSportProvider,
-                  HomeStateProvider, TeammateStateProvider>(
+              ChangeNotifierProxyProvider2<HomeStateProvider,
+                  SelectedSportProvider, TeammateStateProvider>(
                 create: (context) => TeammateStateProvider(
-                    context.read<SelectedSportProvider>(),
-                    context.read<HomeStateProvider>()),
-                update: (_, selectedSport, homeState, previousTeammateState) =>
+                  context.read<HomeStateProvider>(),
+                  context.read<SelectedSportProvider>(),
+                ),
+                update: (_, homeState, selectedSport, previousTeammateState) =>
                     previousTeammateState ??
-                    TeammateStateProvider(selectedSport, homeState),
+                    TeammateStateProvider(
+                      homeState,
+                      selectedSport,
+                    ),
               ),
 
               // Manage Screen
               ChangeNotifierProvider<ManageRemoteLoadStateProvider>(
                   create: (_) => ManageRemoteLoadStateProvider()),
+
+              // Profile Screen
+              ChangeNotifierProxyProvider2<PlayerProvider,
+                  SelectedSportProvider, ProfileStateProvider>(
+                create: (context) => ProfileStateProvider(
+                    context.read<PlayerProvider>(),
+                    context.read<SelectedSportProvider>()),
+                update: (_, player, selectedSport, previousProfileState) =>
+                    previousProfileState ??
+                    ProfileStateProvider(player, selectedSport),
+              ),
             ],
             child: PlatformApp.router(
               title: 'Pubox',

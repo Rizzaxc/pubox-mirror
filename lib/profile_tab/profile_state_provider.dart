@@ -1,10 +1,16 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../core/logger.dart';
 import '../core/model/enum.dart';
 import '../core/model/user_details.dart';
 import '../core/player_provider.dart';
 import '../core/sport_switcher.dart';
+import '../core/utils.dart';
 
 class ProfileStateProvider extends ChangeNotifier {
   final PlayerProvider _playerProvider;
@@ -13,42 +19,44 @@ class ProfileStateProvider extends ChangeNotifier {
   // Pending changes
   Gender? _pendingGender;
   AgeGroup? _pendingAgeGroup;
-  int? _pendingSkill;
-  int? _pendingFitness;
-  String? _pendingPosition;
+
 
   bool _hasPendingChanges = false;
 
   ProfileStateProvider(this._playerProvider, this._sportProvider) {
-    // Listen for changes in player data
     _playerProvider.addListener(notifyListeners);
-
-    // Listen for changes in selected sport
     _sportProvider.addListener(notifyListeners);
   }
 
   // Getters for current values
-  Gender? get gender => _pendingGender ?? _playerProvider.player.details?.gender;
-  AgeGroup? get ageGroup => _pendingAgeGroup ?? _playerProvider.player.details?.ageGroup;
+  Gender? get gender =>
+      _pendingGender ?? _playerProvider.player.details?.gender;
 
-  int? get skill {
-    if (_pendingSkill != null) return _pendingSkill;
+  AgeGroup? get ageGroup =>
+      _pendingAgeGroup ?? _playerProvider.player.details?.ageGroup;
 
-    final details = _playerProvider.player.details;
-    if (details?.sport == null) return null;
+  // int? get skill {
+  //   if (_pendingSkill != null) return _pendingSkill;
+  //
+  //   final details = _playerProvider.player.details;
+  //   if (details?.sport == null) return null;
+  //
+  //   switch (_sportProvider.id) {
+  //     case 1:
+  //       return details!.sport!.soccer?.skill;
+  //     case 2:
+  //       return details!.sport!.basketball?.skill;
+  //     case 3:
+  //       return details!.sport!.badminton?.skill;
+  //     case 4:
+  //       return details!.sport!.tennis?.skill;
+  //     case 5:
+  //       return details!.sport!.pickleball?.skill;
+  //     default:
+  //       return null;
+  //   }
+  // }
 
-    switch (_sportProvider.id) {
-      case 1: return details!.sport!.soccer?.skill;
-      case 2: return details!.sport!.basketball?.skill;
-      case 3: return details!.sport!.badminton?.skill;
-      case 4: return details!.sport!.tennis?.skill;
-      case 5: return details!.sport!.pickleball?.skill;
-      default: return null;
-    }
-  }
-
-  int? get fitness => _pendingFitness;
-  String? get position => _pendingPosition;
 
   bool get hasPendingChanges => _hasPendingChanges;
 
@@ -67,30 +75,9 @@ class ProfileStateProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updateSkill(int? newSkill) {
-    if (newSkill == skill) return;
-    _pendingSkill = newSkill;
-    _hasPendingChanges = true;
-    notifyListeners();
-  }
-
-  void updateFitness(int? newFitness) {
-    if (newFitness == fitness) return;
-    _pendingFitness = newFitness;
-    _hasPendingChanges = true;
-    notifyListeners();
-  }
-
-  void updatePosition(String? newPosition) {
-    if (newPosition == position) return;
-    _pendingPosition = newPosition;
-    _hasPendingChanges = true;
-    notifyListeners();
-  }
-
   // Commit changes to the player provider
-  Future<void> commit() async {
-    if (!_hasPendingChanges) return;
+  Future<bool> commitChanges() async {
+    if (!_hasPendingChanges) return true;
 
     // Get the current player details or create a new one if null
     final player = _playerProvider.player;
@@ -115,60 +102,69 @@ class ProfileStateProvider extends ChangeNotifier {
     details.sport ??= UserSportProfile();
 
     // Update sport-specific details based on the selected sport
-    switch (sportId) {
-      case 1: // Soccer
-        details.sport!.soccer ??= SoccerProfile();
-        if (_pendingSkill != null) {
-          details.sport!.soccer!.skill = _pendingSkill;
-          _pendingSkill = null;
-        }
-        break;
-      case 2: // Basketball
-        details.sport!.basketball ??= BasketballProfile();
-        if (_pendingSkill != null) {
-          details.sport!.basketball!.skill = _pendingSkill;
-          _pendingSkill = null;
-        }
-        break;
-      case 3: // Badminton
-        details.sport!.badminton ??= BadmintonProfile();
-        if (_pendingSkill != null) {
-          details.sport!.badminton!.skill = _pendingSkill;
-          _pendingSkill = null;
-        }
-        break;
-      case 4: // Tennis
-        details.sport!.tennis ??= TennisProfile();
-        if (_pendingSkill != null) {
-          details.sport!.tennis!.skill = _pendingSkill;
-          _pendingSkill = null;
-        }
-        break;
-      case 5: // Pickleball
-        details.sport!.pickleball ??= PickleballProfile();
-        if (_pendingSkill != null) {
-          details.sport!.pickleball!.skill = _pendingSkill;
-          _pendingSkill = null;
-        }
-        break;
+    // switch (sportId) {
+    //   case 1: // Soccer
+    //     details.sport!.soccer ??= SoccerProfile();
+    //     if (_pendingSkill != null) {
+    //       details.sport!.soccer!.skill = _pendingSkill;
+    //       _pendingSkill = null;
+    //     }
+    //     break;
+    //   case 2: // Basketball
+    //     details.sport!.basketball ??= BasketballProfile();
+    //     if (_pendingSkill != null) {
+    //       details.sport!.basketball!.skill = _pendingSkill;
+    //       _pendingSkill = null;
+    //     }
+    //     break;
+    //   case 3: // Badminton
+    //     details.sport!.badminton ??= BadmintonProfile();
+    //     if (_pendingSkill != null) {
+    //       details.sport!.badminton!.skill = _pendingSkill;
+    //       _pendingSkill = null;
+    //     }
+    //     break;
+    //   case 4: // Tennis
+    //     details.sport!.tennis ??= TennisProfile();
+    //     if (_pendingSkill != null) {
+    //       details.sport!.tennis!.skill = _pendingSkill;
+    //       _pendingSkill = null;
+    //     }
+    //     break;
+    //   case 5: // Pickleball
+    //     details.sport!.pickleball ??= PickleballProfile();
+    //     if (_pendingSkill != null) {
+    //       details.sport!.pickleball!.skill = _pendingSkill;
+    //       _pendingSkill = null;
+    //     }
+    //     break;
+    // }
+
+    try {
+      final detailsMap = details.toJson();
+
+      AppLogger.d(jsonEncode(details));
+
+      // Send changes to server
+      await supabase.from('user').update({'details': detailsMap}).eq('id', player.id!);
+
+      // Update the player details
+      player.update(details: details);
+      _hasPendingChanges = false;
+      notifyListeners();
+      return true;
+    } on PostgrestException catch (exception, stackTrace) {
+      AppLogger.d(exception.message);
+      Sentry.captureException(exception, stackTrace: stackTrace);
+      discardChanges();
+      return false;
     }
-
-    // Update the player details
-    player.update(details: details);
-
-    // TODO: Save to server
-
-    _hasPendingChanges = false;
-    notifyListeners();
   }
 
   // Discard pending changes
   void discardChanges() {
     _pendingGender = null;
     _pendingAgeGroup = null;
-    _pendingSkill = null;
-    _pendingFitness = null;
-    _pendingPosition = null;
 
     _hasPendingChanges = false;
     notifyListeners();

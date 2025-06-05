@@ -225,7 +225,7 @@ class VietnamLocationData {
         return _hcmcDistricts;
       case City.hanoi:
         return _hanoiDistricts;
-      }
+    }
   }
 
   /// Get districts by type for a specific city
@@ -596,21 +596,21 @@ class VietnamLocationData {
 @JsonEnum()
 enum AgeGroup {
   @JsonValue('student')
-  student,
-
+  student('Học Sinh & Sinh Viên'),
   @JsonValue('mature')
-  mature,
-
+  mature('Trưởng Thành'),
   @JsonValue('middle_age')
-  middleAge
+  middleAge('Trung Niên');
 
+  final String displayName;
+
+  const AgeGroup(this.displayName);
 }
 
 @JsonEnum()
 enum Gender {
   @JsonValue('male')
   male,
-
   @JsonValue('female')
   female
 }
