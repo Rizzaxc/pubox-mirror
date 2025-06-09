@@ -51,7 +51,8 @@ class IndustrySelection extends StatelessWidget {
 
   void _showAndroidIndustryDialog(
       BuildContext context, List<Industry> selectedIndustries) {
-    final profileState = context.read<ProfileStateProvider>();
+    final selectedIndustries = context.select<ProfileStateProvider, List<Industry>>(
+            (provider) => provider.selectedIndustries);
     final industries = Industry.values;
 
     showDialog(
@@ -65,21 +66,14 @@ class IndustrySelection extends StatelessWidget {
               shrinkWrap: true,
               itemCount: industries.length,
               itemBuilder: (context, index) {
-                final current = industries[index];
-                final isSelected = selectedIndustries.any((i) => i == current);
+                final industry = industries[index];
+                final isSelected = selectedIndustries.contains(industry);
 
                 return CheckboxListTile(
-                  title: Text(current.getLocalizedName(context)),
+                  title: Text(industry.getLocalizedName(context)),
                   value: isSelected,
                   onChanged: (bool? value) {
-                    if (value == true) {
-                      // Only allow selecting if we haven't reached the limit or if this one is already selected
-                      if (selectedIndustries.length < 2 || isSelected) {
-                        profileState.toggleIndustry(current);
-                      }
-                    } else {
-                      profileState.toggleIndustry(current);
-                    }
+                    context.read<ProfileStateProvider>().toggleIndustry(industry);
                   },
                 );
               },
@@ -100,19 +94,11 @@ class IndustrySelection extends StatelessWidget {
 
   Widget _buildIOSIndustryListTile(
       BuildContext context, List<Industry> selectedIndustries) {
-    String? additionalInfo;
-    if (selectedIndustries.isNotEmpty) {
-      if (selectedIndustries.length == 1) {
-        additionalInfo = selectedIndustries[0].getLocalizedName(context);
-      } else {
-        additionalInfo =
-            '${selectedIndustries[0].getLocalizedName(context)}, ${selectedIndustries[1].getLocalizedName(context)}';
-      }
-    }
 
     return CupertinoListTile.notched(
       title: Text(context.tr('$l10nKeyPrefix.industryLabel')),
-      additionalInfo: additionalInfo != null ? Text(additionalInfo) : null,
+      // additionalInfo: additionalInfo != null ? Text(additionalInfo) : null,
+
       leading: const Icon(Icons.work_outline),
       trailing: const CupertinoListTileChevron(),
       onTap: () => _iosIndustryListPageBuilder(context),
@@ -130,12 +116,15 @@ class IndustrySelection extends StatelessWidget {
 
 class IndustryListPage extends StatelessWidget {
   const IndustryListPage({super.key});
+  final industries = Industry.values;
 
   @override
   Widget build(BuildContext context) {
-    final profileState = context.read<ProfileStateProvider>();
-    final industries = Industry.values;
-    final selectedIndustries = profileState.selectedIndustries;
+    // final industries = Industry.values.sort((a, b) =>
+    //     a.getLocalizedName(context).compareTo(b.getLocalizedName(context)));
+
+    final selectedIndustries = context.select<ProfileStateProvider, List<Industry>>(
+        (provider) => provider.selectedIndustries);
 
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
@@ -144,16 +133,15 @@ class IndustryListPage extends StatelessWidget {
         child: SafeArea(
           child: CupertinoListSection.insetGrouped(
             backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-            children: industries.map((localizedIndustry) {
-              final isSelected =
-                  selectedIndustries.any((i) => i == localizedIndustry);
+            children: industries.map((industry) {
+              final isSelected = selectedIndustries.contains(industry);
 
               return CupertinoListTile.notched(
-                title: Text(localizedIndustry.getLocalizedName(context)),
+                title: Text(industry.getLocalizedName(context)),
                 trailing:
                     isSelected ? const Icon(CupertinoIcons.check_mark) : null,
                 onTap: () {
-                  profileState.toggleIndustry(localizedIndustry);
+                  context.read<ProfileStateProvider>().toggleIndustry(industry);
                 },
               );
             }).toList(),

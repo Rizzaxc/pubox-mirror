@@ -22,7 +22,6 @@ class ProfileStateProvider extends ChangeNotifier {
   List<Industry>? _pendingIndustries;
 
   // Available industries
-  static final List<Industry> _industries = Industry.values;
   bool _loadingIndustries = false;
 
   // User's selected industries
@@ -54,7 +53,7 @@ class ProfileStateProvider extends ChangeNotifier {
           .select('industry_id')
           .eq('user_id', player.id!);
 
-      AppLogger.d(response as String);
+      AppLogger.d(response.toString());
 
       _selectedIndustries = (response as List).map((each) {
         return each as Industry;
@@ -76,12 +75,10 @@ class ProfileStateProvider extends ChangeNotifier {
       _pendingAgeGroup ?? _playerProvider.player.details?.ageGroup;
 
   // Industry getters
-  List<Industry> get industries => _industries;
-
 
   bool get loadingIndustries => _loadingIndustries;
 
-  List<Industry> get selectedIndustries => 
+  List<Industry> get selectedIndustries =>
       _pendingIndustries ?? _selectedIndustries;
 
   bool get loadingSelectedIndustries => _loadingSelectedIndustries;
@@ -108,7 +105,6 @@ class ProfileStateProvider extends ChangeNotifier {
   //   }
   // }
 
-
   bool get hasPendingChanges => _hasPendingChanges;
 
   // Update methods
@@ -126,47 +122,32 @@ class ProfileStateProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // Update selected industries
-  void updateSelectedIndustries(List<Industry> industries) {
-    // Ensure max selection is 2
-    if (industries.length > 2) {
-      industries = industries.sublist(0, 2);
-    }
-
-    // Check if the selection has changed
-    final currentSelection = selectedIndustries;
-    if (currentSelection.length == industries.length &&
-        currentSelection.every((i) => industries.any((j) => j == i))) {
-      return; // No change
-    }
-
-    _pendingIndustries = industries;
-    _hasPendingChanges = true;
-    notifyListeners();
-  }
-
   // Add or remove a single industry
   void toggleIndustry(Industry industry) {
-    final currentSelection = List<Industry>.from(selectedIndustries);
+    _hasPendingChanges = true;
+    _pendingIndustries ??= List.from(_selectedIndustries);
 
     // Check if the industry is already selected
-    final index = currentSelection.indexWhere((i) => i == industry);
+    final selected = _pendingIndustries!.contains(industry);
 
-    if (index >= 0) {
+    if (selected) {
       // Remove the industry
-      currentSelection.removeAt(index);
+      _pendingIndustries = [..._pendingIndustries!];
+      _pendingIndustries!.remove(industry);
+
     } else {
       // Add the industry if we haven't reached the limit
-      if (currentSelection.length < 2) {
-        currentSelection.add(industry);
+      if (_pendingIndustries!.length < 2) {
+        _pendingIndustries = [..._pendingIndustries!, industry];
       } else {
         // Replace the first industry if we've reached the limit
-        currentSelection.removeAt(0);
-        currentSelection.add(industry);
+        _pendingIndustries = [..._pendingIndustries!];
+        _pendingIndustries![0] = _pendingIndustries![1];
+        _pendingIndustries![1] = industry;
+
       }
     }
-
-    updateSelectedIndustries(currentSelection);
+    notifyListeners();
   }
 
   // Commit changes to the player provider
@@ -240,24 +221,23 @@ class ProfileStateProvider extends ChangeNotifier {
       AppLogger.d(jsonEncode(details));
 
       // Send changes to server
-      await supabase.from('user').update({'details': detailsMap}).eq('id', player.id!);
+      await supabase
+          .from('user')
+          .update({'details': detailsMap}).eq('id', player.id!);
 
       // Update the player details
       player.update(details: details);
 
       // Update industries if changed
-      if (_pendingIndustries != null) {
+      if (_pendingIndustries != null && _pendingIndustries != _selectedIndustries) {
+        AppLogger.d(_pendingIndustries.toString());
 
         // First, delete all existing user_industry entries for this user
         await supabase.from('user_industry').delete().eq('user_id', player.id!);
 
-        // Then, insert new entries for each selected industry
-        for (final industry in _pendingIndustries!) {
-          await supabase.from('user_industry').insert({
-            'user_id': player.id!,
-            'industry_id': industry,
-          });
-        }
+        final data =
+            _pendingIndustries!.map((industry) => {'user_id': player.id!, 'industry_id': industry.index}).toList();
+        await supabase.from('user_industry').insert(data);
 
         // Update local state
         _selectedIndustries = List.from(_pendingIndustries!);
