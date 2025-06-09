@@ -1,5 +1,9 @@
 // follow database ID
+import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
+
+import '../logger.dart';
 
 enum Sport { others, soccer, basketball, badminton, tennis, pickleball }
 
@@ -596,15 +600,21 @@ class VietnamLocationData {
 @JsonEnum()
 enum AgeGroup {
   @JsonValue('student')
-  student('Học Sinh & Sinh Viên'),
+  student,
   @JsonValue('mature')
-  mature('Trưởng Thành'),
-  @JsonValue('middle_age')
-  middleAge('Trung Niên');
+  mature,
+  @JsonValue('middleAge')
+  middleAge;
 
-  final String displayName;
+  String getLocalizedName(BuildContext context) {
+    return context.tr('ageGroup.$name');
+  }
 
-  const AgeGroup(this.displayName);
+  static List<String> getAllLocalizedName(BuildContext context) {
+    return AgeGroup.values
+        .map((each) => each.getLocalizedName(context))
+        .toList();
+  }
 }
 
 @JsonEnum()
@@ -612,5 +622,46 @@ enum Gender {
   @JsonValue('male')
   male,
   @JsonValue('female')
-  female
+  female;
+
+  String getLocalizedName(BuildContext context) {
+    return context.tr('gender.$name');
+  }
+
+  static List<String> getAllLocalizedName(BuildContext context) {
+    return Gender.values.map((each) => each.getLocalizedName(context)).toList();
+  }
+}
+
+// Do not change order
+@JsonEnum()
+enum Industry {
+  agriculture,
+  construction,
+  culinaryTourism,
+  educationAcademia,
+  energy,
+  entertainmentContentCreation,
+  fashionBeauty,
+  financeConsulting,
+  government,
+  healthcare,
+  legalServices,
+  manufacturing,
+  mediaCommunications,
+  nonprofitCharity,
+  realEstate,
+  retailOnlineCommerce,
+  technology,
+  transportation;
+
+  String getLocalizedName(BuildContext context) {
+    return context.tr('industry.$name');
+  }
+
+  static List<String> getAllLocalizedName(BuildContext context) {
+    return Industry.values
+        .map((each) => each.getLocalizedName(context))
+        .toList();
+  }
 }

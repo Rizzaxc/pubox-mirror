@@ -12,6 +12,7 @@ import '../core/sport_switcher.dart';
 import '../core/utils.dart';
 import 'widget/age_group_selection.dart';
 import 'widget/gender_selection.dart';
+import 'widget/industry_selection.dart';
 
 
 class ProfileTab extends StatefulWidget {
@@ -133,43 +134,55 @@ class _ProfileTabState extends State<ProfileTab> {
   }
 
   Widget _buildNetworkSection(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.all(8.0),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4),
-              child: Text('Network & Industry',
-                  style: Theme.of(context).textTheme.headlineSmall),
-            ),
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.work_outline),
-              title: const Text('Industry'),
-              subtitle: const Text('Not set'),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-              onTap: () {
-                // TODO: Edit industry
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.school_outlined),
-              title: const Text('Networks (School, Company)'),
-              subtitle: const Text('Not set'),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-              onTap: () {
-                // TODO: Edit networks
-              },
-            ),
-          ],
+    // Conditionally render iOS or Android UI based on the current platform
+    if (isCupertino(context)) {
+      // iOS UI
+      return CupertinoListSection.insetGrouped(
+        header: const Text('Network & Industry'),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        children: [
+          const IndustrySelection(),
+          CupertinoListTile.notched(
+            leading: const Icon(Icons.school_outlined),
+            title: const Text('Networks (School, Company)'),
+            trailing: const CupertinoListTileChevron(),
+            onTap: () {
+              // TODO: Edit networks
+            },
+          ),
+        ],
+      );
+    } else {
+      // Android UI
+      return Card(
+        margin: const EdgeInsets.all(8.0),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4),
+                child: Text('Network & Industry',
+                    style: Theme.of(context).textTheme.headlineSmall),
+              ),
+              const Divider(),
+              const IndustrySelection(),
+              ListTile(
+                leading: const Icon(Icons.school_outlined),
+                title: const Text('Networks (School, Company)'),
+                subtitle: const Text('Not set'),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
+                onTap: () {
+                  // TODO: Edit networks
+                },
+              ),
+            ],
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
 
   Widget _buildMainContent(BuildContext context) {

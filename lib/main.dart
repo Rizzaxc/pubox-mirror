@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:animated_bottom_navigation_bar/animated_bottom_navigation_bar.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -49,6 +50,7 @@ Future<void> main() async {
   GoogleFonts.config.allowRuntimeFetching = false;
 
   WidgetsFlutterBinding.ensureInitialized();
+  await EasyLocalization.ensureInitialized();
 
   final sentryDSN = dotenv.env['SENTRY_DSN']!;
   const Map<String, double?> sampleRates = {
@@ -62,7 +64,12 @@ Future<void> main() async {
     // The sampling rate for profiling is relative to tracesSampleRate
     // Setting to 1.0 will profile 100% of sampled transactions:
     options.profilesSampleRate = 1.0;
-  }, appRunner: () => runApp(const Pubox()));
+  },
+      appRunner: () => runApp(EasyLocalization(
+          supportedLocales: const [Locale('vi'), Locale('en')],
+          path: 'assets/translations',
+          startLocale: Locale('vi'),
+          child: const Pubox())));
 }
 
 class Pubox extends StatelessWidget {
@@ -173,11 +180,9 @@ class Pubox extends StatelessWidget {
             child: PlatformApp.router(
               title: 'Pubox',
               routerConfig: puboxRouter,
-              localizationsDelegates: <LocalizationsDelegate<dynamic>>[
-                DefaultMaterialLocalizations.delegate,
-                DefaultWidgetsLocalizations.delegate,
-                DefaultCupertinoLocalizations.delegate,
-              ],
+              localizationsDelegates: context.localizationDelegates,
+              supportedLocales: context.supportedLocales,
+              locale: context.locale,
             ),
           ),
         ),

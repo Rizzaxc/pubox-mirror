@@ -1,0 +1,37 @@
+{
+  "profileView": {
+    "genderLabel": "Giới Tính",
+    "ageGroupLabel": "Nhóm Tuổi",
+    "industryLabel": "Ngành Nghề",
+    "networkLabel": "Network"
+  },
+  "gender": {
+    "male": "Nam",
+    "female": "Nữ"
+  },
+  "ageGroup": {
+    "student": "Học Sinh & Sinh Viên",
+    "mature": "Trưởng Thành",
+    "middleAge": "Trung Niên"
+  },
+  "industry": {
+    "agriculture": "Nông Nghiệp",
+    "construction": "Xây Dựng",
+    "culinaryTourism": "Ẩm Thực & Du Lịch",
+    "educationAcademia": "Giáo Dục & Nghiên Cứu",
+    "energy": "Năng Lượng",
+    "entertainmentContentCreation": "Giải Trí & Sáng Tạo Nội Dung",
+    "fashionBeauty": "Thời Trang & Sắc Đẹp",
+    "financeConsulting": "Finance & Consulting",
+    "government": "Hành Chính Chính Phủ",
+    "healthcare": "Y Tế",
+    "legalServices": "Luật",
+    "manufacturing": "Sản Xuất",
+    "mediaCommunications": "Báo Chí & Media",
+    "nonprofitCharity": "Non-profit & Từ Thiện",
+    "realEstate": "Bất Động Sản",
+    "retailOnlineCommerce": "Bán Lẻ & TMĐT",
+    "technology": "Công Nghệ",
+    "transportation": "Vận Tải"
+  }
+}

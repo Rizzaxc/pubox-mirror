@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -5,6 +6,8 @@ import 'package:provider/provider.dart';
 
 import '../../core/model/enum.dart';
 import '../profile_state_provider.dart';
+
+const l10nKeyPrefix = "profileView";
 
 class AgeGroupSelection extends StatelessWidget {
   const AgeGroupSelection({super.key});
@@ -24,16 +27,16 @@ class AgeGroupSelection extends StatelessWidget {
     late Icon leadingIcon;
 
     if (ageGroup == null) {
-      subtitle = 'Not Set';
+      subtitle = context.tr('not_set');
       leadingIcon = const Icon(Icons.question_mark);
     } else {
-      subtitle = ageGroup.displayName;
+      subtitle = ageGroup.getLocalizedName(context);
       leadingIcon = const Icon(Icons.group);
     }
 
     return ListTile(
       leading: leadingIcon,
-      title: const Text('Nhóm Tuổi'),
+      title: Text(context.tr('$l10nKeyPrefix.ageGroupLabel')),
       subtitle: Text(subtitle),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       onTap: () => _showAndroidAgeGroupDialog(context, ageGroup),
@@ -48,12 +51,12 @@ class AgeGroupSelection extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Nhóm Tuổi'),
+          title: Text(context.tr('$l10nKeyPrefix.ageGroupLabel')),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               RadioListTile<AgeGroup>(
-                title: Text(AgeGroup.student.displayName),
+                title: Text(AgeGroup.student.getLocalizedName(context)),
                 value: AgeGroup.student,
                 groupValue: currentAgeGroup,
                 onChanged: (AgeGroup? value) {
@@ -62,7 +65,7 @@ class AgeGroupSelection extends StatelessWidget {
                 },
               ),
               RadioListTile<AgeGroup>(
-                title: Text(AgeGroup.mature.displayName),
+                title: Text(AgeGroup.mature.getLocalizedName(context)),
                 value: AgeGroup.mature,
                 groupValue: currentAgeGroup,
                 onChanged: (AgeGroup? value) {
@@ -71,7 +74,7 @@ class AgeGroupSelection extends StatelessWidget {
                 },
               ),
               RadioListTile<AgeGroup>(
-                title: Text(AgeGroup.middleAge.displayName),
+                title: Text(AgeGroup.middleAge.getLocalizedName(context)),
                 value: AgeGroup.middleAge,
                 groupValue: currentAgeGroup,
                 onChanged: (AgeGroup? value) {
@@ -86,7 +89,7 @@ class AgeGroupSelection extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text('Cancel'),
+              child: Text(context.tr('done')),
             ),
           ],
         );
@@ -101,11 +104,11 @@ class AgeGroupSelection extends StatelessWidget {
     if (ageGroup == null) {
       choice = null;
     } else {
-      choice = Text(ageGroup.displayName);
+      choice = Text(ageGroup.getLocalizedName(context));
     }
 
     return CupertinoListTile.notched(
-      title: const Text('Nhóm Tuổi'),
+      title: Text(context.tr('$l10nKeyPrefix.ageGroupLabel')),
       additionalInfo: choice,
       leading: leadingIcon,
       trailing: ageGroup != null
@@ -133,16 +136,17 @@ class AgeGroupListPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final ageGroup = context
         .select<ProfileStateProvider, AgeGroup?>((details) => details.ageGroup);
+
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: const Text('Age Group'),
+        middle: Text(context.tr('$l10nKeyPrefix.ageGroupLabel')),
       ),
       child: SafeArea(
         child: CupertinoListSection.insetGrouped(
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           children: [
             CupertinoListTile.notched(
-                title: Text(AgeGroup.student.displayName),
+                title: Text(AgeGroup.student.getLocalizedName(context)),
                 trailing: ageGroup == AgeGroup.student
                     ? const Icon(CupertinoIcons.check_mark)
                     : null,
@@ -150,7 +154,7 @@ class AgeGroupListPage extends StatelessWidget {
                     .read<ProfileStateProvider>()
                     .updateAgeGroup(AgeGroup.student)),
             CupertinoListTile.notched(
-              title: Text(AgeGroup.mature.displayName),
+              title: Text(AgeGroup.mature.getLocalizedName(context)),
               trailing: ageGroup == AgeGroup.mature
                   ? const Icon(CupertinoIcons.check_mark)
                   : null,
@@ -159,7 +163,7 @@ class AgeGroupListPage extends StatelessWidget {
                   .updateAgeGroup(AgeGroup.mature),
             ),
             CupertinoListTile.notched(
-              title: Text(AgeGroup.middleAge.displayName),
+              title: Text(AgeGroup.middleAge.getLocalizedName(context)),
               trailing: ageGroup == AgeGroup.middleAge
                   ? const Icon(CupertinoIcons.check_mark)
                   : null,

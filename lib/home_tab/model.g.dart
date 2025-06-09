@@ -25,8 +25,8 @@ Map<String, dynamic> _$TeammateModelToJson(TeammateModel instance) =>
           _$TeammateResultTypeEnumMap[instance.teammateResultType]!,
       'resultTitle': instance.resultTitle,
       'location': instance.location,
-      'playtime': instance.playtime,
-      'details': instance.details,
+      'playtime': instance.playtime.toJson(),
+      if (instance.details case final value?) 'details': value,
       'compatScore': instance.compatScore,
       'searchableId': instance.searchableId,
     };
@@ -51,12 +51,12 @@ ChallengerModel _$ChallengerModelFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$ChallengerModelToJson(ChallengerModel instance) =>
     <String, dynamic>{
       'lobbyId': instance.lobbyId,
-      'playtime': instance.playtime,
+      'playtime': instance.playtime.toJson(),
       'location': instance.location,
       'compatScore': instance.compatScore,
       'fairplayScore': instance.fairplayScore,
-      'records': instance.records,
-      'stake': instance.stake,
+      if (instance.records case final value?) 'records': value,
+      if (instance.stake case final value?) 'stake': value,
       'stakeUnit': _$StakeUnitEnumMap[instance.stakeUnit]!,
     };
 

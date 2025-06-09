@@ -19,13 +19,53 @@ class ProfileStateProvider extends ChangeNotifier {
   // Pending changes
   Gender? _pendingGender;
   AgeGroup? _pendingAgeGroup;
+  List<Industry>? _pendingIndustries;
 
+  // Available industries
+  static final List<Industry> _industries = Industry.values;
+  bool _loadingIndustries = false;
+
+  // User's selected industries
+  List<Industry> _selectedIndustries = [];
+  bool _loadingSelectedIndustries = false;
 
   bool _hasPendingChanges = false;
 
   ProfileStateProvider(this._playerProvider, this._sportProvider) {
     _playerProvider.addListener(notifyListeners);
     _sportProvider.addListener(notifyListeners);
+
+    // Initialize data
+    _fetchUserIndustries();
+    // TODO: _fetchUserNetworks();
+  }
+
+  // Fetch user's selected industries
+  Future<void> _fetchUserIndustries() async {
+    final player = _playerProvider.player;
+    if (player.id == null || _loadingSelectedIndustries) return;
+
+    _loadingSelectedIndustries = true;
+    notifyListeners();
+
+    try {
+      final response = await supabase
+          .from('user_industry')
+          .select('industry_id')
+          .eq('user_id', player.id!);
+
+      AppLogger.d(response as String);
+
+      _selectedIndustries = (response as List).map((each) {
+        return each as Industry;
+      }).toList();
+    } catch (e, stackTrace) {
+      AppLogger.d('Error fetching selected industries: $e');
+      Sentry.captureException(e, stackTrace: stackTrace);
+    } finally {
+      _loadingSelectedIndustries = false;
+      notifyListeners();
+    }
   }
 
   // Getters for current values
@@ -34,6 +74,17 @@ class ProfileStateProvider extends ChangeNotifier {
 
   AgeGroup? get ageGroup =>
       _pendingAgeGroup ?? _playerProvider.player.details?.ageGroup;
+
+  // Industry getters
+  List<Industry> get industries => _industries;
+
+
+  bool get loadingIndustries => _loadingIndustries;
+
+  List<Industry> get selectedIndustries => 
+      _pendingIndustries ?? _selectedIndustries;
+
+  bool get loadingSelectedIndustries => _loadingSelectedIndustries;
 
   // int? get skill {
   //   if (_pendingSkill != null) return _pendingSkill;
@@ -73,6 +124,49 @@ class ProfileStateProvider extends ChangeNotifier {
     _pendingAgeGroup = newAgeGroup;
     _hasPendingChanges = true;
     notifyListeners();
+  }
+
+  // Update selected industries
+  void updateSelectedIndustries(List<Industry> industries) {
+    // Ensure max selection is 2
+    if (industries.length > 2) {
+      industries = industries.sublist(0, 2);
+    }
+
+    // Check if the selection has changed
+    final currentSelection = selectedIndustries;
+    if (currentSelection.length == industries.length &&
+        currentSelection.every((i) => industries.any((j) => j == i))) {
+      return; // No change
+    }
+
+    _pendingIndustries = industries;
+    _hasPendingChanges = true;
+    notifyListeners();
+  }
+
+  // Add or remove a single industry
+  void toggleIndustry(Industry industry) {
+    final currentSelection = List<Industry>.from(selectedIndustries);
+
+    // Check if the industry is already selected
+    final index = currentSelection.indexWhere((i) => i == industry);
+
+    if (index >= 0) {
+      // Remove the industry
+      currentSelection.removeAt(index);
+    } else {
+      // Add the industry if we haven't reached the limit
+      if (currentSelection.length < 2) {
+        currentSelection.add(industry);
+      } else {
+        // Replace the first industry if we've reached the limit
+        currentSelection.removeAt(0);
+        currentSelection.add(industry);
+      }
+    }
+
+    updateSelectedIndustries(currentSelection);
   }
 
   // Commit changes to the player provider
@@ -150,6 +244,26 @@ class ProfileStateProvider extends ChangeNotifier {
 
       // Update the player details
       player.update(details: details);
+
+      // Update industries if changed
+      if (_pendingIndustries != null) {
+
+        // First, delete all existing user_industry entries for this user
+        await supabase.from('user_industry').delete().eq('user_id', player.id!);
+
+        // Then, insert new entries for each selected industry
+        for (final industry in _pendingIndustries!) {
+          await supabase.from('user_industry').insert({
+            'user_id': player.id!,
+            'industry_id': industry,
+          });
+        }
+
+        // Update local state
+        _selectedIndustries = List.from(_pendingIndustries!);
+        _pendingIndustries = null;
+      }
+
       _hasPendingChanges = false;
       notifyListeners();
       return true;
@@ -165,6 +279,7 @@ class ProfileStateProvider extends ChangeNotifier {
   void discardChanges() {
     _pendingGender = null;
     _pendingAgeGroup = null;
+    _pendingIndustries = null;
 
     _hasPendingChanges = false;
     notifyListeners();

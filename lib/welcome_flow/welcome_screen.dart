@@ -44,24 +44,22 @@ class _ContentCarouselState extends State<ContentCarousel>
   late TabController _tabController;
   int _currentPageIndex = 0;
 
-  final SupaSocialsAuthLocalization localization = const SupaSocialsAuthLocalization();
-
+  final SupaSocialsAuthLocalization localization =
+      const SupaSocialsAuthLocalization();
 
   @override
   void initState() {
     super.initState();
+
     _pageViewController = PageController();
     _tabController =
         TabController(length: ContentCarousel.tabCount, vsync: this);
 
-    // Check if user is already logged in and redirect to home if needed
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (supabase.auth.currentSession != null &&
-          !supabase.auth.currentSession!.isExpired) {
-        context.showToast(localization.successSignInMessage);
-        context.go('/home');
-      }
-    });
+    if (supabase.auth.currentSession != null &&
+        !supabase.auth.currentSession!.isExpired) {
+      context.showToast(localization.successSignInMessage);
+      context.go('/home');
+    }
   }
 
   @override
@@ -125,7 +123,6 @@ class _ContentCarouselState extends State<ContentCarousel>
     );
 
     // Check if user is already logged in and redirect to home
-    // This ensures redirection works when using tab indicators or arrows
     if (supabase.auth.currentSession != null &&
         !supabase.auth.currentSession!.isExpired) {
       context.showToast(localization.successSignInMessage);

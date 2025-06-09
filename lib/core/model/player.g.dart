@@ -15,8 +15,8 @@ Player _$PlayerFromJson(Map<String, dynamic> json) => Player()
       : UserDetails.fromJson(json['details'] as Map<String, dynamic>);
 
 Map<String, dynamic> _$PlayerToJson(Player instance) => <String, dynamic>{
-      'id': instance.id,
+      if (instance.id case final value?) 'id': value,
       'username': instance.username,
       'tagNumber': instance.tagNumber,
-      'details': instance.details?.toJson(),
+      if (instance.details?.toJson() case final value?) 'details': value,
     };

@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -5,6 +6,8 @@ import 'package:provider/provider.dart';
 
 import '../../core/model/enum.dart';
 import '../profile_state_provider.dart';
+
+const l10nKeyPrefix = "profileView";
 
 class GenderSelection extends StatelessWidget {
   const GenderSelection({super.key});
@@ -24,19 +27,19 @@ class GenderSelection extends StatelessWidget {
     late Icon leadingIcon;
 
     if (gender == null) {
-      subtitle = 'Not Set';
+      subtitle = context.tr('not_set');
       leadingIcon = const Icon(Icons.question_mark);
     } else if (gender == Gender.male) {
-      subtitle = 'Nam';
+      subtitle = gender.getLocalizedName(context);
       leadingIcon = const Icon(Icons.male);
     } else if (gender == Gender.female) {
-      subtitle = 'Nữ';
+      subtitle = gender.getLocalizedName(context);
       leadingIcon = const Icon(Icons.female);
     }
 
     return ListTile(
       leading: leadingIcon,
-      title: const Text('Giới Tính'),
+      title: Text(context.tr('$l10nKeyPrefix.genderLabel')),
       subtitle: Text(subtitle),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       onTap: () => _showAndroidGenderDialog(context, gender),
@@ -51,12 +54,12 @@ class GenderSelection extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Select Gender'),
+          title: Text(context.tr('$l10nKeyPrefix.genderLabel')),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               RadioListTile<Gender>(
-                title: const Text('Nam'),
+                title: Text(Gender.male.getLocalizedName(context)),
                 value: Gender.male,
                 groupValue: currentGender,
                 onChanged: (Gender? value) {
@@ -65,7 +68,7 @@ class GenderSelection extends StatelessWidget {
                 },
               ),
               RadioListTile<Gender>(
-                title: const Text('Nữ'),
+                title: Text(Gender.female.getLocalizedName(context)),
                 value: Gender.female,
                 groupValue: currentGender,
                 onChanged: (Gender? value) {
@@ -80,7 +83,7 @@ class GenderSelection extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: const Text('Cancel'),
+              child: Text(context.tr('done')),
             ),
           ],
         );
@@ -96,17 +99,15 @@ class GenderSelection extends StatelessWidget {
       choice = null;
       leadingIcon = const Icon(Icons.transgender);
     } else if (gender == Gender.male) {
-      choice = const Text(
-        'Nam',
-      );
+      choice = Text(gender.getLocalizedName(context));
       leadingIcon = const Icon(Icons.male);
     } else if (gender == Gender.female) {
-      choice = const Text('Nữ');
+      choice = Text(gender.getLocalizedName(context));
       leadingIcon = const Icon(Icons.female);
     }
 
     return CupertinoListTile.notched(
-      title: const Text('Giới Tính'),
+      title: Text(context.tr('$l10nKeyPrefix.genderLabel')),
       additionalInfo: choice,
       leading: leadingIcon,
       trailing: gender != null
@@ -134,16 +135,17 @@ class GenderListPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final gender = context
         .select<ProfileStateProvider, Gender?>((details) => details.gender);
+
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
-        middle: const Text('Gender'),
+        middle: Text(context.tr('$l10nKeyPrefix.genderLabel')),
       ),
       child: SafeArea(
         child: CupertinoListSection.insetGrouped(
           backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           children: [
             CupertinoListTile.notched(
-                title: const Text('Nam'),
+                title: Text(Gender.male.getLocalizedName(context)),
                 trailing: gender == Gender.male
                     ? const Icon(CupertinoIcons.check_mark)
                     : null,
@@ -151,7 +153,7 @@ class GenderListPage extends StatelessWidget {
                     .read<ProfileStateProvider>()
                     .updateGender(Gender.male)),
             CupertinoListTile.notched(
-              title: const Text('Nữ'),
+              title: Text(Gender.female.getLocalizedName(context)),
               trailing: gender == Gender.female
                   ? const Icon(CupertinoIcons.check_mark)
                   : null,

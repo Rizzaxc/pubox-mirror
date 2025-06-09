@@ -92,9 +92,8 @@ final GoRouter puboxRouter = GoRouter(
           routes: <RouteBase>[
             GoRoute(
               path: '/manage',
-              builder: (context, state) {
-                return const ManageTab();
-              },
+              builder: (context, state) => const ManageTab(),
+
               routes: <RouteBase>[],
             ),
           ],
@@ -120,7 +119,7 @@ final GoRouter puboxRouter = GoRouter(
                 }
                 return null;
               },
-              builder: (context, state) => ProfileTab(),
+              builder: (context, state) => const ProfileTab(),
               routes: <RouteBase>[
                 GoRoute(
                     path: 'auth',

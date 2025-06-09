@@ -38,3 +38,26 @@ find teammates, parties ("lobby"), organize play, hire coaches/ referees etc
 - Use SharedPreferences to persist important app states
 - Use PlatformWidgets whenever possible
 - Use Vietnamese for UI/ messages but do not translate jargon
+
+## Internationalization
+The app supports both English and Vietnamese languages. Translations are stored in JSON files in the `lib/l10n` directory:
+
+- `en.json` - English translations
+- `vi.json` - Vietnamese translations
+- `industries_en.json` - English industry names
+- `industries_vi.json` - Vietnamese industry names
+
+### Adding or Updating Industry Translations
+To add or update industry translations, edit the `industries_vi.json` file. The file structure is:
+
+```json
+{
+  "industries": {
+    "English Industry Name": "Vietnamese Translation",
+    "Technology": "Công nghệ",
+    "Healthcare": "Y tế"
+  }
+}
+```
+
+Make sure to keep the English industry names as keys exactly as they appear in the database, and provide the Vietnamese translations as values.

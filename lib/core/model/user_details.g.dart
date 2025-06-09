@@ -51,8 +51,8 @@ UserLocation _$UserLocationFromJson(Map<String, dynamic> json) => UserLocation(
 
 Map<String, dynamic> _$UserLocationToJson(UserLocation instance) =>
     <String, dynamic>{
-      'city': _$CityEnumMap[instance.city],
-      'districts': instance.districts,
+      if (_$CityEnumMap[instance.city] case final value?) 'city': value,
+      if (instance.districts case final value?) 'districts': value,
     };
 
 const _$CityEnumMap = {
@@ -95,7 +95,7 @@ SoccerProfile _$SoccerProfileFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$SoccerProfileToJson(SoccerProfile instance) =>
     <String, dynamic>{
-      'skill': instance.skill,
+      if (instance.skill case final value?) 'skill': value,
     };
 
 BasketballProfile _$BasketballProfileFromJson(Map<String, dynamic> json) =>
@@ -105,7 +105,7 @@ BasketballProfile _$BasketballProfileFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$BasketballProfileToJson(BasketballProfile instance) =>
     <String, dynamic>{
-      'skill': instance.skill,
+      if (instance.skill case final value?) 'skill': value,
     };
 
 BadmintonProfile _$BadmintonProfileFromJson(Map<String, dynamic> json) =>
@@ -115,7 +115,7 @@ BadmintonProfile _$BadmintonProfileFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$BadmintonProfileToJson(BadmintonProfile instance) =>
     <String, dynamic>{
-      'skill': instance.skill,
+      if (instance.skill case final value?) 'skill': value,
     };
 
 TennisProfile _$TennisProfileFromJson(Map<String, dynamic> json) =>
@@ -125,7 +125,7 @@ TennisProfile _$TennisProfileFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$TennisProfileToJson(TennisProfile instance) =>
     <String, dynamic>{
-      'skill': instance.skill,
+      if (instance.skill case final value?) 'skill': value,
     };
 
 PickleballProfile _$PickleballProfileFromJson(Map<String, dynamic> json) =>
@@ -135,5 +135,5 @@ PickleballProfile _$PickleballProfileFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$PickleballProfileToJson(PickleballProfile instance) =>
     <String, dynamic>{
-      'skill': instance.skill,
+      if (instance.skill case final value?) 'skill': value,
     };

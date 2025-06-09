@@ -1,0 +1,37 @@
+{
+  "profileView": {
+    "genderLabel": "Gender",
+    "ageGroupLabel": "Age Group",
+    "industryLabel": "Industry",
+    "networkLabel": "Network"
+  },
+  "gender": {
+    "male": "Male",
+    "female": "Female"
+  },
+  "ageGroup": {
+    "student": "Student",
+    "mature": "Mature",
+    "middleAge": "Middle Age"
+  },
+  "industry": {
+    "agriculture": "Agriculture",
+    "construction": "Construction",
+    "culinaryTourism": "Culinary & Tourism",
+    "educationAcademia": "Education & Academia",
+    "energy": "Energy",
+    "entertainmentContentCreation": "Entertainment & Content Creation",
+    "fashionBeauty": "Fashion & Beauty",
+    "financeConsulting": "Finance & Consulting",
+    "government": "Government",
+    "healthcare": "Healthcare",
+    "legalServices": "Legal Services",
+    "manufacturing": "Manufacturing",
+    "mediaCommunications": "Media & Communications",
+    "nonprofitCharity": "Non-profit & Charity",
+    "realEstate": "Real Estate",
+    "retailOnlineCommerce": "Retail & Online Commerce",
+    "technology": "Technology",
+    "transportation": "Transportation"
+  }
+}
