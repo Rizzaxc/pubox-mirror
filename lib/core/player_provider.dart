@@ -91,6 +91,7 @@ class PlayerProvider extends ChangeNotifier {
   }
 
   Future<void> _loadFromServer() async {
+    AppLogger.d('reloading');
     if (_player.id == null) {
       return;
     }

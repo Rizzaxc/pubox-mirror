@@ -16,7 +16,7 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:toastification/toastification.dart';
 
-import 'core/icons/pubox_icons.dart';
+import 'core/icons/main.dart';
 import 'core/player_provider.dart';
 import 'core/sport_switcher.dart';
 import 'health_tab/health_f_a_b.dart';
@@ -106,7 +106,7 @@ class Pubox extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
         ),
       ),
-      cardTheme: CardTheme(
+      cardTheme: CardThemeData(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
@@ -205,7 +205,7 @@ class ScaffoldWithNavBar extends StatelessWidget {
     CupertinoIcons.house_fill,
     Icons.edit_calendar_rounded,
     FontAwesomeIcons.heartPulse,
-    PuboxIcons.profile
+    CupertinoIcons.profile_circled
   ];
 
   // TODO: move into their own screen

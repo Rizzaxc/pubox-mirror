@@ -292,7 +292,7 @@ class _SupaSocialsAuthState extends State<SupaSocialsAuth> {
         switch (socialProvider) {
           case OAuthProvider.google:
             return SvgPicture(
-              PuboxIconData.googleRound,
+              PuboxIcons.googleRound,
               height: 56,
               width: 56,
             );

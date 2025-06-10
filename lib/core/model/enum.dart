@@ -2,8 +2,10 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
 import '../logger.dart';
+import '../utils.dart';
 
 enum Sport { others, soccer, basketball, badminton, tennis, pickleball }
 
@@ -630,6 +632,91 @@ enum Gender {
 
   static List<String> getAllLocalizedName(BuildContext context) {
     return Gender.values.map((each) => each.getLocalizedName(context)).toList();
+  }
+}
+
+/// Class representing a network
+class Network {
+  final int id;
+  final String name;
+
+  const Network({
+    required this.id,
+    required this.name,
+  });
+
+  @override
+  String toString() => name;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is Network && other.id == id;
+  }
+
+  @override
+  int get hashCode => id.hashCode;
+
+  String getLocalizedName(BuildContext context) {
+    return name;
+  }
+}
+
+/// Class to manage network data
+class NetworkData {
+  NetworkData._();
+
+  /// Singleton instance
+  static final NetworkData instance = NetworkData._();
+
+  /// List of all networks (will be populated from database)
+  List<Network> _networks = [];
+
+  /// Flag to track if networks have been loaded
+  bool _loaded = false;
+
+  /// Get all networks
+  Future<List<Network>> getAllNetworks() async {
+    if (_loaded) return _networks;
+
+    try {
+      // Fetch networks from database
+      final response = await supabase.from('network').select('id, name');
+
+      _networks = (response as List).map((each) {
+        return Network(
+          id: each['id'],
+          name: each['name'],
+        );
+      }).toList();
+
+      _loaded = true;
+    } catch (e, stackTrace) {
+      AppLogger.d('Error fetching networks: $e');
+      Sentry.captureException(e, stackTrace: stackTrace);
+    }
+
+    return _networks;
+  }
+
+  /// Find a network by ID
+  Future<Network?> findNetworkById(int id) async {
+    final networks = await getAllNetworks();
+    try {
+      return networks.firstWhere((network) => network.id == id);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  /// Find networks by a search term (case insensitive, partial match)
+  Future<List<Network>> searchNetworks(String term) async {
+    final networks = await getAllNetworks();
+    final searchTerm = term.toLowerCase();
+
+    return networks.where((network) => 
+      network.name.toLowerCase().contains(searchTerm)
+    ).toList();
   }
 }
 

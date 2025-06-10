@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/icons/main.dart';
 import '../../core/model/enum.dart';
 import '../profile_state_provider.dart';
 
@@ -24,18 +25,15 @@ class AgeGroupSelection extends StatelessWidget {
 
   Widget _buildAndroidAgeGroupListTile(BuildContext context, AgeGroup? ageGroup) {
     late String subtitle;
-    late Icon leadingIcon;
 
     if (ageGroup == null) {
       subtitle = context.tr('not_set');
-      leadingIcon = const Icon(Icons.question_mark);
     } else {
       subtitle = ageGroup.getLocalizedName(context);
-      leadingIcon = const Icon(Icons.group);
     }
 
     return ListTile(
-      leading: leadingIcon,
+      leading: PuboxIcons.age,
       title: Text(context.tr('$l10nKeyPrefix.ageGroupLabel')),
       subtitle: Text(subtitle),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -99,7 +97,6 @@ class AgeGroupSelection extends StatelessWidget {
 
   Widget _buildIOSAgeGroupListTile(BuildContext context, AgeGroup? ageGroup) {
     late final Widget? choice;
-    final leadingIcon = const Icon(CupertinoIcons.group_solid);
 
     if (ageGroup == null) {
       choice = null;
@@ -110,7 +107,7 @@ class AgeGroupSelection extends StatelessWidget {
     return CupertinoListTile.notched(
       title: Text(context.tr('$l10nKeyPrefix.ageGroupLabel')),
       additionalInfo: choice,
-      leading: leadingIcon,
+      leading: PuboxIcons.age,
       trailing: ageGroup != null
           ? CupertinoListTileChevron()
           : Icon(Icons.question_mark),

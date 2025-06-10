@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/icons/main.dart';
 import '../../core/model/enum.dart';
 import '../profile_state_provider.dart';
 
@@ -16,12 +17,6 @@ class IndustrySelection extends StatelessWidget {
   Widget build(BuildContext context) {
     final profileState = Provider.of<ProfileStateProvider>(context);
     final selectedIndustries = profileState.selectedIndustries;
-    final isLoading = context.select<ProfileStateProvider, bool>(
-        (provider) => provider.loadingSelectedIndustries);
-
-    if (isLoading) {
-      return const Center(child: CircularProgressIndicator());
-    }
 
     return isCupertino(context)
         ? _buildIOSIndustryListTile(context, selectedIndustries)
@@ -41,7 +36,7 @@ class IndustrySelection extends StatelessWidget {
     }
 
     return ListTile(
-      leading: const Icon(Icons.work_outline),
+      leading: PuboxIcons.suitcase,
       title: Text(context.tr('$l10nKeyPrefix.industryLabel')),
       subtitle: Text(subtitle),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -51,7 +46,8 @@ class IndustrySelection extends StatelessWidget {
 
   void _showAndroidIndustryDialog(
       BuildContext context, List<Industry> selectedIndustries) {
-    final selectedIndustries = context.select<ProfileStateProvider, List<Industry>>(
+    final selectedIndustries =
+        context.select<ProfileStateProvider, List<Industry>>(
             (provider) => provider.selectedIndustries);
     final industries = Industry.values;
 
@@ -73,7 +69,9 @@ class IndustrySelection extends StatelessWidget {
                   title: Text(industry.getLocalizedName(context)),
                   value: isSelected,
                   onChanged: (bool? value) {
-                    context.read<ProfileStateProvider>().toggleIndustry(industry);
+                    context
+                        .read<ProfileStateProvider>()
+                        .toggleIndustry(industry);
                   },
                 );
               },
@@ -94,12 +92,11 @@ class IndustrySelection extends StatelessWidget {
 
   Widget _buildIOSIndustryListTile(
       BuildContext context, List<Industry> selectedIndustries) {
-
     return CupertinoListTile.notched(
       title: Text(context.tr('$l10nKeyPrefix.industryLabel')),
       // additionalInfo: additionalInfo != null ? Text(additionalInfo) : null,
 
-      leading: const Icon(Icons.work_outline),
+      leading: PuboxIcons.suitcase,
       trailing: const CupertinoListTileChevron(),
       onTap: () => _iosIndustryListPageBuilder(context),
     );
@@ -116,6 +113,7 @@ class IndustrySelection extends StatelessWidget {
 
 class IndustryListPage extends StatelessWidget {
   const IndustryListPage({super.key});
+
   final industries = Industry.values;
 
   @override
@@ -123,8 +121,9 @@ class IndustryListPage extends StatelessWidget {
     // final industries = Industry.values.sort((a, b) =>
     //     a.getLocalizedName(context).compareTo(b.getLocalizedName(context)));
 
-    final selectedIndustries = context.select<ProfileStateProvider, List<Industry>>(
-        (provider) => provider.selectedIndustries);
+    final selectedIndustries =
+        context.select<ProfileStateProvider, List<Industry>>(
+            (provider) => provider.selectedIndustries);
 
     return CupertinoPageScaffold(
       navigationBar: CupertinoNavigationBar(
