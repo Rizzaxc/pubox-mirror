@@ -7,13 +7,15 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:toastification/toastification.dart';
 
+import '../core/icons/main.dart';
 import '../core/player_provider.dart';
 import '../core/sport_switcher.dart';
 import '../core/utils.dart';
+import 'profile_state_provider.dart';
 import 'widget/age_group_selection.dart';
 import 'widget/gender_selection.dart';
 import 'widget/industry_selection.dart';
-
+import 'widget/network_selection.dart';
 
 class ProfileTab extends StatefulWidget {
   const ProfileTab({super.key});
@@ -25,62 +27,114 @@ class ProfileTab extends StatefulWidget {
 class _ProfileTabState extends State<ProfileTab> {
   Widget _buildAccountSection(BuildContext context) {
     final player = context.watch<PlayerProvider>().player;
-    return Card(
-      margin: const EdgeInsets.all(8.0),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4),
-              child: Text('Account',
-                  style: Theme.of(context).textTheme.headlineSmall),
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          // Avatar as the main signifier
+          CircleAvatar(
+            radius: 72,
+            backgroundColor:
+                Theme.of(context).colorScheme.primary.withOpacity(0.1),
+            child: Icon(
+              Icons.person,
+              size: 80,
+              color: Theme.of(context).colorScheme.primary,
             ),
-            const Divider(),
-            ListTile(
-                leading: const Icon(Icons.person_outline),
-                title: Text('${player.username}#${player.tagNumber}'),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12))
-
-                // TODO: Add onTap to edit username
-                ),
-            ListTile(
-              leading: const Icon(Icons.email_outlined),
-              title: Text(supabase.auth.currentUser?.email ?? 'No Email'),
+          ),
+          const SizedBox(height: 16),
+          // Username and tag directly beneath
+          Text(
+            '${player.username}#${player.tagNumber}',
+            style: Theme.of(context).textTheme.titleLarge,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+          // Email
+          Text(
+            supabase.auth.currentUser?.email ?? 'No Email',
+            style: Theme.of(context).textTheme.bodyMedium,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 16),
+          // Change password button
+          OutlinedButton.icon(
+            icon: const Icon(Icons.lock_outline),
+            label: const Text('Đổi Password'),
+            onPressed: () {
+              // TODO: Navigate to change password screen
+              context.showToast('Navigate to change password screen',
+                  type: ToastificationType.info);
+            },
+            style: OutlinedButton.styleFrom(
+              minimumSize: const Size(double.infinity, 48),
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-              // TODO: Add onTap to change email
+                borderRadius: BorderRadius.circular(12),
+              ),
             ),
-            ListTile(
-              leading: const Icon(Icons.lock_outline),
-              title: const Text('Đổi Password'),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-              onTap: () {
-                // TODO: Navigate to change password screen
-                context.showToast('Navigate to change password screen',
-                    type: ToastificationType.info);
-              },
-            ),
-            ListTile(
-              leading: Icon(Icons.logout, color: Colors.red.shade700),
-              title: Text('Sign Out',
-                  style: TextStyle(color: Colors.red.shade700)),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-              onTap: () async {
-                await supabase.auth.signOut();
-                if (context.mounted) {
-                  context.go('/welcome');
-                }
-              },
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
+  }
+
+  Widget _buildLogoutButton(BuildContext context) {
+    return Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: PlatformElevatedButton(
+          onPressed: () async {
+            showPlatformDialog(
+                context: context,
+                barrierDismissible: true,
+                builder: (context) => PlatformAlertDialog(
+                      title: const Text('Confirm Log Out?'),
+                      actions: [
+                        PlatformTextButton(
+                          onPressed: () => context.pop(),
+                          child: const Text('No'),
+                        ),
+                        PlatformTextButton(
+                          onPressed: () async {
+                            await supabase.auth.signOut();
+                            if (context.mounted) {
+                              context.go('/welcome');
+                              context.pop();
+                            }
+                          },
+                          child: const Text('Yes'),
+                        )
+                      ],
+                    ));
+          },
+          color: Theme.of(context).colorScheme.tertiary,
+          cupertino: (_, __) => CupertinoElevatedButtonData(
+              borderRadius: BorderRadius.all(Radius.circular(16))),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            spacing: 16,
+            children: const [
+              Icon(Icons.logout),
+              Text(
+                'Log Out',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ],
+          ),
+        )
+        // child: ListTile(
+        //   leading: Icon(Icons.logout, color: Colors.red.shade700),
+        //   title: Text('Sign Out', style: TextStyle(color: Colors.red.shade700)),
+        //   shape: RoundedRectangleBorder(
+        //       borderRadius: BorderRadius.circular(12)),
+        //   onTap: () async {
+        //     await supabase.auth.signOut();
+        //     if (context.mounted) {
+        //       context.go('/welcome');
+        //     }
+        //   },
+        // ),
+        );
   }
 
   Widget _buildProfileSection(BuildContext context) {
@@ -107,7 +161,8 @@ class _ProfileTabState extends State<ProfileTab> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4),
                 child: Text('Profile ${selectedSport.name.capitalize()}',
                     style: Theme.of(context).textTheme.headlineSmall),
               ),
@@ -142,14 +197,7 @@ class _ProfileTabState extends State<ProfileTab> {
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         children: [
           const IndustrySelection(),
-          CupertinoListTile.notched(
-            leading: const Icon(Icons.school_outlined),
-            title: const Text('Networks (School, Company)'),
-            trailing: const CupertinoListTileChevron(),
-            onTap: () {
-              // TODO: Edit networks
-            },
-          ),
+          const NetworkSelection(),
         ],
       );
     } else {
@@ -162,22 +210,14 @@ class _ProfileTabState extends State<ProfileTab> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4),
                 child: Text('Network & Industry',
                     style: Theme.of(context).textTheme.headlineSmall),
               ),
               const Divider(),
               const IndustrySelection(),
-              ListTile(
-                leading: const Icon(Icons.school_outlined),
-                title: const Text('Networks (School, Company)'),
-                subtitle: const Text('Not set'),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
-                onTap: () {
-                  // TODO: Edit networks
-                },
-              ),
+              const NetworkSelection(),
             ],
           ),
         ),
@@ -186,9 +226,8 @@ class _ProfileTabState extends State<ProfileTab> {
   }
 
   Widget _buildMainContent(BuildContext context) {
-
     return RefreshIndicator(
-      onRefresh: () => context.read<PlayerProvider>().refreshData(),
+      onRefresh: () => context.read<ProfileStateProvider>().refreshProfile(),
       child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -200,7 +239,9 @@ class _ProfileTabState extends State<ProfileTab> {
               _buildProfileSection(context),
               const SizedBox(height: 16),
               _buildNetworkSection(context),
-              const SizedBox(height: 120), // For FAB spacing
+              const SizedBox(height: 16),
+              _buildLogoutButton(context),
+              const SizedBox(height: 144), // For FAB spacing
             ],
           ),
         ),
@@ -259,7 +300,6 @@ class _ProfileTabState extends State<ProfileTab> {
         ],
       ),
       body: body, // Use the determined body widget
-
     );
   }
 }

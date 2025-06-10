@@ -57,7 +57,7 @@ class Player {
   /// Connect the generated [_$PlayerToJson] function to the `toJson` method.
   Map<String, dynamic> toJson() => _$PlayerToJson(this);
 
-  // Method to update player properties, preserving the singleton nature
+  // Method to update player properties
   void update({
     String? id,
     String? username,

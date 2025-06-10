@@ -20,13 +20,11 @@ class ProfileStateProvider extends ChangeNotifier {
   Gender? _pendingGender;
   AgeGroup? _pendingAgeGroup;
   List<Industry>? _pendingIndustries;
+  List<Network>? _pendingNetworks;
 
-  // Available industries
-  bool _loadingIndustries = false;
-
-  // User's selected industries
+  // User's selected industries and networks
   List<Industry> _selectedIndustries = [];
-  bool _loadingSelectedIndustries = false;
+  List<Network> _selectedNetworks = [];
 
   bool _hasPendingChanges = false;
 
@@ -36,15 +34,17 @@ class ProfileStateProvider extends ChangeNotifier {
 
     // Initialize data
     _fetchUserIndustries();
-    // TODO: _fetchUserNetworks();
+    _fetchUserNetworks();
   }
 
   // Fetch user's selected industries
   Future<void> _fetchUserIndustries() async {
     final player = _playerProvider.player;
-    if (player.id == null || _loadingSelectedIndustries) return;
+    if (player.id == null) return;
+    // if (player.id == null || _loadingSelectedIndustries) return;
 
-    _loadingSelectedIndustries = true;
+    // _loadingSelectedIndustries = true;
+
     notifyListeners();
 
     try {
@@ -53,16 +53,46 @@ class ProfileStateProvider extends ChangeNotifier {
           .select('industry_id')
           .eq('user_id', player.id!);
 
-      AppLogger.d(response.toString());
+      // AppLogger.d(response.toString());
 
       _selectedIndustries = (response as List).map((each) {
-        return each as Industry;
+        return Industry.values[each['industry_id']];
       }).toList();
     } catch (e, stackTrace) {
       AppLogger.d('Error fetching selected industries: $e');
       Sentry.captureException(e, stackTrace: stackTrace);
     } finally {
-      _loadingSelectedIndustries = false;
+      // _loadingSelectedIndustries = false;
+      notifyListeners();
+    }
+  }
+
+  // Fetch user's selected networks
+  Future<void> _fetchUserNetworks() async {
+    final player = _playerProvider.player;
+    if (player.id == null) return;
+
+    notifyListeners();
+
+    try {
+      final response = await supabase
+          .from('user_network')
+          .select('network_id')
+          .eq('user_id', player.id!);
+
+      // Convert the response to a list of Network objects
+      _selectedNetworks = [];
+      for (var each in response as List) {
+        final networkId = each['network_id'];
+        final network = await NetworkData.instance.findNetworkById(networkId);
+        if (network != null) {
+          _selectedNetworks.add(network);
+        }
+      }
+    } catch (e, stackTrace) {
+      AppLogger.d('Error fetching selected networks: $e');
+      Sentry.captureException(e, stackTrace: stackTrace);
+    } finally {
       notifyListeners();
     }
   }
@@ -75,13 +105,12 @@ class ProfileStateProvider extends ChangeNotifier {
       _pendingAgeGroup ?? _playerProvider.player.details?.ageGroup;
 
   // Industry getters
-
-  bool get loadingIndustries => _loadingIndustries;
-
   List<Industry> get selectedIndustries =>
       _pendingIndustries ?? _selectedIndustries;
 
-  bool get loadingSelectedIndustries => _loadingSelectedIndustries;
+  // Network getters
+  List<Network> get selectedNetworks =>
+      _pendingNetworks ?? _selectedNetworks;
 
   // int? get skill {
   //   if (_pendingSkill != null) return _pendingSkill;
@@ -134,7 +163,6 @@ class ProfileStateProvider extends ChangeNotifier {
       // Remove the industry
       _pendingIndustries = [..._pendingIndustries!];
       _pendingIndustries!.remove(industry);
-
     } else {
       // Add the industry if we haven't reached the limit
       if (_pendingIndustries!.length < 2) {
@@ -144,7 +172,32 @@ class ProfileStateProvider extends ChangeNotifier {
         _pendingIndustries = [..._pendingIndustries!];
         _pendingIndustries![0] = _pendingIndustries![1];
         _pendingIndustries![1] = industry;
+      }
+    }
+    notifyListeners();
+  }
 
+  // Add or remove a single network
+  void toggleNetwork(Network network) {
+    _hasPendingChanges = true;
+    _pendingNetworks ??= List.from(_selectedNetworks);
+
+    // Check if the network is already selected
+    final selected = _pendingNetworks!.contains(network);
+
+    if (selected) {
+      // Remove the network
+      _pendingNetworks = [..._pendingNetworks!];
+      _pendingNetworks!.remove(network);
+    } else {
+      // Add the network if we haven't reached the limit
+      if (_pendingNetworks!.length < 2) {
+        _pendingNetworks = [..._pendingNetworks!, network];
+      } else {
+        // Replace the first network if we've reached the limit
+        _pendingNetworks = [..._pendingNetworks!];
+        _pendingNetworks![0] = _pendingNetworks![1];
+        _pendingNetworks![1] = network;
       }
     }
     notifyListeners();
@@ -229,19 +282,41 @@ class ProfileStateProvider extends ChangeNotifier {
       player.update(details: details);
 
       // Update industries if changed
-      if (_pendingIndustries != null && _pendingIndustries != _selectedIndustries) {
+      if (_pendingIndustries != null &&
+          _pendingIndustries != _selectedIndustries) {
         AppLogger.d(_pendingIndustries.toString());
 
         // First, delete all existing user_industry entries for this user
         await supabase.from('user_industry').delete().eq('user_id', player.id!);
 
-        final data =
-            _pendingIndustries!.map((industry) => {'user_id': player.id!, 'industry_id': industry.index}).toList();
+        final data = _pendingIndustries!
+            .map((industry) =>
+                {'user_id': player.id!, 'industry_id': industry.index})
+            .toList();
         await supabase.from('user_industry').insert(data);
 
         // Update local state
         _selectedIndustries = List.from(_pendingIndustries!);
         _pendingIndustries = null;
+      }
+
+      // Update networks if changed
+      if (_pendingNetworks != null &&
+          _pendingNetworks != _selectedNetworks) {
+        AppLogger.d(_pendingNetworks.toString());
+
+        // First, delete all existing user_network entries for this user
+        await supabase.from('user_network').delete().eq('user_id', player.id!);
+
+        final data = _pendingNetworks!
+            .map((network) =>
+                {'user_id': player.id!, 'network_id': network.id})
+            .toList();
+        await supabase.from('user_network').insert(data);
+
+        // Update local state
+        _selectedNetworks = List.from(_pendingNetworks!);
+        _pendingNetworks = null;
       }
 
       _hasPendingChanges = false;
@@ -255,11 +330,26 @@ class ProfileStateProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> refreshProfile() async {
+    discardChanges();
+    try {
+      Future.wait([
+        _playerProvider.refreshData(),
+        _fetchUserIndustries(),
+        _fetchUserNetworks()
+      ]);
+    } on Exception catch (exception, stackTrace) {
+      Sentry.captureException(exception, stackTrace: stackTrace);
+    }
+    notifyListeners();
+  }
+
   // Discard pending changes
   void discardChanges() {
     _pendingGender = null;
     _pendingAgeGroup = null;
     _pendingIndustries = null;
+    _pendingNetworks = null;
 
     _hasPendingChanges = false;
     notifyListeners();

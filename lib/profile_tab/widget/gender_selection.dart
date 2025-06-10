@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
 
+import '../../core/icons/main.dart';
 import '../../core/model/enum.dart';
 import '../profile_state_provider.dart';
 
@@ -24,17 +25,17 @@ class GenderSelection extends StatelessWidget {
 
   Widget _buildAndroidGenderListTile(BuildContext context, Gender? gender) {
     late String subtitle;
-    late Icon leadingIcon;
+    late Widget leadingIcon;
 
     if (gender == null) {
       subtitle = context.tr('not_set');
-      leadingIcon = const Icon(Icons.question_mark);
+      leadingIcon = PuboxIcons.gender;
     } else if (gender == Gender.male) {
       subtitle = gender.getLocalizedName(context);
-      leadingIcon = const Icon(Icons.male);
+      leadingIcon = PuboxIcons.male;
     } else if (gender == Gender.female) {
       subtitle = gender.getLocalizedName(context);
-      leadingIcon = const Icon(Icons.female);
+      leadingIcon = PuboxIcons.female;
     }
 
     return ListTile(
@@ -97,13 +98,13 @@ class GenderSelection extends StatelessWidget {
 
     if (gender == null) {
       choice = null;
-      leadingIcon = const Icon(Icons.transgender);
+      leadingIcon = PuboxIcons.gender;
     } else if (gender == Gender.male) {
       choice = Text(gender.getLocalizedName(context));
-      leadingIcon = const Icon(Icons.male);
+      leadingIcon = PuboxIcons.male;
     } else if (gender == Gender.female) {
       choice = Text(gender.getLocalizedName(context));
-      leadingIcon = const Icon(Icons.female);
+      leadingIcon = PuboxIcons.female;
     }
 
     return CupertinoListTile.notched(
