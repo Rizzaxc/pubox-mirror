@@ -37,61 +37,97 @@ class AgeGroupSelection extends StatelessWidget {
       title: Text(context.tr('$l10nKeyPrefix.ageGroupLabel')),
       subtitle: Text(subtitle),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      onTap: () => _showAndroidAgeGroupDialog(context, ageGroup),
+      onTap: () => _showAgeGroupModal(context, ageGroup),
     );
   }
 
-  void _showAndroidAgeGroupDialog(BuildContext context, AgeGroup? currentAgeGroup) {
+  void _showAgeGroupModal(BuildContext context, AgeGroup? currentAgeGroup) {
     final profileState =
         Provider.of<ProfileStateProvider>(context, listen: false);
 
-    showDialog(
+    showPlatformModalSheet(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(context.tr('$l10nKeyPrefix.ageGroupLabel')),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
+      material: MaterialModalSheetData(
+        isScrollControlled: true,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+        ),
+      ),
+      cupertino: CupertinoModalSheetData(
+          barrierDismissible: true, semanticsDismissible: true),
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.6,
+        minChildSize: 0.4,
+        maxChildSize: 0.8,
+        snap: true,
+        builder: (context, scrollController) => Container(
+          decoration: BoxDecoration(
+              color: Theme.of(context).canvasColor,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(24))),
+          padding: const EdgeInsets.only(top: 8, left: 8, right: 8),
+          child: Column(
             children: [
-              RadioListTile<AgeGroup>(
-                title: Text(AgeGroup.student.getLocalizedName(context)),
-                value: AgeGroup.student,
-                groupValue: currentAgeGroup,
-                onChanged: (AgeGroup? value) {
-                  profileState.updateAgeGroup(value);
-                  Navigator.of(context).pop();
-                },
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0, vertical: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      context.tr('$l10nKeyPrefix.ageGroupLabel'),
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    PlatformTextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: Text(context.tr('done')),
+                    ),
+                  ],
+                ),
               ),
-              RadioListTile<AgeGroup>(
-                title: Text(AgeGroup.mature.getLocalizedName(context)),
-                value: AgeGroup.mature,
-                groupValue: currentAgeGroup,
-                onChanged: (AgeGroup? value) {
-                  profileState.updateAgeGroup(value);
-                  Navigator.of(context).pop();
-                },
-              ),
-              RadioListTile<AgeGroup>(
-                title: Text(AgeGroup.middleAge.getLocalizedName(context)),
-                value: AgeGroup.middleAge,
-                groupValue: currentAgeGroup,
-                onChanged: (AgeGroup? value) {
-                  profileState.updateAgeGroup(value);
-                  Navigator.of(context).pop();
-                },
+              Expanded(
+                child: SingleChildScrollView(
+                  controller: scrollController,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      RadioListTile<AgeGroup>(
+                        title: Text(AgeGroup.student.getLocalizedName(context)),
+                        value: AgeGroup.student,
+                        groupValue: currentAgeGroup,
+                        onChanged: (AgeGroup? value) {
+                          profileState.updateAgeGroup(value);
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      RadioListTile<AgeGroup>(
+                        title: Text(AgeGroup.mature.getLocalizedName(context)),
+                        value: AgeGroup.mature,
+                        groupValue: currentAgeGroup,
+                        onChanged: (AgeGroup? value) {
+                          profileState.updateAgeGroup(value);
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                      RadioListTile<AgeGroup>(
+                        title: Text(AgeGroup.middleAge.getLocalizedName(context)),
+                        value: AgeGroup.middleAge,
+                        groupValue: currentAgeGroup,
+                        onChanged: (AgeGroup? value) {
+                          profileState.updateAgeGroup(value);
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ],
           ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text(context.tr('done')),
-            ),
-          ],
-        );
-      },
+        ),
+      ),
     );
   }
 

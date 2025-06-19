@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:sentry_flutter/sentry_flutter.dart';
 
+import '../core/logger.dart';
 import '../core/player_provider.dart';
 import '../misc/flutter_auth_ui/supabase_auth_ui.dart';
 
@@ -78,6 +80,10 @@ class AuthForm extends StatelessWidget {
                       OAuthProvider.apple,
                       OAuthProvider.facebook
                     ],
+                    onError: (error) {
+                      AppLogger.e(error.toString());
+                      Sentry.captureException(error);
+                    },
                     onSuccess: (session) async {
                       final hasPlayerInitialized =
                           await _awaitPlayerInitialized(context);

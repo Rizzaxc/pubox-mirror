@@ -26,9 +26,6 @@ class HomeSearchPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<HomeStateProvider>(
       builder: (context, stateProvider, _) {
-        final city = stateProvider.city;
-        final districts = stateProvider.districts;
-
         return SingleChildScrollView(
           controller: scrollController,
           scrollDirection: Axis.vertical,

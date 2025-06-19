@@ -3,7 +3,50 @@
     "genderLabel": "Giới Tính",
     "ageGroupLabel": "Nhóm Tuổi",
     "industryLabel": "Ngành Nghề",
-    "networkLabel": "Network"
+    "networkLabel": "Network",
+    "playtimeLabel": "Lịch Hằng Tuần"
+  },
+  "timeslot": {
+    "dayOfWeek": {
+      "label": "Ngày Trong Tuần",
+      "everyday": "Hàng Ngày",
+      "monday": "Thứ 2",
+      "tuesday": "Thứ 3",
+      "wednesday": "Thứ 4",
+      "thursday": "Thứ 5",
+      "friday": "Thứ 6",
+      "saturday": "Thứ 7",
+      "sunday": "Chủ Nhật",
+      "even": "Ngày Chẵn (2,4,6)",
+      "odd": "Ngày Lẻ (3,5,7)",
+      "weekend": "Cuối Tuần",
+      "shortName": {
+        "everyday": "HN",
+        "monday": "T2",
+        "tuesday": "T3",
+        "wednesday": "T4",
+        "thursday": "T5",
+        "friday": "T6",
+        "saturday": "T7",
+        "sunday": "CN",
+        "even": "246",
+        "odd": "357",
+        "weekend": "CT"
+      }
+    },
+    "dayChunk": {
+      "label": "Khoảng Giờ",
+      "early": "Sáng (4h-9h)",
+      "midday": "Trưa (9h-14h)",
+      "noon": "Chiều (14h-18h)",
+      "night": "Tối (18h-24h)",
+      "shortName": {
+        "early": "Sáng",
+        "midday": "Trưa",
+        "noon": "Chiều",
+        "night": "Tối"
+      }
+    }
   },
   "gender": {
     "male": "Nam",

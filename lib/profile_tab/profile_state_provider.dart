@@ -8,6 +8,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../core/logger.dart';
 import '../core/model/enum.dart';
 import '../core/model/user_details.dart';
+import '../core/model/timeslot.dart';
 import '../core/player_provider.dart';
 import '../core/sport_switcher.dart';
 import '../core/utils.dart';
@@ -21,6 +22,7 @@ class ProfileStateProvider extends ChangeNotifier {
   AgeGroup? _pendingAgeGroup;
   List<Industry>? _pendingIndustries;
   List<Network>? _pendingNetworks;
+  dynamic _pendingPlaytime;
 
   // User's selected industries and networks
   List<Industry> _selectedIndustries = [];
@@ -112,6 +114,10 @@ class ProfileStateProvider extends ChangeNotifier {
   List<Network> get selectedNetworks =>
       _pendingNetworks ?? _selectedNetworks;
 
+  // Playtime getter
+  dynamic get playtime =>
+      _pendingPlaytime ?? _playerProvider.player.details?.playtime;
+
   // int? get skill {
   //   if (_pendingSkill != null) return _pendingSkill;
   //
@@ -147,6 +153,13 @@ class ProfileStateProvider extends ChangeNotifier {
   void updateAgeGroup(AgeGroup? newAgeGroup) {
     if (newAgeGroup == ageGroup) return;
     _pendingAgeGroup = newAgeGroup;
+    _hasPendingChanges = true;
+    notifyListeners();
+  }
+
+  void updatePlaytime(dynamic newPlaytime) {
+    if (newPlaytime == playtime) return;
+    _pendingPlaytime = newPlaytime;
     _hasPendingChanges = true;
     notifyListeners();
   }
@@ -221,6 +234,12 @@ class ProfileStateProvider extends ChangeNotifier {
     if (_pendingAgeGroup != null) {
       details.ageGroup = _pendingAgeGroup;
       _pendingAgeGroup = null;
+    }
+
+    // Update playtime if changed
+    if (_pendingPlaytime != null) {
+      details.playtime = _pendingPlaytime;
+      _pendingPlaytime = null;
     }
 
     // Update sport-specific details if changed
@@ -350,6 +369,7 @@ class ProfileStateProvider extends ChangeNotifier {
     _pendingAgeGroup = null;
     _pendingIndustries = null;
     _pendingNetworks = null;
+    _pendingPlaytime = null;
 
     _hasPendingChanges = false;
     notifyListeners();

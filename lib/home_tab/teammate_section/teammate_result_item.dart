@@ -154,23 +154,27 @@ class TeammateResultItem extends StatelessWidget {
   }
 
   Widget _buildPlaytime() {
-    final dayShortName = data.playtime.dayOfWeek.getShortName();
-    final timeShortName = data.playtime.dayChunk.getShortName();
-    final combinedLabel = '$timeShortName $dayShortName';
+    return Builder(
+      builder: (context) {
+        final dayShortName = data.playtime.dayOfWeek.getShortName(context);
+        final timeShortName = data.playtime.dayChunk.getShortName(context);
+        final combinedLabel = '$timeShortName $dayShortName';
 
-    return Row(
-      children: [
-        const Icon(Icons.access_time, size: 16, color: Colors.grey),
-        const SizedBox(width: 4),
-        Expanded(
-          child: Text(
-            combinedLabel,
-            style: const TextStyle(fontSize: 12),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ],
+        return Row(
+          children: [
+            const Icon(Icons.access_time, size: 16, color: Colors.grey),
+            const SizedBox(width: 4),
+            Expanded(
+              child: Text(
+                combinedLabel,
+                style: const TextStyle(fontSize: 12),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 

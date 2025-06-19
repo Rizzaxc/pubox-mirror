@@ -7,7 +7,6 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import 'package:toastification/toastification.dart';
 
-import '../core/icons/main.dart';
 import '../core/player_provider.dart';
 import '../core/sport_switcher.dart';
 import '../core/utils.dart';
@@ -16,6 +15,7 @@ import 'widget/age_group_selection.dart';
 import 'widget/gender_selection.dart';
 import 'widget/industry_selection.dart';
 import 'widget/network_selection.dart';
+import 'widget/playtime_selection.dart';
 
 class ProfileTab extends StatefulWidget {
   const ProfileTab({super.key});
@@ -112,7 +112,7 @@ class _ProfileTabState extends State<ProfileTab> {
               borderRadius: BorderRadius.all(Radius.circular(16))),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            spacing: 16,
+            spacing: 4,
             children: const [
               Icon(Icons.logout),
               Text(
@@ -121,20 +121,7 @@ class _ProfileTabState extends State<ProfileTab> {
               ),
             ],
           ),
-        )
-        // child: ListTile(
-        //   leading: Icon(Icons.logout, color: Colors.red.shade700),
-        //   title: Text('Sign Out', style: TextStyle(color: Colors.red.shade700)),
-        //   shape: RoundedRectangleBorder(
-        //       borderRadius: BorderRadius.circular(12)),
-        //   onTap: () async {
-        //     await supabase.auth.signOut();
-        //     if (context.mounted) {
-        //       context.go('/welcome');
-        //     }
-        //   },
-        // ),
-        );
+        ));
   }
 
   Widget _buildProfileSection(BuildContext context) {
@@ -149,6 +136,8 @@ class _ProfileTabState extends State<ProfileTab> {
         children: [
           const GenderSelection(),
           const AgeGroupSelection(),
+          const PlaytimeSelection(),
+
         ],
       );
     } else {
@@ -169,17 +158,7 @@ class _ProfileTabState extends State<ProfileTab> {
               const Divider(),
               const GenderSelection(),
               const AgeGroupSelection(),
-
-              ListTile(
-                leading: const Icon(Icons.schedule),
-                title: const Text('Playtime'),
-                subtitle: const Text('Not set'),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12)),
-                onTap: () {
-                  // TODO: Create a PlaytimeSelection widget
-                },
-              ),
+              const PlaytimeSelection(),
               // Save/cancel buttons removed - now handled by FAB
             ],
           ),
@@ -188,7 +167,7 @@ class _ProfileTabState extends State<ProfileTab> {
     }
   }
 
-  Widget _buildNetworkSection(BuildContext context) {
+  Widget _buildNetworkIndustrySection(BuildContext context) {
     // Conditionally render iOS or Android UI based on the current platform
     if (isCupertino(context)) {
       // iOS UI
@@ -196,8 +175,8 @@ class _ProfileTabState extends State<ProfileTab> {
         header: const Text('Network & Industry'),
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         children: [
-          const IndustrySelection(),
           const NetworkSelection(),
+          const IndustrySelection(),
         ],
       );
     } else {
@@ -216,8 +195,8 @@ class _ProfileTabState extends State<ProfileTab> {
                     style: Theme.of(context).textTheme.headlineSmall),
               ),
               const Divider(),
-              const IndustrySelection(),
               const NetworkSelection(),
+              const IndustrySelection(),
             ],
           ),
         ),
@@ -238,7 +217,7 @@ class _ProfileTabState extends State<ProfileTab> {
               const SizedBox(height: 16),
               _buildProfileSection(context),
               const SizedBox(height: 16),
-              _buildNetworkSection(context),
+              _buildNetworkIndustrySection(context),
               const SizedBox(height: 16),
               _buildLogoutButton(context),
               const SizedBox(height: 144), // For FAB spacing

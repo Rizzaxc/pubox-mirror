@@ -1,3 +1,4 @@
+import 'package:diacritic/diacritic.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -6,6 +7,7 @@ import 'package:provider/provider.dart';
 
 import '../../core/icons/main.dart';
 import '../../core/model/enum.dart';
+import '../../core/utils.dart';
 import '../profile_state_provider.dart';
 
 const l10nKeyPrefix = "profileView";
@@ -40,53 +42,82 @@ class IndustrySelection extends StatelessWidget {
       title: Text(context.tr('$l10nKeyPrefix.industryLabel')),
       subtitle: Text(subtitle),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      onTap: () => _showAndroidIndustryDialog(context, selectedIndustries),
+      onTap: () => _showIndustryModal(context, selectedIndustries),
     );
   }
 
-  void _showAndroidIndustryDialog(
+  void _showIndustryModal(
       BuildContext context, List<Industry> selectedIndustries) {
-    final selectedIndustries =
-        context.select<ProfileStateProvider, List<Industry>>(
-            (provider) => provider.selectedIndustries);
-    final industries = Industry.values;
+    // Sort industries alphabetically by localized names, stripping diacritics before comparison
+    final industries = Industry.values.toList()
+      ..sort((a, b) => removeDiacritics(a.getLocalizedName(context)).compareTo(removeDiacritics(b.getLocalizedName(context))));
 
-    showDialog(
+    showPlatformModalSheet(
       context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(context.tr('industry_selection_title')),
-          content: SizedBox(
-            width: double.maxFinite,
-            child: ListView.builder(
-              shrinkWrap: true,
-              itemCount: industries.length,
-              itemBuilder: (context, index) {
-                final industry = industries[index];
-                final isSelected = selectedIndustries.contains(industry);
+      material: MaterialModalSheetData(
+        isScrollControlled: true,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
+        ),
+      ),
+      cupertino: CupertinoModalSheetData(
+          barrierDismissible: true, semanticsDismissible: true),
+      builder: (context) => DraggableScrollableSheet(
+        initialChildSize: 0.8,
+        minChildSize: 0.4,
+        maxChildSize: 0.8,
+        snap: true,
+        builder: (context, scrollController) => Container(
+          decoration: BoxDecoration(
+              color: Theme.of(context).canvasColor,
+              borderRadius: const BorderRadius.vertical(top: Radius.circular(24))),
+          padding: const EdgeInsets.only(top: 8, left: 8, right: 8),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 16.0, vertical: 8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      context.tr('industry_selection_title'),
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    PlatformTextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: Text(context.tr('done')),
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                child: ListView.builder(
+                  controller: scrollController,
+                  itemCount: industries.length,
+                  itemBuilder: (context, index) {
+                    final industry = industries[index];
+                    final isSelected = selectedIndustries.contains(industry);
 
-                return CheckboxListTile(
-                  title: Text(industry.getLocalizedName(context)),
-                  value: isSelected,
-                  onChanged: (bool? value) {
-                    context
-                        .read<ProfileStateProvider>()
-                        .toggleIndustry(industry);
+                    return CheckboxListTile(
+                      title: Text(industry.getLocalizedName(context)),
+                      value: isSelected,
+                      onChanged: (bool? value) {
+                        context
+                            .read<ProfileStateProvider>()
+                            .toggleIndustry(industry);
+                      },
+                    );
                   },
-                );
-              },
-            ),
+                ),
+              ),
+            ],
           ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text(context.tr('done')),
-            ),
-          ],
-        );
-      },
+        ),
+      ),
     );
   }
 
@@ -114,12 +145,11 @@ class IndustrySelection extends StatelessWidget {
 class IndustryListPage extends StatelessWidget {
   const IndustryListPage({super.key});
 
-  final industries = Industry.values;
-
   @override
   Widget build(BuildContext context) {
-    // final industries = Industry.values.sort((a, b) =>
-    //     a.getLocalizedName(context).compareTo(b.getLocalizedName(context)));
+    // Sort industries alphabetically by localized names, stripping diacritics before comparison
+    final industries = Industry.values.toList()
+      ..sort((a, b) => removeDiacritics(a.getLocalizedName(context)).compareTo(removeDiacritics(b.getLocalizedName(context))));
 
     final selectedIndustries =
         context.select<ProfileStateProvider, List<Industry>>(

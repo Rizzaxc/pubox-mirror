@@ -4,20 +4,19 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:vector_graphics/vector_graphics.dart';
 
 class PuboxIcons {
-  static const age =
-      SvgPicture(AssetBytesLoader('./assets/icons/age.svg.vec'));
+  static const age = SvgPicture(AssetBytesLoader('./assets/icons/age.svg.vec'));
 
   static const suitcase =
-  SvgPicture(AssetBytesLoader('./assets/icons/suitcase.svg.vec'));
+      SvgPicture(AssetBytesLoader('./assets/icons/suitcase.svg.vec'));
 
   static const male =
-  SvgPicture(AssetBytesLoader('./assets/icons/male.svg.vec'));
+      SvgPicture(AssetBytesLoader('./assets/icons/male.svg.vec'));
 
   static const female =
-  SvgPicture(AssetBytesLoader('./assets/icons/female.svg.vec'));
+      SvgPicture(AssetBytesLoader('./assets/icons/female.svg.vec'));
 
   static const ageGroup =
-  SvgPicture(AssetBytesLoader('./assets/icons/ageGroup.svg.vec'));
+      SvgPicture(AssetBytesLoader('./assets/icons/ageGroup.svg.vec'));
 
   static const badminton =
       SvgPicture(AssetBytesLoader('./assets/icons/badminton.svg.vec'));
@@ -46,6 +45,9 @@ class PuboxIcons {
   static const pickleball =
       SvgPicture(AssetBytesLoader('./assets/icons/pickleball.svg.vec'));
 
+  static const playtime =
+      SvgPicture(AssetBytesLoader('./assets/icons/playtime.svg.vec'));
+
   static const position =
       SvgPicture(AssetBytesLoader('./assets/icons/position.svg.vec'));
 
@@ -68,7 +70,7 @@ class PuboxIcons {
       SvgPicture(AssetBytesLoader('./assets/icons/tennis.svg.vec'));
 
   static const profile =
-  SvgPicture(AssetBytesLoader('./assets/icons/profile.svg.vec'));
+      SvgPicture(AssetBytesLoader('./assets/icons/profile.svg.vec'));
 }
 
 class SportIcons {

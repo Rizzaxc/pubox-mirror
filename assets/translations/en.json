@@ -3,7 +3,50 @@
     "genderLabel": "Gender",
     "ageGroupLabel": "Age Group",
     "industryLabel": "Industry",
-    "networkLabel": "Network"
+    "networkLabel": "Network",
+    "playtimeLabel": "Playtime"
+  },
+  "timeslot": {
+    "dayOfWeek": {
+      "label": "Day Of Week",
+      "everyday": "Everyday",
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday",
+      "sunday": "Sunday",
+      "even": "Mon-Wed-Fri",
+      "odd": "Tue-Thu-Sat",
+      "weekend": "Weekend",
+      "shortName": {
+        "everyday": "All",
+        "monday": "Mon",
+        "tuesday": "Tue",
+        "wednesday": "Wed",
+        "thursday": "Thu",
+        "friday": "Fri",
+        "saturday": "Sat",
+        "sunday": "Sun",
+        "even": "M-W-F",
+        "odd": "T-Th-Sa",
+        "weekend": "Wkn"
+      }
+    },
+    "dayChunk": {
+      "label": "Time Range",
+      "early": "Early (4am-9am)",
+      "midday": "Midday (9am-2pm)",
+      "noon": "Afternoon (2pm-6pm)",
+      "night": "Evening (6pm-12am)",
+      "shortName": {
+        "early": "Early",
+        "midday": "Midday",
+        "noon": "Afternoon",
+        "night": "Evening"
+      }
+    }
   },
   "gender": {
     "male": "Male",

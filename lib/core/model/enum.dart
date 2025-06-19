@@ -20,30 +20,17 @@ enum DayChunk {
   @JsonValue('night')
   night; // 6pm-12pm
 
-  String getShortName() {
-    switch (this) {
-      case DayChunk.early:
-        return 'Sáng';
-      case DayChunk.midday:
-        return 'Trưa';
-      case DayChunk.noon:
-        return 'Chiều';
-      case DayChunk.night:
-        return 'Tối';
-    }
+  static String getLocalizedEnumLabel(BuildContext context) {
+    return context.tr('timeslot.dayChunk.label');
   }
 
-  String getFullName() {
-    switch (this) {
-      case DayChunk.early:
-        return 'Sáng (4h-9h)';
-      case DayChunk.midday:
-        return 'Trưa (9h-14h)';
-      case DayChunk.noon:
-        return 'Chiều (14h-18h)';
-      case DayChunk.night:
-        return 'Tối (18h-24h)';
-    }
+  String getShortName(BuildContext context) {
+    return context.tr('timeslot.dayChunk.shortName.$name');
+
+  }
+
+  String getFullName(BuildContext context) {
+    return context.tr('timeslot.dayChunk.$name');
   }
 }
 
@@ -72,7 +59,24 @@ enum DayOfWeek {
   @JsonValue('wkn')
   weekend; // sat sun
 
-  String getShortName() {
+
+  static String getLocalizedEnumLabel(BuildContext context) {
+    return context.tr('timeslot.dayOfWeek.label');
+  }
+
+  String getLocalizedName(BuildContext context) {
+    return context.tr('timeslot.dayOfWeek.$name');
+  }
+
+  static List<String> getAllLocalizedName(BuildContext context) {
+    return Gender.values.map((each) => each.getLocalizedName(context)).toList();
+  }
+
+  String getShortName([BuildContext? context]) {
+    if (context != null) {
+      return context.tr('timeslot.dayOfWeek.shortName.$name');
+    }
+    // Fallback to hardcoded strings for backward compatibility
     switch (this) {
       case DayOfWeek.everyday:
         return 'HN';
@@ -99,7 +103,11 @@ enum DayOfWeek {
     }
   }
 
-  String getFullName() {
+  String getFullName([BuildContext? context]) {
+    if (context != null) {
+      return context.tr('timeslot.dayOfWeek.$name');
+    }
+    // Fallback to hardcoded strings for backward compatibility
     switch (this) {
       case DayOfWeek.everyday:
         return 'Hàng Ngày';

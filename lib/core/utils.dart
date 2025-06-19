@@ -30,6 +30,7 @@ extension StringExtension on String {
     if (isEmpty) return this;
     return '${this[0].toUpperCase()}${substring(1)}';
   }
+
 }
 
 /// A dialog page with Material entrance and exit animations, modal barrier color,

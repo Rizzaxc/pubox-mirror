@@ -77,7 +77,7 @@ class _TimeslotSelectionState extends State<TimeslotSelection> {
                               padding: const EdgeInsets.only(right: 8.0),
                               child: _buildTimeSlotChip(
                                 label:
-                                '${timeSlot.dayChunk.getShortName()} ${timeSlot.dayOfWeek.getShortName()}',
+                                '${timeSlot.dayChunk.getShortName(context)} ${timeSlot.dayOfWeek.getShortName(context)}',
                                 isSelected: true,
                                 onTap: () => removeTimeSlot(timeSlot),
                               ),
@@ -151,7 +151,7 @@ class _TimeslotSelectionState extends State<TimeslotSelection> {
                 return DropdownMenuItem<DayOfWeek>(
                   value: day,
                   child: Text(
-                    day.getFullName(),
+                    day.getFullName(context),
                     maxLines: 2,
                     style: Theme.of(context).textTheme.labelLarge,
                   ),
@@ -196,7 +196,7 @@ class _TimeslotSelectionState extends State<TimeslotSelection> {
                 return DropdownMenuItem<DayChunk>(
                   value: chunk,
                   child: Text(
-                    chunk.getFullName(),
+                    chunk.getFullName(context),
                     maxLines: 2,
                     style: Theme.of(context).textTheme.labelLarge,
                   ),
