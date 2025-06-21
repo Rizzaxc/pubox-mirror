@@ -26,7 +26,7 @@ class ProfileTab extends StatefulWidget {
 
 class _ProfileTabState extends State<ProfileTab> {
   Widget _buildAccountSection(BuildContext context) {
-    final player = context.watch<PlayerProvider>().player;
+    final playerProvider = context.watch<PlayerProvider>();
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -46,7 +46,7 @@ class _ProfileTabState extends State<ProfileTab> {
           const SizedBox(height: 16),
           // Username and tag directly beneath
           Text(
-            '${player.username}#${player.tagNumber}',
+            '${playerProvider.username}#${playerProvider.tagNumber}',
             style: Theme.of(context).textTheme.titleLarge,
             textAlign: TextAlign.center,
           ),
@@ -235,9 +235,9 @@ class _ProfileTabState extends State<ProfileTab> {
     Widget body; // Variable to hold the body content
 
     // Check if we need to show loading or redirect
-    if (playerProvider.loading || playerProvider.player.id == null) {
+    if (playerProvider.loading || playerProvider.id == null) {
       // If user is not logged in and not currently loading, schedule redirect.
-      if (playerProvider.player.id == null && !playerProvider.loading) {
+      if (playerProvider.id == null && !playerProvider.loading) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
             final currentRoute = GoRouter.of(context)

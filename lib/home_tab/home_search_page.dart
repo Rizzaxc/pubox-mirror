@@ -52,7 +52,7 @@ class HomeSearchPage extends StatelessWidget {
                       ),
                       LocationSelection(),
                       TimeslotSelection(
-                        initialSelection: stateProvider.timeSlots,
+                        initialSelection: stateProvider.timeslots,
                         onSelectionChanged: (selectedTimeslots) {
                           stateProvider.updateTimeslots(selectedTimeslots);
                         },

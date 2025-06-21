@@ -109,7 +109,7 @@ class _PlaytimeSelectionModalState extends State<PlaytimeSelectionModal> {
   @override
   Widget build(BuildContext context) {
     final selectedTimeslots = context.select<ProfileStateProvider, List<Timeslot>>(
-      (provider) => provider.playtime as List<Timeslot>? ?? [],
+      (provider) => provider.playtime ?? [],
     );
 
     return Material(

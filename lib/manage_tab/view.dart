@@ -38,13 +38,12 @@ class _ManageTabState extends State<ManageTab> {
       ),
       body: Consumer<PlayerProvider>(
         builder: (context, playerProvider, _) {
-          final player = playerProvider.player;
-          if (player.id == null) {
+          if (playerProvider.id == null) {
             // TODO: provide context & redirect to /profile/auth
             return const EmptyPage();
           }
           return Center(
-              child: Text('Welcome ${player.username}@${player.tagNumber}'));
+              child: Text('Welcome ${playerProvider.username}@${playerProvider.tagNumber}'));
         },
       ),
     );

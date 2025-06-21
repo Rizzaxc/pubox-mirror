@@ -22,7 +22,7 @@ class ProfileStateProvider extends ChangeNotifier {
   AgeGroup? _pendingAgeGroup;
   List<Industry>? _pendingIndustries;
   List<Network>? _pendingNetworks;
-  dynamic _pendingPlaytime;
+  List<Timeslot>? _pendingPlaytime;
 
   // User's selected industries and networks
   List<Industry> _selectedIndustries = [];
@@ -41,8 +41,7 @@ class ProfileStateProvider extends ChangeNotifier {
 
   // Fetch user's selected industries
   Future<void> _fetchUserIndustries() async {
-    final player = _playerProvider.player;
-    if (player.id == null) return;
+    if (_playerProvider.id == null) return;
     // if (player.id == null || _loadingSelectedIndustries) return;
 
     // _loadingSelectedIndustries = true;
@@ -53,7 +52,7 @@ class ProfileStateProvider extends ChangeNotifier {
       final response = await supabase
           .from('user_industry')
           .select('industry_id')
-          .eq('user_id', player.id!);
+          .eq('user_id', _playerProvider.id!);
 
       // AppLogger.d(response.toString());
 
@@ -71,8 +70,7 @@ class ProfileStateProvider extends ChangeNotifier {
 
   // Fetch user's selected networks
   Future<void> _fetchUserNetworks() async {
-    final player = _playerProvider.player;
-    if (player.id == null) return;
+    if (_playerProvider.id == null) return;
 
     notifyListeners();
 
@@ -80,7 +78,7 @@ class ProfileStateProvider extends ChangeNotifier {
       final response = await supabase
           .from('user_network')
           .select('network_id')
-          .eq('user_id', player.id!);
+          .eq('user_id', _playerProvider.id!);
 
       // Convert the response to a list of Network objects
       _selectedNetworks = [];
@@ -101,44 +99,21 @@ class ProfileStateProvider extends ChangeNotifier {
 
   // Getters for current values
   Gender? get gender =>
-      _pendingGender ?? _playerProvider.player.details?.gender;
+      _pendingGender ?? _playerProvider.details?.gender;
 
   AgeGroup? get ageGroup =>
-      _pendingAgeGroup ?? _playerProvider.player.details?.ageGroup;
+      _pendingAgeGroup ?? _playerProvider.details?.ageGroup;
+
+  // Playtime getter
+  List<Timeslot>? get playtime =>
+      _pendingPlaytime ?? _playerProvider.details?.playtime;
 
   // Industry getters
   List<Industry> get selectedIndustries =>
       _pendingIndustries ?? _selectedIndustries;
 
   // Network getters
-  List<Network> get selectedNetworks =>
-      _pendingNetworks ?? _selectedNetworks;
-
-  // Playtime getter
-  dynamic get playtime =>
-      _pendingPlaytime ?? _playerProvider.player.details?.playtime;
-
-  // int? get skill {
-  //   if (_pendingSkill != null) return _pendingSkill;
-  //
-  //   final details = _playerProvider.player.details;
-  //   if (details?.sport == null) return null;
-  //
-  //   switch (_sportProvider.id) {
-  //     case 1:
-  //       return details!.sport!.soccer?.skill;
-  //     case 2:
-  //       return details!.sport!.basketball?.skill;
-  //     case 3:
-  //       return details!.sport!.badminton?.skill;
-  //     case 4:
-  //       return details!.sport!.tennis?.skill;
-  //     case 5:
-  //       return details!.sport!.pickleball?.skill;
-  //     default:
-  //       return null;
-  //   }
-  // }
+  List<Network> get selectedNetworks => _pendingNetworks ?? _selectedNetworks;
 
   bool get hasPendingChanges => _hasPendingChanges;
 
@@ -157,7 +132,7 @@ class ProfileStateProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void updatePlaytime(dynamic newPlaytime) {
+  void updatePlaytime(List<Timeslot> newPlaytime) {
     if (newPlaytime == playtime) return;
     _pendingPlaytime = newPlaytime;
     _hasPendingChanges = true;
@@ -221,8 +196,7 @@ class ProfileStateProvider extends ChangeNotifier {
     if (!_hasPendingChanges) return true;
 
     // Get the current player details or create a new one if null
-    final player = _playerProvider.player;
-    final details = player.details ?? UserDetails();
+    final details = _playerProvider.details ?? UserDetails();
 
     // Update gender if changed
     if (_pendingGender != null) {
@@ -242,51 +216,6 @@ class ProfileStateProvider extends ChangeNotifier {
       _pendingPlaytime = null;
     }
 
-    // Update sport-specific details if changed
-    final sportId = _sportProvider.id;
-
-    // Ensure sport profile exists
-    details.sport ??= UserSportProfile();
-
-    // Update sport-specific details based on the selected sport
-    // switch (sportId) {
-    //   case 1: // Soccer
-    //     details.sport!.soccer ??= SoccerProfile();
-    //     if (_pendingSkill != null) {
-    //       details.sport!.soccer!.skill = _pendingSkill;
-    //       _pendingSkill = null;
-    //     }
-    //     break;
-    //   case 2: // Basketball
-    //     details.sport!.basketball ??= BasketballProfile();
-    //     if (_pendingSkill != null) {
-    //       details.sport!.basketball!.skill = _pendingSkill;
-    //       _pendingSkill = null;
-    //     }
-    //     break;
-    //   case 3: // Badminton
-    //     details.sport!.badminton ??= BadmintonProfile();
-    //     if (_pendingSkill != null) {
-    //       details.sport!.badminton!.skill = _pendingSkill;
-    //       _pendingSkill = null;
-    //     }
-    //     break;
-    //   case 4: // Tennis
-    //     details.sport!.tennis ??= TennisProfile();
-    //     if (_pendingSkill != null) {
-    //       details.sport!.tennis!.skill = _pendingSkill;
-    //       _pendingSkill = null;
-    //     }
-    //     break;
-    //   case 5: // Pickleball
-    //     details.sport!.pickleball ??= PickleballProfile();
-    //     if (_pendingSkill != null) {
-    //       details.sport!.pickleball!.skill = _pendingSkill;
-    //       _pendingSkill = null;
-    //     }
-    //     break;
-    // }
-
     try {
       final detailsMap = details.toJson();
 
@@ -295,10 +224,10 @@ class ProfileStateProvider extends ChangeNotifier {
       // Send changes to server
       await supabase
           .from('user')
-          .update({'details': detailsMap}).eq('id', player.id!);
+          .update({'details': detailsMap}).eq('id', _playerProvider.id!);
 
       // Update the player details
-      player.update(details: details);
+      _playerProvider.update(details: details);
 
       // Update industries if changed
       if (_pendingIndustries != null &&
@@ -306,11 +235,11 @@ class ProfileStateProvider extends ChangeNotifier {
         AppLogger.d(_pendingIndustries.toString());
 
         // First, delete all existing user_industry entries for this user
-        await supabase.from('user_industry').delete().eq('user_id', player.id!);
+        await supabase.from('user_industry').delete().eq('user_id', _playerProvider.id!);
 
         final data = _pendingIndustries!
             .map((industry) =>
-                {'user_id': player.id!, 'industry_id': industry.index})
+                {'user_id': _playerProvider.id!, 'industry_id': industry.index})
             .toList();
         await supabase.from('user_industry').insert(data);
 
@@ -320,16 +249,14 @@ class ProfileStateProvider extends ChangeNotifier {
       }
 
       // Update networks if changed
-      if (_pendingNetworks != null &&
-          _pendingNetworks != _selectedNetworks) {
+      if (_pendingNetworks != null && _pendingNetworks != _selectedNetworks) {
         AppLogger.d(_pendingNetworks.toString());
 
         // First, delete all existing user_network entries for this user
-        await supabase.from('user_network').delete().eq('user_id', player.id!);
+        await supabase.from('user_network').delete().eq('user_id', _playerProvider.id!);
 
         final data = _pendingNetworks!
-            .map((network) =>
-                {'user_id': player.id!, 'network_id': network.id})
+            .map((network) => {'user_id': _playerProvider.id!, 'network_id': network.id})
             .toList();
         await supabase.from('user_network').insert(data);
 
@@ -338,7 +265,6 @@ class ProfileStateProvider extends ChangeNotifier {
         _pendingNetworks = null;
       }
 
-      _hasPendingChanges = false;
       notifyListeners();
       return true;
     } on PostgrestException catch (exception, stackTrace) {
@@ -349,10 +275,12 @@ class ProfileStateProvider extends ChangeNotifier {
     }
   }
 
+  // Return whenever a part of the profile successfully refreshes
+  // No need to notify since every submethod already notifies
   Future<void> refreshProfile() async {
-    discardChanges();
+    discardChanges(shouldNotify: false);
     try {
-      Future.wait([
+      await Future.any([
         _playerProvider.refreshData(),
         _fetchUserIndustries(),
         _fetchUserNetworks()
@@ -360,11 +288,10 @@ class ProfileStateProvider extends ChangeNotifier {
     } on Exception catch (exception, stackTrace) {
       Sentry.captureException(exception, stackTrace: stackTrace);
     }
-    notifyListeners();
   }
 
   // Discard pending changes
-  void discardChanges() {
+  void discardChanges({bool shouldNotify = true}) {
     _pendingGender = null;
     _pendingAgeGroup = null;
     _pendingIndustries = null;
@@ -372,7 +299,7 @@ class ProfileStateProvider extends ChangeNotifier {
     _pendingPlaytime = null;
 
     _hasPendingChanges = false;
-    notifyListeners();
+    if (shouldNotify) notifyListeners();
   }
 
   @override

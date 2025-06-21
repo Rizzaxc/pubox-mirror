@@ -3,8 +3,10 @@ import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../core/logger.dart';
 import '../core/model/enum.dart';
 import '../core/model/timeslot.dart';
+import '../core/player_provider.dart';
 
 class HomeStateProvider extends ChangeNotifier {
   static const String _prefKey = 'STORED_HOME_STATE_PERSISTENT_KEY';
@@ -14,13 +16,13 @@ class HomeStateProvider extends ChangeNotifier {
   Set<String> _districts = {};
 
   // Time slot selection state
-  final List<Timeslot> _timeSlots = [];
+  final List<Timeslot> _timeslots = [];
 
 
   // Pre-commit state
   City? _pendingCity;
   Set<String>? _pendingDistricts;
-  List<Timeslot>? _pendingTimeSlots;
+  List<Timeslot>? _pendingTimeslots;
 
   bool _hasPendingChanges = false;
 
@@ -30,8 +32,13 @@ class HomeStateProvider extends ChangeNotifier {
   // SharedPreferences instance
   SharedPreferences? localStorage;
 
-  HomeStateProvider() {
+  // Player provider reference
+  final PlayerProvider _playerProvider;
+
+  HomeStateProvider(this._playerProvider) {
     _initPrefs();
+    _playerProvider.addListener(initializeTimeslotWithUserPlaytime);
+
   }
 
   Future<void> _initPrefs() async {
@@ -44,6 +51,20 @@ class HomeStateProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Initialize timeslots with user's playtime if it exists
+  void initializeTimeslotWithUserPlaytime() {
+    final userPlaytime = _playerProvider.details?.playtime ?? [];
+    // AppLogger.d(jsonEncode(userPlaytime));
+
+    if (userPlaytime.isEmpty) return;
+    _timeslots.clear();
+    _timeslots.addAll(userPlaytime);
+    _pendingTimeslots = null;
+    notifyListeners();
+    // AppLogger.d('Notified Home of new playtime');
+
+  }
+
   // Getters
   bool get isInitialized => _isInitialized;
 
@@ -51,13 +72,13 @@ class HomeStateProvider extends ChangeNotifier {
 
   Set<String> get districts => _districts;
 
-  List<Timeslot> get timeSlots => _timeSlots;
+  List<Timeslot> get timeslots => _timeslots;
 
   bool get hasPendingChanges => _hasPendingChanges;
 
   // max 3 slots
   bool canAddTimeSlot(Timeslot toAdd) {
-    final slots = _pendingTimeSlots ?? _timeSlots;
+    final slots = _pendingTimeslots ?? _timeslots;
     return slots.length < 3 && !slots.contains(toAdd);
   }
 
@@ -79,8 +100,7 @@ class HomeStateProvider extends ChangeNotifier {
 
   void updateTimeslots(List<Timeslot> newTimeslots) {
     if (newTimeslots.length >= 3) return;
-    // if ((_pendingTimeSlots ?? _timeSlots) == newTimeslots) return;
-    _pendingTimeSlots = newTimeslots;
+    _pendingTimeslots = newTimeslots;
     _hasPendingChanges = true;
   }
 
@@ -98,10 +118,10 @@ class HomeStateProvider extends ChangeNotifier {
       _pendingDistricts = null;
     }
 
-    if (_pendingTimeSlots != null) {
-      _timeSlots.clear();
-      _timeSlots.addAll(_pendingTimeSlots!);
-      _pendingTimeSlots = null;
+    if (_pendingTimeslots != null) {
+      _timeslots.clear();
+      _timeslots.addAll(_pendingTimeslots!);
+      _pendingTimeslots = null;
     }
 
     _hasPendingChanges = false;
@@ -113,7 +133,7 @@ class HomeStateProvider extends ChangeNotifier {
   void discardChanges() {
     _pendingCity = null;
     _pendingDistricts = null;
-    _pendingTimeSlots = null;
+    _pendingTimeslots = null;
 
     _hasPendingChanges = false;
   }
@@ -124,7 +144,7 @@ class HomeStateProvider extends ChangeNotifier {
 
     try {
       // Convert timeSlots using their built-in JSON serialization
-      final timeSlotsList = _timeSlots.map((slot) => slot.toJson()).toList();
+      final timeSlotsList = _timeslots.map((slot) => slot.toJson()).toList();
 
       // Create a map of the current state
       final stateMap = {
@@ -159,16 +179,16 @@ class HomeStateProvider extends ChangeNotifier {
       _districts = Set<String>.from(stateMap['districts'] as List);
 
       // Restore time slots
-      _timeSlots.clear();
+      _timeslots.clear();
       final timeSlotsList = stateMap['timeSlots'] as List;
       for (var slotMap in timeSlotsList) {
-        _timeSlots.add(Timeslot.fromJson(Map<String, dynamic>.from(slotMap)));
+        _timeslots.add(Timeslot.fromJson(Map<String, dynamic>.from(slotMap)));
       }
 
       notifyListeners();
     } catch (e) {
       localStorage?.remove(_prefKey);
-      _timeSlots.clear();
+      _timeslots.clear();
       _city = City.hochiminh;
       _districts.clear();
     }
@@ -177,6 +197,8 @@ class HomeStateProvider extends ChangeNotifier {
   @override
   void dispose() {
     _persistState();
+    _playerProvider.removeListener(initializeTimeslotWithUserPlaytime);
+
     super.dispose();
   }
 }

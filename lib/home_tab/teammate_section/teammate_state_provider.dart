@@ -107,7 +107,7 @@ class TeammateStateProvider with ChangeNotifier {
       const int privateVisibilityId = 1;
 
       // Convert timeslots to JSON for filtering
-      final List<String> timeslotsJsonStrings = _homeStateProvider.timeSlots
+      final List<String> timeslotsJsonStrings = _homeStateProvider.timeslots
           .map((t) => jsonEncode(t.toJson()))
           .toList();
 
@@ -122,7 +122,7 @@ class TeammateStateProvider with ChangeNotifier {
         'sport_id': _sportProvider.id,
         'city_id': _homeStateProvider.city.dbIndex,
         'districts': _homeStateProvider.districts,
-        'timeslots': Timeslot.listToJson(_homeStateProvider.timeSlots),
+        'timeslots': Timeslot.listToJson(_homeStateProvider.timeslots),
       };
 
       // Call a stored function that handles the complex query

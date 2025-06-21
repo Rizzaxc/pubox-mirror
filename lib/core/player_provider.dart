@@ -17,9 +17,17 @@ class PlayerProvider extends ChangeNotifier {
 
   late final StreamSubscription<AuthState> _authStateSubscription;
 
+  // Do not expose through public getter
   late Player _player;
 
-  Player get player => _player;
+  // Individual getters for Player members
+  String? get id => _player.id;
+
+  String get username => _player.username;
+
+  String get tagNumber => _player.tagNumber;
+
+  UserDetails? get details => _player.details;
 
   bool _loading = false;
 
@@ -116,11 +124,11 @@ class PlayerProvider extends ChangeNotifier {
       _player.username = data['username'] ?? Player.defaultUsername;
       _player.tagNumber = data['tag_number'] ?? Player.defaultTagNumber;
       if (data['details'] != null) {
-        _player.update(
+        update(
             details:
-                UserDetails.fromJson(data['details'] as Map<String, dynamic>));
+                UserDetails.fromJson(data['details'] as Map<String, dynamic>), shouldNotify: false);
       } else {
-        _player.update(details: null);
+        update(details: null, shouldNotify: false);
       }
     } on PostgrestException catch (exception, stackTrace) {
       AppLogger.d(exception.message);
@@ -140,11 +148,25 @@ class PlayerProvider extends ChangeNotifier {
     await _loadFromServer();
   }
 
+  // Method to update player properties
+  void update({
+    String? id,
+    String? username,
+    String? tagNumber,
+    UserDetails? details,
+    bool shouldNotify = true,
+  }) {
+    _player.update(
+        id: id, username: username, tagNumber: tagNumber, details: details);
+    if (shouldNotify) notifyListeners();
+  }
+
   Future<void> _clearUserData() async {
-    _player.username = Player.defaultUsername;
-    _player.tagNumber = Player.defaultTagNumber;
-    _player.id = null;
-    _player.details = UserDetails();
+    _player.update(
+        id: null,
+        username: Player.defaultUsername,
+        tagNumber: Player.defaultTagNumber,
+        details: UserDetails());
 
     notifyListeners();
   }

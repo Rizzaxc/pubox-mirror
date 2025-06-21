@@ -145,9 +145,15 @@ class Pubox extends StatelessWidget {
               ChangeNotifierProvider<SelectedSportProvider>.value(
                 value: SelectedSportProvider.instance,
               ),
+
               // Home Screen
-              ChangeNotifierProvider<HomeStateProvider>(
-                  create: (_) => HomeStateProvider()),
+              ChangeNotifierProxyProvider<PlayerProvider, HomeStateProvider>(
+                create: (context) => HomeStateProvider(
+                  context.read<PlayerProvider>(),
+                ),
+                update: (_, playerProvider, previousHomeState) =>
+                    previousHomeState ?? HomeStateProvider(playerProvider),
+              ),
               ChangeNotifierProxyProvider2<HomeStateProvider,
                   SelectedSportProvider, TeammateStateProvider>(
                 create: (context) => TeammateStateProvider(
@@ -166,6 +172,7 @@ class Pubox extends StatelessWidget {
               ChangeNotifierProvider<ManageRemoteLoadStateProvider>(
                   create: (_) => ManageRemoteLoadStateProvider()),
 
+
               // Profile Screen
               ChangeNotifierProxyProvider2<PlayerProvider,
                   SelectedSportProvider, ProfileStateProvider>(
@@ -173,9 +180,10 @@ class Pubox extends StatelessWidget {
                     context.read<PlayerProvider>(),
                     context.read<SelectedSportProvider>()),
                 update: (_, player, selectedSport, previousProfileState) =>
-                    previousProfileState ??
+                previousProfileState ??
                     ProfileStateProvider(player, selectedSport),
               ),
+
             ],
             child: PlatformApp.router(
               title: 'Pubox',
