@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:provider/provider.dart';
 
 import '../core/pubox_fab.dart';
+import '../core/sport_switcher.dart';
 import 'home_search_page.dart';
 
 class HomeFAB extends StatelessWidget {
@@ -18,6 +20,7 @@ class HomeFAB extends StatelessWidget {
   }
 
   void _openFullModal(BuildContext context) {
+
     showPlatformModalSheet(
       context: context,
       material: MaterialModalSheetData(

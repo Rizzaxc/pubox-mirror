@@ -39,7 +39,7 @@ const _$GenderEnumMap = {
 const _$AgeGroupEnumMap = {
   AgeGroup.student: 'student',
   AgeGroup.mature: 'mature',
-  AgeGroup.middleAge: 'middle_age',
+  AgeGroup.middleAge: 'middleAge',
 };
 
 UserLocation _$UserLocationFromJson(Map<String, dynamic> json) => UserLocation(

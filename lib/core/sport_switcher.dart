@@ -4,17 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
 import 'icons/main.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'model/enum.dart';
+import 'user_preferences.dart';
 
 class SelectedSportProvider extends ChangeNotifier {
   static const _prefKey = 'STORED_SPORT_PERSISTENT_KEY';
-  late final SharedPreferencesAsync localStorage;
+  late final UserPreferences localStorage;
   bool _isInitialized = false;
 
   SelectedSportProvider._() {
-    localStorage = SharedPreferencesAsync();
+    localStorage = UserPreferences.instance;
     loadFromStorage();
   }
 

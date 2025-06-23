@@ -93,6 +93,15 @@ class AgeGroupSelection extends StatelessWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                        child: Text(
+                          'TODO',
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: Theme.of(context).colorScheme.secondary,
+                              ),
+                        ),
+                      ),
                       RadioListTile<AgeGroup>(
                         title: Text(AgeGroup.student.getLocalizedName(context)),
                         value: AgeGroup.student,
@@ -175,34 +184,49 @@ class AgeGroupListPage extends StatelessWidget {
         middle: Text(context.tr('$l10nKeyPrefix.ageGroupLabel')),
       ),
       child: SafeArea(
-        child: CupertinoListSection.insetGrouped(
-          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CupertinoListTile.notched(
-                title: Text(AgeGroup.student.getLocalizedName(context)),
-                trailing: ageGroup == AgeGroup.student
-                    ? const Icon(CupertinoIcons.check_mark)
-                    : null,
-                onTap: () => context
-                    .read<ProfileStateProvider>()
-                    .updateAgeGroup(AgeGroup.student)),
-            CupertinoListTile.notched(
-              title: Text(AgeGroup.mature.getLocalizedName(context)),
-              trailing: ageGroup == AgeGroup.mature
-                  ? const Icon(CupertinoIcons.check_mark)
-                  : null,
-              onTap: () => context
-                  .read<ProfileStateProvider>()
-                  .updateAgeGroup(AgeGroup.mature),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: Text(
+                'TODO',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: CupertinoColors.secondaryLabel,
+                ),
+              ),
             ),
-            CupertinoListTile.notched(
-              title: Text(AgeGroup.middleAge.getLocalizedName(context)),
-              trailing: ageGroup == AgeGroup.middleAge
-                  ? const Icon(CupertinoIcons.check_mark)
-                  : null,
-              onTap: () => context
-                  .read<ProfileStateProvider>()
-                  .updateAgeGroup(AgeGroup.middleAge),
+            CupertinoListSection.insetGrouped(
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+              children: [
+                CupertinoListTile.notched(
+                    title: Text(AgeGroup.student.getLocalizedName(context)),
+                    trailing: ageGroup == AgeGroup.student
+                        ? const Icon(CupertinoIcons.check_mark)
+                        : null,
+                    onTap: () => context
+                        .read<ProfileStateProvider>()
+                        .updateAgeGroup(AgeGroup.student)),
+                CupertinoListTile.notched(
+                  title: Text(AgeGroup.mature.getLocalizedName(context)),
+                  trailing: ageGroup == AgeGroup.mature
+                      ? const Icon(CupertinoIcons.check_mark)
+                      : null,
+                  onTap: () => context
+                      .read<ProfileStateProvider>()
+                      .updateAgeGroup(AgeGroup.mature),
+                ),
+                CupertinoListTile.notched(
+                  title: Text(AgeGroup.middleAge.getLocalizedName(context)),
+                  trailing: ageGroup == AgeGroup.middleAge
+                      ? const Icon(CupertinoIcons.check_mark)
+                      : null,
+                  onTap: () => context
+                      .read<ProfileStateProvider>()
+                      .updateAgeGroup(AgeGroup.middleAge),
+                ),
+              ],
             ),
           ],
         ),

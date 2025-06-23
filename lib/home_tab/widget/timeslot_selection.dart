@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../../core/model/enum.dart';
 import '../../core/model/timeslot.dart';
@@ -37,7 +38,7 @@ class _TimeslotSelectionState extends State<TimeslotSelection> {
         Row(
           children: [
             Icon(PlatformIcons(context).timeSolid),
-            Text('Thời Gian',
+            Text('TODO', // homeTab.filter.time.title
                 style: Theme.of(context).textTheme.titleMedium),
           ],
         ),
@@ -52,7 +53,7 @@ class _TimeslotSelectionState extends State<TimeslotSelection> {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4),
                   child: Text(
-                    'Chọn: ${_selectedTimeslots.length}/3',
+                    'TODO: ${_selectedTimeslots.length}/3', // homeTab.filter.time.selectionCount
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: _selectedTimeslots.length < 3
@@ -131,7 +132,7 @@ class _TimeslotSelectionState extends State<TimeslotSelection> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'Ngày',
+          'TODO', // homeTab.filter.time.dayLabel
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
@@ -176,7 +177,7 @@ class _TimeslotSelectionState extends State<TimeslotSelection> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'Giờ',
+          'TODO', // homeTab.filter.time.hourLabel
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),

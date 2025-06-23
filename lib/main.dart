@@ -16,15 +16,18 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:toastification/toastification.dart';
 
-import 'core/icons/main.dart';
+import 'core/network_provider.dart';
 import 'core/player_provider.dart';
 import 'core/sport_switcher.dart';
 import 'health_tab/health_f_a_b.dart';
 import 'home_tab/home_f_a_b.dart';
+import 'home_tab/neutral_section/professional_state_provider.dart';
 import 'home_tab/state_provider.dart';
 import 'home_tab/teammate_section/teammate_state_provider.dart';
 import 'manage_tab/manage_f_a_b.dart';
-import 'manage_tab/manage_remote_fetch_state_provider.dart';
+import 'manage_tab/manage_state_provider.dart';
+import 'manage_tab/schedule_section/schedule_state_provider.dart';
+import 'manage_tab/lobby_section/lobby_state_provider.dart';
 import 'profile_tab/profile_f_a_b.dart';
 import 'profile_tab/profile_state_provider.dart';
 import 'router.dart';
@@ -142,6 +145,10 @@ class Pubox extends StatelessWidget {
               ChangeNotifierProvider<PlayerProvider>(
                   create: (_) => PlayerProvider()),
 
+              ChangeNotifierProvider<NetworkProvider>.value(
+                value: NetworkProvider.instance,
+              ),
+
               ChangeNotifierProvider<SelectedSportProvider>.value(
                 value: SelectedSportProvider.instance,
               ),
@@ -169,8 +176,26 @@ class Pubox extends StatelessWidget {
               ),
 
               // Manage Screen
-              ChangeNotifierProvider<ManageRemoteLoadStateProvider>(
-                  create: (_) => ManageRemoteLoadStateProvider()),
+              ChangeNotifierProvider<ScheduleStateProvider>(
+                  create: (_) => ScheduleStateProvider()),
+              ChangeNotifierProvider<LobbyStateProvider>(
+                  create: (_) => LobbyStateProvider()),
+              ChangeNotifierProxyProvider4<PlayerProvider, SelectedSportProvider, 
+                  LobbyStateProvider, ScheduleStateProvider, ManageStateProvider>(
+                create: (context) => ManageStateProvider(
+                  context.read<PlayerProvider>(),
+                  context.read<SelectedSportProvider>(),
+                  context.read<LobbyStateProvider>(),
+                  context.read<ScheduleStateProvider>(),
+                ),
+                update: (_, player, sport, lobby, schedule, previousManageState) =>
+                    previousManageState ?? ManageStateProvider(
+                      player,
+                      sport,
+                      lobby,
+                      schedule,
+                    ),
+              ),
 
 
               // Profile Screen
@@ -182,6 +207,18 @@ class Pubox extends StatelessWidget {
                 update: (_, player, selectedSport, previousProfileState) =>
                 previousProfileState ??
                     ProfileStateProvider(player, selectedSport),
+              ),
+
+              // Professional/Neutral Screen
+              ChangeNotifierProxyProvider2<HomeStateProvider,
+                  SelectedSportProvider, ProfessionalStateProvider>(
+                create: (context) => ProfessionalStateProvider(
+                  context.read<HomeStateProvider>(),
+                  context.read<SelectedSportProvider>(),
+                ),
+                update: (_, homeState, selectedSport, previousProfessionalState) =>
+                    previousProfessionalState ??
+                    ProfessionalStateProvider(homeState, selectedSport),
               ),
 
             ],

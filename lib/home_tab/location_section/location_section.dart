@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class LocationSection extends StatefulWidget {
   const LocationSection({super.key});
@@ -9,7 +10,7 @@ class LocationSection extends StatefulWidget {
 
 class _LocationSectionState extends State<LocationSection>
     with AutomaticKeepAliveClientMixin {
-  static const sectionTitle = 'Địa Điểm';
+  static const sectionTitle = 'TODO'; // homeTab.location.title
 
   @override
   bool get wantKeepAlive => true;

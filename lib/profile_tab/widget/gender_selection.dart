@@ -99,6 +99,15 @@ class GenderSelection extends StatelessWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                        child: Text(
+                          'TODO',
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: Theme.of(context).colorScheme.secondary,
+                              ),
+                        ),
+                      ),
                       RadioListTile<Gender>(
                         title: Text(Gender.male.getLocalizedName(context)),
                         value: Gender.male,
@@ -178,25 +187,40 @@ class GenderListPage extends StatelessWidget {
         middle: Text(context.tr('$l10nKeyPrefix.genderLabel')),
       ),
       child: SafeArea(
-        child: CupertinoListSection.insetGrouped(
-          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            CupertinoListTile.notched(
-                title: Text(Gender.male.getLocalizedName(context)),
-                trailing: gender == Gender.male
-                    ? const Icon(CupertinoIcons.check_mark)
-                    : null,
-                onTap: () => context
-                    .read<ProfileStateProvider>()
-                    .updateGender(Gender.male)),
-            CupertinoListTile.notched(
-              title: Text(Gender.female.getLocalizedName(context)),
-              trailing: gender == Gender.female
-                  ? const Icon(CupertinoIcons.check_mark)
-                  : null,
-              onTap: () => context
-                  .read<ProfileStateProvider>()
-                  .updateGender(Gender.female),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+              child: Text(
+                'TODO',
+                style: TextStyle(
+                  fontSize: 12,
+                  color: CupertinoColors.secondaryLabel,
+                ),
+              ),
+            ),
+            CupertinoListSection.insetGrouped(
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+              children: [
+                CupertinoListTile.notched(
+                    title: Text(Gender.male.getLocalizedName(context)),
+                    trailing: gender == Gender.male
+                        ? const Icon(CupertinoIcons.check_mark)
+                        : null,
+                    onTap: () => context
+                        .read<ProfileStateProvider>()
+                        .updateGender(Gender.male)),
+                CupertinoListTile.notched(
+                  title: Text(Gender.female.getLocalizedName(context)),
+                  trailing: gender == Gender.female
+                      ? const Icon(CupertinoIcons.check_mark)
+                      : null,
+                  onTap: () => context
+                      .read<ProfileStateProvider>()
+                      .updateGender(Gender.female),
+                ),
+              ],
             ),
           ],
         ),

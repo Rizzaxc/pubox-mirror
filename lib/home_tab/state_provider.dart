@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../core/user_preferences.dart';
 import '../core/logger.dart';
 import '../core/model/enum.dart';
 import '../core/model/timeslot.dart';
@@ -29,8 +29,8 @@ class HomeStateProvider extends ChangeNotifier {
   // Initialization state
   bool _isInitialized = false;
 
-  // SharedPreferences instance
-  SharedPreferences? localStorage;
+  // UserPreferences instance
+  late final UserPreferences _userPrefs;
 
   // Player provider reference
   final PlayerProvider _playerProvider;
@@ -42,8 +42,8 @@ class HomeStateProvider extends ChangeNotifier {
   }
 
   Future<void> _initPrefs() async {
-    // Load stored preferences
-    localStorage = await SharedPreferences.getInstance();
+    // Get UserPreferences instance
+    _userPrefs = UserPreferences.instance;
     await _loadPersistedState();
 
     // Mark as initialized and notify listeners
@@ -138,10 +138,8 @@ class HomeStateProvider extends ChangeNotifier {
     _hasPendingChanges = false;
   }
 
-  // Persist current state to SharedPreferences using async API
+  // Persist current state to UserPreferences
   Future<void> _persistState() async {
-    localStorage ??= await SharedPreferences.getInstance();
-
     try {
       // Convert timeSlots using their built-in JSON serialization
       final timeSlotsList = _timeslots.map((slot) => slot.toJson()).toList();
@@ -153,20 +151,18 @@ class HomeStateProvider extends ChangeNotifier {
         'timeSlots': timeSlotsList,
       };
 
-      // Save as JSON string using the async API
-      await localStorage!.setString(_prefKey, jsonEncode(stateMap));
+      // Save as JSON string
+      await _userPrefs.setString(_prefKey, jsonEncode(stateMap));
     } catch (e) {
       // TODO
       log('Failed to persist state: $e');
     }
   }
 
-  // Load persisted state from SharedPreferences using async API
+  // Load persisted state from UserPreferences
   Future<void> _loadPersistedState() async {
-    if (localStorage == null) return;
-
     try {
-      final stateJson = localStorage!.getString(_prefKey);
+      final stateJson = await _userPrefs.getString(_prefKey);
 
       if (stateJson == null) return;
 
@@ -187,7 +183,7 @@ class HomeStateProvider extends ChangeNotifier {
 
       notifyListeners();
     } catch (e) {
-      localStorage?.remove(_prefKey);
+      await _userPrefs.remove(_prefKey);
       _timeslots.clear();
       _city = City.hochiminh;
       _districts.clear();

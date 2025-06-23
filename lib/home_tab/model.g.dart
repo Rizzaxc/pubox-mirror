@@ -96,3 +96,65 @@ Map<String, dynamic> _$LocationModelToJson(LocationModel instance) =>
       'description': instance.description,
       'createdAt': instance.createdAt.toIso8601String(),
     };
+
+ProfessionalModel _$ProfessionalModelFromJson(Map<String, dynamic> json) =>
+    ProfessionalModel(
+      id: (json['id'] as num).toInt(),
+      name: json['name'] as String,
+      bio: json['bio'] as String,
+      role: $enumDecode(_$ProfessionalRoleEnumMap, json['role']),
+      avatarUrl: json['avatarUrl'] as String?,
+      rating: (json['rating'] as num?)?.toDouble(),
+      reviewCount: (json['reviewCount'] as num).toInt(),
+      experienceYears: (json['experienceYears'] as num).toInt(),
+      isVerified: json['isVerified'] as bool,
+      isAvailable: json['isAvailable'] as bool,
+      services: (json['services'] as List<dynamic>)
+          .map((e) => ProfessionalService.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      createdAt: DateTime.parse(json['createdAt'] as String),
+      updatedAt: DateTime.parse(json['updatedAt'] as String),
+    );
+
+Map<String, dynamic> _$ProfessionalModelToJson(ProfessionalModel instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'bio': instance.bio,
+      'role': _$ProfessionalRoleEnumMap[instance.role]!,
+      if (instance.avatarUrl case final value?) 'avatarUrl': value,
+      if (instance.rating case final value?) 'rating': value,
+      'reviewCount': instance.reviewCount,
+      'experienceYears': instance.experienceYears,
+      'isVerified': instance.isVerified,
+      'isAvailable': instance.isAvailable,
+      'services': instance.services.map((e) => e.toJson()).toList(),
+      'createdAt': instance.createdAt.toIso8601String(),
+      'updatedAt': instance.updatedAt.toIso8601String(),
+    };
+
+const _$ProfessionalRoleEnumMap = {
+  ProfessionalRole.coach: 'coach',
+  ProfessionalRole.referee: 'referee',
+};
+
+ProfessionalService _$ProfessionalServiceFromJson(Map<String, dynamic> json) =>
+    ProfessionalService(
+      id: (json['id'] as num).toInt(),
+      name: json['name'] as String,
+      description: json['description'] as String,
+      price: (json['price'] as num).toDouble(),
+      durationMinutes: (json['durationMinutes'] as num).toInt(),
+      isActive: json['isActive'] as bool,
+    );
+
+Map<String, dynamic> _$ProfessionalServiceToJson(
+        ProfessionalService instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'name': instance.name,
+      'description': instance.description,
+      'price': instance.price,
+      'durationMinutes': instance.durationMinutes,
+      'isActive': instance.isActive,
+    };

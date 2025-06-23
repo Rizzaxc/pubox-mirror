@@ -76,5 +76,86 @@
     "retailOnlineCommerce": "Retail & Online Commerce",
     "technology": "Technology",
     "transportation": "Transportation"
-  }
+  },
+  "networkCategory": {
+    "highSchool": "High School",
+    "giftedHighSchool": "Gifted High School",
+    "university": "University",
+    "company": "Company"
+  },
+  "homeTab": {
+    "professional": {
+      "title": "Professionals",
+      "filter": {
+        "all": "All",
+        "coach": "Coach",
+        "referee": "Referee"
+      },
+      "empty": {
+        "title": "No professionals found",
+        "message": "Try adjusting your filters or check back later"
+      },
+      "book": "Book",
+      "experience": "{years} years experience",
+      "reviews": "{count} reviews",
+      "role": {
+        "coach": "Coach",
+        "referee": "Referee"
+      },
+      "booking": {
+        "title": "Book Session",
+        "confirm": "Confirm Booking",
+        "selectService": "Select Service",
+        "selectDate": "Select Date",
+        "selectTime": "Select Time",
+        "noSlots": "No available time slots for this date",
+        "notes": "Additional Notes",
+        "notesHint": "Add any special requests or notes...",
+        "summary": "Booking Summary",
+        "service": "Service",
+        "date": "Date",
+        "time": "Time",
+        "total": "Total",
+        "success": "Booking confirmed successfully!",
+        "error": "Failed to book session. Please try again."
+      },
+      "details": {
+        "bio": "Bio"
+      }
+    }
+  },
+  "manageTab": {
+    "title": "Manage",
+    "schedule": {
+      "title": "Schedule",
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "participants": "{count} participants",
+      "empty": {
+        "title": "No appointments scheduled",
+        "message": "Your upcoming appointments will appear here"
+      }
+    },
+    "lobby": {
+      "title": "Lobbies",
+      "participants": "{current}/{max} players",
+      "scheduledFor": "Scheduled for {time}",
+      "createNew": "Create New Lobby",
+      "createFirst": "Create Your First Lobby",
+      "navigate": "Navigate to Lobby",
+      "navigateMessage": "Opening {lobbyTitle} lobby...",
+      "createMessage": "Lobby creation coming soon!",
+      "empty": {
+        "title": "No lobbies found",
+        "message": "Create a lobby to start playing with others"
+      }
+    }
+  },
+  "not_set": "Not set",
+  "done": "Done",
+  "network_selection_title": "Select Networks",
+  "search_network": "Search networks...",
+  "selected_networks": "Selected Networks",
+  "no_networks_found": "No networks found",
+  "industry_selection_title": "Select Industries"
 }

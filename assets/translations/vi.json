@@ -76,5 +76,86 @@
     "retailOnlineCommerce": "Bán Lẻ & TMĐT",
     "technology": "Công Nghệ",
     "transportation": "Vận Tải"
-  }
+  },
+  "networkCategory": {
+    "highSchool": "Trường Trung Học",
+    "giftedHighSchool": "Trường Chuyên",
+    "university": "Đại Học",
+    "company": "Công Ty"
+  },
+  "homeTab": {
+    "professional": {
+      "title": "Chuyên Gia",
+      "filter": {
+        "all": "Tất Cả",
+        "coach": "Huấn Luyện Viên",
+        "referee": "Trọng Tài"
+      },
+      "empty": {
+        "title": "Không tìm thấy chuyên gia",
+        "message": "Thử điều chỉnh bộ lọc hoặc quay lại sau"
+      },
+      "book": "Đặt Lịch",
+      "experience": "{years} năm kinh nghiệm",
+      "reviews": "{count} đánh giá",
+      "role": {
+        "coach": "Huấn Luyện Viên",
+        "referee": "Trọng Tài"
+      },
+      "booking": {
+        "title": "Đặt Lịch Hẹn",
+        "confirm": "Xác Nhận Đặt Lịch",
+        "selectService": "Chọn Dịch Vụ",
+        "selectDate": "Chọn Ngày",
+        "selectTime": "Chọn Giờ",
+        "noSlots": "Không có khung giờ trống cho ngày này",
+        "notes": "Ghi Chú Thêm",
+        "notesHint": "Thêm yêu cầu đặc biệt hoặc ghi chú...",
+        "summary": "Tóm Tắt Đặt Lịch",
+        "service": "Dịch Vụ",
+        "date": "Ngày",
+        "time": "Giờ",
+        "total": "Tổng Cộng",
+        "success": "Đặt lịch thành công!",
+        "error": "Đặt lịch thất bại. Vui lòng thử lại."
+      },
+      "details": {
+        "bio": "Tiểu Sử"
+      }
+    }
+  },
+  "manageTab": {
+    "title": "Quản Lý",
+    "schedule": {
+      "title": "Lịch Trình",
+      "today": "Hôm Nay",
+      "tomorrow": "Ngày Mai",
+      "participants": "{count} người tham gia",
+      "empty": {
+        "title": "Không có lịch hẹn",
+        "message": "Các cuộc hẹn sắp tới sẽ hiển thị ở đây"
+      }
+    },
+    "lobby": {
+      "title": "Phòng Chơi",
+      "participants": "{current}/{max} người chơi",
+      "scheduledFor": "Đã lên lịch cho {time}",
+      "createNew": "Tạo Phòng Mới",
+      "createFirst": "Tạo Phòng Đầu Tiên",
+      "navigate": "Vào Phòng Chơi",
+      "navigateMessage": "Đang mở phòng {lobbyTitle}...",
+      "createMessage": "Tính năng tạo phòng sắp ra mắt!",
+      "empty": {
+        "title": "Không tìm thấy phòng chơi",
+        "message": "Tạo phòng để bắt đầu chơi với người khác"
+      }
+    }
+  },
+  "not_set": "Chưa Thiết Lập",
+  "done": "Xong",
+  "network_selection_title": "Chọn Network",
+  "search_network": "Tìm kiếm network...",
+  "selected_networks": "Network Đã Chọn",
+  "no_networks_found": "Không tìm thấy network",
+  "industry_selection_title": "Chọn Ngành Nghề"
 }

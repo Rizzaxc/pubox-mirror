@@ -32,7 +32,9 @@ class _HealthTabState extends State<HealthTab> {
             size: 24,
           ),
         ),
-        actions: [SportSwitcher.instance],
+        actions: [
+          SportSwitcher.instance
+        ],
       ),
       // TODO: provide context & redirect to /profile/auth
 
@@ -43,7 +45,29 @@ class _HealthTabState extends State<HealthTab> {
             return const Placeholder();
           }
           return Center(
-              child: Text('Welcome ${playerProvider.username}@${playerProvider.tagNumber}'));
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Welcome ${playerProvider.username}',
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                  const SizedBox(width: 4),
+                  Chip(
+                    label: Text(
+                      '#${playerProvider.tagNumber}',
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: Colors.grey.shade700,
+                        height: 0.8,
+                      ),
+                    ),
+                    backgroundColor: Colors.grey.shade200,
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    visualDensity: VisualDensity(horizontal: 0, vertical: -4),
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                ],
+              ));
         },
       ),
     );

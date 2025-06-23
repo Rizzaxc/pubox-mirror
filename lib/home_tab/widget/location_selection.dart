@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:provider/provider.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../../core/model/enum.dart';
 import '../../core/tag_carousel.dart';
@@ -39,7 +40,7 @@ class _LocationSelectionState extends State<LocationSelection> {
         Row(
           children: [
             Icon(PlatformIcons(context).locationSolid),
-            Text('Khu Vực', style: Theme.of(context).textTheme.titleMedium),
+            Text('TODO', style: Theme.of(context).textTheme.titleMedium), // homeTab.filter.location.title
           ],
         ),
         Card(
@@ -59,7 +60,7 @@ class _LocationSelectionState extends State<LocationSelection> {
                         duration: const Duration(milliseconds: 250))),
                 cupertino: (_, __) => CupertinoPopupMenuData(
                   title: Text(
-                    'Thành Phố',
+                    'TODO', // homeTab.filter.location.cityTitle
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),

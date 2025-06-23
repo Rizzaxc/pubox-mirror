@@ -94,6 +94,15 @@ class IndustrySelection extends StatelessWidget {
                   ],
                 ),
               ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                child: Text(
+                  'TODO',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.secondary,
+                      ),
+                ),
+              ),
               Expanded(
                 child: ListView.builder(
                   controller: scrollController,
@@ -126,7 +135,6 @@ class IndustrySelection extends StatelessWidget {
     return CupertinoListTile.notched(
       title: Text(context.tr('$l10nKeyPrefix.industryLabel')),
       // additionalInfo: additionalInfo != null ? Text(additionalInfo) : null,
-
       leading: PuboxIcons.suitcase,
       trailing: const CupertinoListTileChevron(),
       onTap: () => _iosIndustryListPageBuilder(context),
@@ -160,7 +168,20 @@ class IndustryListPage extends StatelessWidget {
           middle: Text(context.tr('$l10nKeyPrefix.industryLabel'))),
       child: SingleChildScrollView(
         child: SafeArea(
-          child: CupertinoListSection.insetGrouped(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                child: Text(
+                  'TODO',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: CupertinoColors.secondaryLabel,
+                  ),
+                ),
+              ),
+              CupertinoListSection.insetGrouped(
             backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             children: industries.map((industry) {
               final isSelected = selectedIndustries.contains(industry);
@@ -173,7 +194,7 @@ class IndustryListPage extends StatelessWidget {
                   context.read<ProfileStateProvider>().toggleIndustry(industry);
                 },
               );
-            }).toList(),
+            }).toList(),)]
           ),
         ),
       ),

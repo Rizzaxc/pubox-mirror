@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../core/model/enum.dart';
 import '../core/tag_carousel.dart';
@@ -44,7 +45,7 @@ class HomeSearchPage extends StatelessWidget {
                       PlatformSearchBar(
                         focusNode: searchBarFocusNode,
                         keyboardType: TextInputType.text,
-                        hintText: 'FriendID hoặc InviteCode',
+                        hintText: 'TODO', // homeTab.search.friendIdHint
                         cupertino: (_, __) => CupertinoSearchBarData(
                           itemSize: 16,
                           autocorrect: false,
@@ -70,7 +71,7 @@ class HomeSearchPage extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           PlatformText(
-                            'Refresh',
+                            'TODO', // homeTab.search.refreshButton
                           ),
                           Icon(PlatformIcons(context).refreshBold),
                         ],

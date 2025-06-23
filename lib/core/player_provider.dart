@@ -3,17 +3,17 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'logger.dart';
 import 'model/player.dart';
 import 'model/user_details.dart';
 import 'utils.dart';
+import 'user_preferences.dart';
 
 class PlayerProvider extends ChangeNotifier {
   static const storedPlayerKey = 'STORED_PLAYER_PERSISTENT_KEY';
-  late final SharedPreferencesAsync localStorage;
+  late final UserPreferences _userPrefs;
 
   late final StreamSubscription<AuthState> _authStateSubscription;
 
@@ -43,7 +43,7 @@ class PlayerProvider extends ChangeNotifier {
 
   // TODO: local storage
   PlayerProvider() {
-    localStorage = SharedPreferencesAsync();
+    _userPrefs = UserPreferences.instance;
 
     _player = Player.instance;
 
@@ -69,7 +69,7 @@ class PlayerProvider extends ChangeNotifier {
   }
 
   Future<void> _loadFromStorage() async {
-    final jsonifiedString = await localStorage.getString(storedPlayerKey);
+    final jsonifiedString = await _userPrefs.getString(storedPlayerKey);
     if (jsonifiedString == null) return;
 
     final Map<String, dynamic> json = jsonDecode(jsonifiedString);
@@ -80,7 +80,7 @@ class PlayerProvider extends ChangeNotifier {
 
   Future<void> _saveToStorage() async {
     if (_player.id == null) return;
-    await localStorage.setString(storedPlayerKey, jsonEncode(_player.toJson()));
+    await _userPrefs.setString(storedPlayerKey, jsonEncode(_player.toJson()));
   }
 
   Future<bool> hasInitialized() async {

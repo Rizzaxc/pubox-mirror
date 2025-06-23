@@ -3,6 +3,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
@@ -82,7 +83,7 @@ class _HomeTabState extends State<HomeTab>
     super.build(context);
     return Scaffold(
       appBar: AppBar(
-        title: PlatformText('Home'),
+        title: PlatformText('TODO'), // homeTab.title
         automaticallyImplyLeading: true,
         centerTitle: true,
         scrolledUnderElevation: 0,
@@ -93,7 +94,9 @@ class _HomeTabState extends State<HomeTab>
             size: 24,
           ),
         ),
-        actions: [SportSwitcher.instance],
+        actions: [
+          SportSwitcher.instance
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 8),

@@ -643,14 +643,62 @@ enum Gender {
   }
 }
 
+/// Enum for network categories
+@JsonEnum()
+enum NetworkCategory {
+  @JsonValue('high school')
+  highSchool,
+  @JsonValue('gifted high school')
+  giftedHighSchool,
+  @JsonValue('university')
+  university,
+  @JsonValue('company')
+  company;
+
+  String getLocalizedName(BuildContext context) {
+    return context.tr('networkCategory.$name');
+  }
+
+  String get displayName {
+    switch (this) {
+      case NetworkCategory.highSchool:
+        return 'High School';
+      case NetworkCategory.giftedHighSchool:
+        return 'Gifted High School';
+      case NetworkCategory.university:
+        return 'University';
+      case NetworkCategory.company:
+        return 'Company';
+    }
+  }
+
+  static NetworkCategory? fromString(String? value) {
+    if (value == null) return null;
+    switch (value) {
+      case 'high school':
+        return NetworkCategory.highSchool;
+      case 'gifted high school':
+        return NetworkCategory.giftedHighSchool;
+      case 'university':
+        return NetworkCategory.university;
+      case 'company':
+        return NetworkCategory.company;
+      default:
+        return null;
+    }
+  }
+}
+
 /// Class representing a network
 class Network {
   final int id;
   final String name;
+  final NetworkCategory? category;
 
   const Network({
     required this.id,
     required this.name,
+    this.category,
   });
 
   @override
@@ -670,63 +718,6 @@ class Network {
   }
 }
 
-/// Class to manage network data
-class NetworkData {
-  NetworkData._();
-
-  /// Singleton instance
-  static final NetworkData instance = NetworkData._();
-
-  /// List of all networks (will be populated from database)
-  List<Network> _networks = [];
-
-  /// Flag to track if networks have been loaded
-  bool _loaded = false;
-
-  /// Get all networks
-  Future<List<Network>> getAllNetworks() async {
-    if (_loaded) return _networks;
-
-    try {
-      // Fetch networks from database
-      final response = await supabase.from('network').select('id, name');
-
-      _networks = (response as List).map((each) {
-        return Network(
-          id: each['id'],
-          name: each['name'],
-        );
-      }).toList();
-
-      _loaded = true;
-    } catch (e, stackTrace) {
-      AppLogger.d('Error fetching networks: $e');
-      Sentry.captureException(e, stackTrace: stackTrace);
-    }
-
-    return _networks;
-  }
-
-  /// Find a network by ID
-  Future<Network?> findNetworkById(int id) async {
-    final networks = await getAllNetworks();
-    try {
-      return networks.firstWhere((network) => network.id == id);
-    } catch (e) {
-      return null;
-    }
-  }
-
-  /// Find networks by a search term (case insensitive, partial match)
-  Future<List<Network>> searchNetworks(String term) async {
-    final networks = await getAllNetworks();
-    final searchTerm = term.toLowerCase();
-
-    return networks.where((network) => 
-      network.name.toLowerCase().contains(searchTerm)
-    ).toList();
-  }
-}
 
 // Do not change order
 @JsonEnum()

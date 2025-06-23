@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 import '../model.dart';
 
@@ -130,9 +131,9 @@ class TeammateResultItem extends StatelessWidget {
   String _getResultTypeLabel() {
     switch (data.teammateResultType) {
       case TeammateResultType.lobby:
-        return 'Lobby';
+        return 'TODO'; // homeTab.teammate.type.lobby
       case TeammateResultType.player:
-        return 'Player';
+        return 'TODO'; // homeTab.teammate.type.player
     }
   }
 
@@ -193,7 +194,7 @@ class TeammateResultItem extends StatelessWidget {
     final color = _getCompatibilityColor(data.compatScore);
 
     return Tooltip(
-      message: 'Compatibility',
+      message: 'TODO', // homeTab.teammate.compatibility
       triggerMode: TooltipTriggerMode.tap,
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -244,7 +245,7 @@ class TeammateResultItem extends StatelessWidget {
         ),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       ),
-      label: const Text('Connect'),
+      label: const Text('TODO'), // homeTab.teammate.connectButton
       icon: const Icon(Icons.person_add, size: 16),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:easy_localization/easy_localization.dart';
 
 class ChallengerSection extends StatefulWidget {
   const ChallengerSection({super.key});
@@ -9,7 +10,7 @@ class ChallengerSection extends StatefulWidget {
 
 class _ChallengerSectionState extends State<ChallengerSection>
     with AutomaticKeepAliveClientMixin {
-  static const sectionTitle = 'Đối Thủ';
+  static const sectionTitle = 'TODO'; // homeTab.challenger.title
 
   @override
   bool get wantKeepAlive => true;
@@ -29,7 +30,7 @@ class _ChallengerSectionState extends State<ChallengerSection>
       controller: _scrollController,
       slivers: <Widget>[
         SliverAppBar(
-          title: Text(sectionTitle,
+          title: Text('TODO', // homeTab.challenger.title
               style: Theme.of(context).textTheme.headlineMedium),
           titleSpacing: 4,
           centerTitle: false,
