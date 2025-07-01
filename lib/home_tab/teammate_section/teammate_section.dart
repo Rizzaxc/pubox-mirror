@@ -16,7 +16,7 @@ class TeammateSection extends StatefulWidget {
 
 class _TeammateSectionState extends State<TeammateSection>
     with AutomaticKeepAliveClientMixin {
-  static const sectionTitle = 'TODO'; // homeTab.teammate.title
+  static const l10nKeyPrefix = 'homeTab';
 
   final ScrollController _scrollController = ScrollController();
 
@@ -41,7 +41,7 @@ class _TeammateSectionState extends State<TeammateSection>
           controller: _scrollController,
           slivers: <Widget>[
             SliverAppBar(
-              title: Text(sectionTitle,
+              title: Text(context.tr('$l10nKeyPrefix.teammate.title'),
                   style: Theme.of(context).textTheme.headlineMedium),
               titleSpacing: 4,
               centerTitle: false,
@@ -68,12 +68,12 @@ class _TeammateSectionState extends State<TeammateSection>
                           color: Colors.grey.shade400,
                         ),
                         Text(
-                          'TODO', // homeTab.teammate.empty.title
+                          context.tr('$l10nKeyPrefix.empty.title'),
                           style: Theme.of(context).textTheme.titleLarge,
                           textAlign: TextAlign.center,
                         ),
                         Text(
-                          'TODO', // homeTab.teammate.empty.message
+                          context.tr('$l10nKeyPrefix.empty.message'),
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: Colors.grey.shade600,
                           ),
@@ -99,7 +99,7 @@ class _TeammateSectionState extends State<TeammateSection>
                           color: Colors.red.shade300,
                         ),
                         Text(
-                          'TODO', // homeTab.teammate.error.title
+                          context.tr('$l10nKeyPrefix.error.title'),
                           style: Theme.of(context).textTheme.titleLarge,
                           textAlign: TextAlign.center,
                         ),
@@ -121,7 +121,7 @@ class _TeammateSectionState extends State<TeammateSection>
                             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                           ),
                           icon: const Icon(Icons.refresh, size: 16),
-                          label: const Text('TODO'), // homeTab.teammate.error.retryButton
+                          label: Text(context.tr('$l10nKeyPrefix.error.retry')),
                         ),
                         const SizedBox(height: 64),
 

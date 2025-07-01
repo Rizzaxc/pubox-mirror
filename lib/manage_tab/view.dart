@@ -35,6 +35,8 @@ class ManageTab extends StatefulWidget {
 
 class _ManageTabState extends State<ManageTab>
     with TickerProviderStateMixin, AutomaticKeepAliveClientMixin {
+  static const l10nKeyPrefix = 'manageTab';
+
   late TabController _tabController;
 
   @override
@@ -57,7 +59,7 @@ class _ManageTabState extends State<ManageTab>
     super.build(context);
     return Scaffold(
       appBar: AppBar(
-        title: PlatformText(context.tr('manageTab.title')),
+        title: Text(context.tr('$l10nKeyPrefix.title')),
         automaticallyImplyLeading: true,
         centerTitle: true,
         scrolledUnderElevation: 0,

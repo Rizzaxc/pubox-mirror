@@ -12,7 +12,7 @@ import '../core/sport_switcher.dart';
 import '../core/utils.dart';
 import 'challenger_section/challenger_section.dart';
 import 'home_f_a_b.dart';
-import 'location_section/location_section.dart';
+import 'venue_section/venue_section.dart';
 import 'model.dart';
 import 'neutral_section/neutral_section.dart';
 import 'state_provider.dart';
@@ -83,7 +83,7 @@ class _HomeTabState extends State<HomeTab>
     super.build(context);
     return Scaffold(
       appBar: AppBar(
-        title: PlatformText('TODO'), // homeTab.title
+        title: PlatformText('Home'),
         automaticallyImplyLeading: true,
         centerTitle: true,
         scrolledUnderElevation: 0,
@@ -126,7 +126,7 @@ class _HomeTabState extends State<HomeTab>
             TeammateSection(),
             ChallengerSection(),
             NeutralSection(),
-            LocationSection()
+            VenueSection()
           ]),
         ),
       ),

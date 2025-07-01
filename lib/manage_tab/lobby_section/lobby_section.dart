@@ -41,31 +41,12 @@ class _LobbySectionState extends State<LobbySection>
                 context.tr('manageTab.lobby.title'),
                 style: Theme.of(context).textTheme.headlineMedium,
               ),
-              const Spacer(),
-              Consumer<SelectedSportProvider>(
-                builder: (context, sportProvider, child) {
-                  return Text(
-                    sportProvider.self.name,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Theme.of(context).primaryColor,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  );
-                },
-              ),
             ],
           ),
           titleSpacing: 4,
           centerTitle: false,
           pinned: false,
           primary: false,
-          actions: [
-            IconButton(
-              onPressed: () => _showCreateLobbyDialog(),
-              icon: const Icon(Icons.add),
-              tooltip: context.tr('manageTab.lobby.createNew'),
-            ),
-          ],
         ),
         Consumer2<LobbyStateProvider, SelectedSportProvider>(
           builder: (context, lobbyProvider, sportProvider, child) {
@@ -105,19 +86,6 @@ class _LobbySectionState extends State<LobbySection>
                           textAlign: TextAlign.center,
                         ),
                         const SizedBox(height: 8),
-                        ElevatedButton.icon(
-                          onPressed: () => _showCreateLobbyDialog(),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Theme.of(context).primaryColor,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(24),
-                            ),
-                            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-                          ),
-                          icon: const Icon(Icons.add, size: 18),
-                          label: Text(context.tr('manageTab.lobby.createFirst')),
-                        ),
                       ],
                     ),
                   ),

@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 
 import '../../core/icons/main.dart';
 import '../model.dart';
-import 'professional_state_provider.dart';
+import 'neutral_state_provider.dart';
 
 class ProfessionalBookingWidget extends StatefulWidget {
   final ProfessionalModel professional;
@@ -46,7 +46,7 @@ class _ProfessionalBookingWidgetState extends State<ProfessionalBookingWidget> {
       _loadingSlots = true;
     });
 
-    final provider = context.read<ProfessionalStateProvider>();
+    final provider = context.read<NeutralStateProvider>();
     final slots = await provider.getAvailableSlots(
       professionalId: widget.professional.id,
       date: _selectedDate,
@@ -171,7 +171,7 @@ class _ProfessionalBookingWidgetState extends State<ProfessionalBookingWidget> {
                     onPressed: _selectedService != null && _selectedTimeSlot != null
                         ? _bookSlot 
                         : null,
-                    child: Text(context.tr('homeTab.professional.booking.confirm')),
+                    child: Text(context.tr('homeTab.neutral.booking.confirm')),
                   ),
                 ),
               ),
@@ -232,7 +232,7 @@ class _ProfessionalBookingWidgetState extends State<ProfessionalBookingWidget> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          context.tr('homeTab.professional.booking.selectDate'),
+          context.tr('homeTab.neutral.booking.selectDate'),
           style: Theme.of(context).textTheme.titleSmall,
         ),
         const SizedBox(height: 8),
@@ -267,7 +267,7 @@ class _ProfessionalBookingWidgetState extends State<ProfessionalBookingWidget> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          context.tr('homeTab.professional.booking.selectTime'),
+          context.tr('homeTab.neutral.booking.selectTime'),
           style: Theme.of(context).textTheme.titleSmall,
         ),
         const SizedBox(height: 8),
@@ -277,7 +277,7 @@ class _ProfessionalBookingWidgetState extends State<ProfessionalBookingWidget> {
           Container(
             padding: const EdgeInsets.all(16),
             child: Text(
-              context.tr('homeTab.professional.booking.noSlots'),
+              context.tr('homeTab.neutral.booking.noSlots'),
               style: Theme.of(context).textTheme.bodyMedium,
               textAlign: TextAlign.center,
             ),
@@ -312,7 +312,7 @@ class _ProfessionalBookingWidgetState extends State<ProfessionalBookingWidget> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          context.tr('homeTab.professional.booking.notes'),
+          context.tr('homeTab.neutral.booking.notes'),
           style: Theme.of(context).textTheme.titleSmall,
         ),
         const SizedBox(height: 8),
@@ -320,7 +320,7 @@ class _ProfessionalBookingWidgetState extends State<ProfessionalBookingWidget> {
           controller: _notesController,
           maxLines: 3,
           decoration: InputDecoration(
-            hintText: context.tr('homeTab.professional.booking.notesHint'),
+            hintText: context.tr('homeTab.neutral.booking.notesHint'),
             border: const OutlineInputBorder(),
           ),
         ),
@@ -338,14 +338,14 @@ class _ProfessionalBookingWidgetState extends State<ProfessionalBookingWidget> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              context.tr('homeTab.professional.booking.summary'),
+              context.tr('homeTab.neutral.booking.summary'),
               style: Theme.of(context).textTheme.titleSmall,
             ),
             const SizedBox(height: 8),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(context.tr('homeTab.professional.booking.service')),
+                Text(context.tr('homeTab.neutral.booking.service')),
                 Text(_selectedService!.name),
               ],
             ),
@@ -353,7 +353,7 @@ class _ProfessionalBookingWidgetState extends State<ProfessionalBookingWidget> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(context.tr('homeTab.professional.booking.date')),
+                Text(context.tr('homeTab.neutral.booking.date')),
                 Text(DateFormat('MMM d, y').format(_selectedDate)),
               ],
             ),
@@ -361,7 +361,7 @@ class _ProfessionalBookingWidgetState extends State<ProfessionalBookingWidget> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(context.tr('homeTab.professional.booking.time')),
+                Text(context.tr('homeTab.neutral.booking.time')),
                 Text(
                   '${DateFormat('HH:mm').format(_selectedTimeSlot!.startTime)} - ${DateFormat('HH:mm').format(_selectedTimeSlot!.endTime)}',
                 ),
@@ -372,7 +372,7 @@ class _ProfessionalBookingWidgetState extends State<ProfessionalBookingWidget> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  context.tr('homeTab.professional.booking.total'),
+                  context.tr('homeTab.neutral.booking.total'),
                   style: Theme.of(context).textTheme.titleSmall,
                 ),
                 Text(
@@ -408,7 +408,7 @@ class _ProfessionalBookingWidgetState extends State<ProfessionalBookingWidget> {
   Future<void> _bookSlot() async {
     if (_selectedService == null || _selectedTimeSlot == null) return;
 
-    final provider = context.read<ProfessionalStateProvider>();
+    final provider = context.read<NeutralStateProvider>();
     
     final success = await provider.bookSlot(
       professionalId: widget.professional.id,
@@ -425,7 +425,7 @@ class _ProfessionalBookingWidgetState extends State<ProfessionalBookingWidget> {
       // Show success message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(context.tr('homeTab.professional.booking.success')),
+          content: Text(context.tr('homeTab.neutral.booking.success')),
           backgroundColor: Colors.green,
         ),
       );
@@ -433,7 +433,7 @@ class _ProfessionalBookingWidgetState extends State<ProfessionalBookingWidget> {
       // Show error message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(context.tr('homeTab.professional.booking.error')),
+          content: Text(context.tr('homeTab.neutral.booking.error')),
           backgroundColor: Colors.red,
         ),
       );

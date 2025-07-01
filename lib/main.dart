@@ -21,7 +21,7 @@ import 'core/player_provider.dart';
 import 'core/sport_switcher.dart';
 import 'health_tab/health_f_a_b.dart';
 import 'home_tab/home_f_a_b.dart';
-import 'home_tab/neutral_section/professional_state_provider.dart';
+import 'home_tab/neutral_section/neutral_state_provider.dart';
 import 'home_tab/state_provider.dart';
 import 'home_tab/teammate_section/teammate_state_provider.dart';
 import 'manage_tab/manage_f_a_b.dart';
@@ -211,14 +211,14 @@ class Pubox extends StatelessWidget {
 
               // Professional/Neutral Screen
               ChangeNotifierProxyProvider2<HomeStateProvider,
-                  SelectedSportProvider, ProfessionalStateProvider>(
-                create: (context) => ProfessionalStateProvider(
+                  SelectedSportProvider, NeutralStateProvider>(
+                create: (context) => NeutralStateProvider(
                   context.read<HomeStateProvider>(),
                   context.read<SelectedSportProvider>(),
                 ),
                 update: (_, homeState, selectedSport, previousProfessionalState) =>
                     previousProfessionalState ??
-                    ProfessionalStateProvider(homeState, selectedSport),
+                    NeutralStateProvider(homeState, selectedSport),
               ),
 
             ],

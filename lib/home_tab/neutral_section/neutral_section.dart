@@ -6,8 +6,8 @@ import 'package:provider/provider.dart';
 
 import '../../core/icons/main.dart';
 import '../model.dart';
+import 'neutral_state_provider.dart';
 import 'professional_result_item.dart';
-import 'professional_state_provider.dart';
 import 'professional_booking_widget.dart';
 
 class NeutralSection extends StatefulWidget {
@@ -19,14 +19,16 @@ class NeutralSection extends StatefulWidget {
 
 class _NeutralSectionState extends State<NeutralSection>
     with AutomaticKeepAliveClientMixin {
+  static const l10nKeyPrefix = 'homeTab';
+
   @override
   bool get wantKeepAlive => true;
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    
-    return Consumer<ProfessionalStateProvider>(
+
+    return Consumer<NeutralStateProvider>(
       builder: (context, state, child) {
         return RefreshIndicator(
           onRefresh: () => Future.sync(() => state.refresh()),
@@ -34,67 +36,65 @@ class _NeutralSectionState extends State<NeutralSection>
             slivers: [
               // Section Header
               SliverAppBar(
-                pinned: true,
-                automaticallyImplyLeading: false,
                 backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                title: Row(
-                  children: [
-                    SizedBox(height: 36, width: 36,child: PuboxIcons.coach,),
-                    const SizedBox(width: 8),
-                    Text(
-                      context.tr('homeTab.professional.title'),
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                  ],
-                ),
+                title: Text(context.tr('$l10nKeyPrefix.neutral.title'),
+                    style: Theme.of(context).textTheme.headlineMedium),
+                titleSpacing: 4,
+                centerTitle: false,
+                pinned: false,
+                primary: false,
                 actions: [
                   // Filter button for coach/referee
                   PopupMenuButton<ProfessionalRole?>(
                     icon: Icon(
-                      state.selectedRole == null 
-                        ? Icons.filter_list_outlined 
-                        : Icons.filter_list,
+                      state.selectedRole == null
+                          ? Icons.filter_list_outlined
+                          : Icons.filter_list,
                     ),
                     onSelected: (role) => state.setRoleFilter(role),
                     itemBuilder: (context) => [
                       PopupMenuItem(
                         value: null,
-                        child: Text(context.tr('homeTab.professional.filter.all')),
+                        child: Text(
+                            context.tr('$l10nKeyPrefix.neutral.filter.all')),
                       ),
                       PopupMenuItem(
                         value: ProfessionalRole.coach,
-                        child: Text(context.tr('homeTab.professional.filter.coach')),
+                        child: Text(
+                            context.tr('$l10nKeyPrefix.neutral.filter.coach')),
                       ),
                       PopupMenuItem(
                         value: ProfessionalRole.referee,
-                        child: Text(context.tr('homeTab.professional.filter.referee')),
+                        child: Text(
+                            context.tr('$l10nKeyPrefix.neutral.filter.referee')),
                       ),
                     ],
                   ),
                 ],
               ),
-              
+
               // Professional List
-              PagedSliverList<int, ProfessionalModel>(
-                state: state.professionalPagingState,
-                fetchNextPage: state.loadData,
-                builderDelegate: PagedChildBuilderDelegate(
-                  itemBuilder: (context, professional, index) {
-                    return ProfessionalResultItem(
-                      professional: professional,
-                      onBookingTap: () => _showBookingModal(context, professional),
-                    );
-                  },
-                  noItemsFoundIndicatorBuilder: (context) => _buildEmptyState(context),
-                ),
-              ),
+              // PagedSliverList<int, ProfessionalModel>(
+              //   state: state.professionalPagingState,
+              //   fetchNextPage: state.loadData,
+              //   builderDelegate: PagedChildBuilderDelegate(
+              //     itemBuilder: (context, professional, index) {
+              //       return ProfessionalResultItem(
+              //         professional: professional,
+              //         onBookingTap: () =>
+              //             _showBookingModal(context, professional),
+              //       );
+              //     },
+              //     noItemsFoundIndicatorBuilder: (context) =>
+              //         _buildEmptyState(context),
+              //   ),
+              // ),
             ],
           ),
         );
       },
     );
   }
-
 
   Widget _buildEmptyState(BuildContext context) {
     return SliverFillRemaining(
@@ -105,12 +105,12 @@ class _NeutralSectionState extends State<NeutralSection>
             PuboxIcons.coach,
             const SizedBox(height: 16),
             Text(
-              context.tr('homeTab.professional.empty.title'),
+              context.tr('$l10nKeyPrefix.neutral.empty.title'),
               style: Theme.of(context).textTheme.titleMedium,
             ),
             const SizedBox(height: 8),
             Text(
-              context.tr('homeTab.professional.empty.message'),
+              context.tr('$l10nKeyPrefix.neutral.empty.message'),
               style: Theme.of(context).textTheme.bodyMedium,
               textAlign: TextAlign.center,
             ),
@@ -129,7 +129,8 @@ class _NeutralSectionState extends State<NeutralSection>
           borderRadius: BorderRadius.vertical(top: Radius.circular(32)),
         ),
       ),
-      builder: (context) => ProfessionalBookingWidget(professional: professional),
+      builder: (context) =>
+          ProfessionalBookingWidget(professional: professional),
     );
   }
 }

@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:easy_localization/easy_localization.dart';
 
-class LocationSection extends StatefulWidget {
-  const LocationSection({super.key});
+class VenueSection extends StatefulWidget {
+  const VenueSection({super.key});
 
   @override
-  State<LocationSection> createState() => _LocationSectionState();
+  State<VenueSection> createState() => _VenueSectionState();
 }
 
-class _LocationSectionState extends State<LocationSection>
+class _VenueSectionState extends State<VenueSection>
     with AutomaticKeepAliveClientMixin {
-  static const sectionTitle = 'TODO'; // homeTab.location.title
+  static const l10nKeyPrefix = 'homeTab';
 
   @override
   bool get wantKeepAlive => true;
@@ -30,7 +30,7 @@ class _LocationSectionState extends State<LocationSection>
       controller: _scrollController,
       slivers: <Widget>[
         SliverAppBar(
-          title: Text(sectionTitle,
+          title: Text(context.tr('$l10nKeyPrefix.venue.title'),
               style: Theme.of(context).textTheme.headlineMedium),
           titleSpacing: 4,
           centerTitle: false,

@@ -13,7 +13,7 @@ import '../../core/utils.dart';
 import '../state_provider.dart';
 import '../model.dart';
 
-class ProfessionalStateProvider with ChangeNotifier {
+class NeutralStateProvider with ChangeNotifier {
   static const int _pageSize = 10;
   
   final HomeStateProvider _homeStateProvider;
@@ -34,7 +34,7 @@ class ProfessionalStateProvider with ChangeNotifier {
   // Getters
   ProfessionalRole? get selectedRole => _selectedRole;
   
-  ProfessionalStateProvider(this._homeStateProvider, this._sportProvider) {
+  NeutralStateProvider(this._homeStateProvider, this._sportProvider) {
     _homeStateProvider.addListener(_onDependenciesChanged);
     _sportProvider.addListener(_onDependenciesChanged);
   }

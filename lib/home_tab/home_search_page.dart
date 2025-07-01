@@ -45,7 +45,7 @@ class HomeSearchPage extends StatelessWidget {
                       PlatformSearchBar(
                         focusNode: searchBarFocusNode,
                         keyboardType: TextInputType.text,
-                        hintText: 'TODO', // homeTab.search.friendIdHint
+                        hintText: 'SearchID | Username#TagNumber', // homeTab.search.friendIdHint
                         cupertino: (_, __) => CupertinoSearchBarData(
                           itemSize: 16,
                           autocorrect: false,
@@ -71,7 +71,7 @@ class HomeSearchPage extends StatelessWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           PlatformText(
-                            'TODO', // homeTab.search.refreshButton
+                            'Refresh', // homeTab.search.refreshButton
                           ),
                           Icon(PlatformIcons(context).refreshBold),
                         ],

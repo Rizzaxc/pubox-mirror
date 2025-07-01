@@ -7,6 +7,7 @@ import '../../core/model/enum.dart';
 import '../../core/model/timeslot.dart';
 
 class TimeslotSelection extends StatefulWidget {
+
   const TimeslotSelection(
       {super.key, required this.onSelectionChanged, required this.initialSelection});
 
@@ -18,6 +19,7 @@ class TimeslotSelection extends StatefulWidget {
 }
 
 class _TimeslotSelectionState extends State<TimeslotSelection> {
+  static const l10nKeyPrefix = 'homeTab.filter';
 
   final List<Timeslot> _selectedTimeslots = [];
   DayChunk _selectedDayChunk = DayChunk.noon;
@@ -38,7 +40,7 @@ class _TimeslotSelectionState extends State<TimeslotSelection> {
         Row(
           children: [
             Icon(PlatformIcons(context).timeSolid),
-            Text('TODO', // homeTab.filter.time.title
+            Text(context.tr('$l10nKeyPrefix.time'), // homeTab.filter.time.title
                 style: Theme.of(context).textTheme.titleMedium),
           ],
         ),
@@ -53,7 +55,7 @@ class _TimeslotSelectionState extends State<TimeslotSelection> {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 4),
                   child: Text(
-                    'TODO: ${_selectedTimeslots.length}/3', // homeTab.filter.time.selectionCount
+                    '${_selectedTimeslots.length}/3', // homeTab.filter.time.selectionCount
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: _selectedTimeslots.length < 3
@@ -131,8 +133,8 @@ class _TimeslotSelectionState extends State<TimeslotSelection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'TODO', // homeTab.filter.time.dayLabel
+        Text(
+          context.tr('$l10nKeyPrefix.weekdayLabel'), // homeTab.filter.time.dayLabel
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
@@ -176,8 +178,8 @@ class _TimeslotSelectionState extends State<TimeslotSelection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'TODO', // homeTab.filter.time.hourLabel
+        Text(
+          context.tr('$l10nKeyPrefix.dayChunkLabel'), // homeTab.filter.time.dayLabel
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),

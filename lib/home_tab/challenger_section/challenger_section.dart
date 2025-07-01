@@ -10,7 +10,7 @@ class ChallengerSection extends StatefulWidget {
 
 class _ChallengerSectionState extends State<ChallengerSection>
     with AutomaticKeepAliveClientMixin {
-  static const sectionTitle = 'TODO'; // homeTab.challenger.title
+  static const l10nKeyPrefix = 'homeTab';
 
   @override
   bool get wantKeepAlive => true;
@@ -30,7 +30,7 @@ class _ChallengerSectionState extends State<ChallengerSection>
       controller: _scrollController,
       slivers: <Widget>[
         SliverAppBar(
-          title: Text('TODO', // homeTab.challenger.title
+          title: Text(context.tr('$l10nKeyPrefix.challenger.title'),
               style: Theme.of(context).textTheme.headlineMedium),
           titleSpacing: 4,
           centerTitle: false,

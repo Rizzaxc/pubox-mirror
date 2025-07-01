@@ -4,7 +4,15 @@
     "ageGroupLabel": "Age Group",
     "industryLabel": "Industry",
     "networkLabel": "Network",
-    "playtimeLabel": "Playtime"
+    "playtimeLabel": "Playtime",
+    "network_selection_title": "Select Networks",
+    "search_network": "Search networks...",
+    "selected_networks": "Selected Networks",
+    "no_networks_found": "No networks found matching the search criteria",
+    "industry_selection_title": "Select Industries",
+    "network_feature_explanation": "Choose at most 2 schools/ universities/ companies that you were or are a part of. Pubox will connect you with people who share your networks.",
+    "industry_feature_explanation": "Choose at most 2 industries that you work in. Pubox will connect you with people who share your industries.",
+    "profile_feature_explanation": "Fill in your profile will help Pubox connect you more effectively."
   },
   "timeslot": {
     "dayOfWeek": {
@@ -84,6 +92,24 @@
     "company": "Company"
   },
   "homeTab": {
+    "title": "Home",
+    "filter": {
+      "location": "Location",
+      "time": "Time",
+      "weekdayLabel": "Weekday",
+      "dayChunkLabel": "Day Chunk"
+    },
+    "empty": {
+      "title": "No results found",
+      "message": "Try adjusting your filters or check back later"
+    },
+    "error": {
+      "title": "Error loading teammates",
+      "retry": "Retry"
+    },
+    "teammate": {
+      "title": "Teammates"
+    },
     "professional": {
       "title": "Professionals",
       "filter": {
@@ -152,10 +178,5 @@
     }
   },
   "not_set": "Not set",
-  "done": "Done",
-  "network_selection_title": "Select Networks",
-  "search_network": "Search networks...",
-  "selected_networks": "Selected Networks",
-  "no_networks_found": "No networks found",
-  "industry_selection_title": "Select Industries"
+  "done": "Done"
 }

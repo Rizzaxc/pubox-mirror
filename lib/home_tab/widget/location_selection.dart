@@ -10,6 +10,7 @@ import '../home_search_page.dart';
 import '../state_provider.dart';
 
 class LocationSelection extends StatefulWidget {
+
   const LocationSelection({super.key});
 
   @override
@@ -17,6 +18,8 @@ class LocationSelection extends StatefulWidget {
 }
 
 class _LocationSelectionState extends State<LocationSelection> {
+  static const l10nKeyPrefix = 'homeTab.filter';
+
   late City _selectedCity;
   late Set<String> _selectedDistricts;
   late HomeStateProvider _stateProvider;
@@ -40,7 +43,7 @@ class _LocationSelectionState extends State<LocationSelection> {
         Row(
           children: [
             Icon(PlatformIcons(context).locationSolid),
-            Text('TODO', style: Theme.of(context).textTheme.titleMedium), // homeTab.filter.location.title
+            Text(context.tr('$l10nKeyPrefix.location'), style: Theme.of(context).textTheme.titleMedium), // homeTab.filter.location.title
           ],
         ),
         Card(
@@ -59,10 +62,7 @@ class _LocationSelectionState extends State<LocationSelection> {
                         curve: Curves.easeOut,
                         duration: const Duration(milliseconds: 250))),
                 cupertino: (_, __) => CupertinoPopupMenuData(
-                  title: Text(
-                    'TODO', // homeTab.filter.location.cityTitle
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
+
                 ),
                 icon: Container(
                   padding: EdgeInsets.symmetric(vertical: 4),

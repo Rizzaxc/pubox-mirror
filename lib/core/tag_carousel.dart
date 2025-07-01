@@ -227,7 +227,7 @@ class _TagCarouselState extends State<TagCarousel> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Chọn: ${_selectedTags.length}/${widget.maxSelected}',
+                '${_selectedTags.length}/${widget.maxSelected}',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   color: _selectedTags.length == widget.maxSelected

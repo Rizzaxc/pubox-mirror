@@ -48,8 +48,7 @@ class NetworkSelection extends StatelessWidget {
     );
   }
 
-  void _showNetworkModal(
-      BuildContext context, List<Network> selectedNetworks) {
+  void _showNetworkModal(BuildContext context, List<Network> selectedNetworks) {
     final TextEditingController searchController = TextEditingController();
 
     showPlatformModalSheet(
@@ -76,7 +75,8 @@ class NetworkSelection extends StatelessWidget {
             return Container(
               decoration: BoxDecoration(
                   color: Theme.of(context).canvasColor,
-                  borderRadius: const BorderRadius.vertical(top: Radius.circular(24))),
+                  borderRadius:
+                      const BorderRadius.vertical(top: Radius.circular(24))),
               padding: const EdgeInsets.only(top: 8, left: 8, right: 8),
               child: Column(
                 children: [
@@ -87,7 +87,7 @@ class NetworkSelection extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          context.tr('network_selection_title'),
+                          context.tr('$l10nKeyPrefix.network_selection_title'),
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -95,86 +95,116 @@ class NetworkSelection extends StatelessWidget {
                         ),
                         PlatformTextButton(
                           onPressed: () => Navigator.of(context).pop(),
-                          child: Text(context.tr('done')),
+                          child: Text('OK'),
                         ),
                       ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                    child: Text(
-                      'TODO',
-                      style: isCupertino(context)
-                          ? TextStyle(
-                              fontSize: 12,
-                              color: CupertinoColors.secondaryLabel,
-                            )
-                          : Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Theme.of(context).colorScheme.secondary,
-                              ),
                     ),
                   ),
                   Expanded(
                     child: Column(
                       children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: isCupertino(context)
-                              ? CupertinoSearchTextField(
-                                  controller: searchController,
-                                  placeholder: context.tr('search_network'),
-                                  onChanged: (value) {
-                                    // Search functionality will be handled by TypeAheadField
-                                  },
-                                )
-                              : TypeAheadField<Network>(
-                                  suggestionsCallback: (pattern) async {
-                                    if (pattern.trim().isEmpty || pattern.length < 2) {
-                                      // Show popular networks when no search term
-                                      return NetworkProvider.instance.getPopularNetworks(limit: 10);
-                                    }
-                                    return NetworkProvider.instance.searchNetworks(pattern);
-                                  },
-                                  debounceDuration: const Duration(milliseconds: 300),
-                                  itemBuilder: (context, network) {
-                                    final isSelected = selectedNetworks.contains(network);
-                                    return ListTile(
-                                      title: Row(
-                                        children: [
-                                          Expanded(child: Text(network.name)),
-                                          if (network.category != null)
-                                            Container(
-                                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                                              decoration: BoxDecoration(
-                                                color: _getCategoryColor(network.category!).withValues(alpha: 0.2),
-                                                borderRadius: BorderRadius.circular(12),
-                                                border: Border.all(
-                                                  color: _getCategoryColor(network.category!),
-                                                  width: 1,
-                                                ),
-                                              ),
-                                              child: Text(
-                                                network.category!.displayName,
-                                                style: TextStyle(
-                                                  fontSize: 10,
-                                                  color: _getCategoryColor(network.category!),
-                                                  fontWeight: FontWeight.w500,
-                                                ),
+                        isCupertino(context)
+                            ? Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(12.0),
+                                    child: CupertinoSearchTextField(
+                                      controller: searchController,
+                                      onChanged: (value) {
+                                        // Search functionality will be handled by TypeAheadField
+                                      },
+                                    ),
+                                  ),
+                                  // TODO: Selected network section
+                                  CupertinoListSection.insetGrouped(
+                                    header: Text(context.tr('$l10nKeyPrefix.selected_networks')),
+                                    backgroundColor: Theme.of(context)
+                                        .scaffoldBackgroundColor,
+
+                                    children: [
+                                      CupertinoListTile.notched(
+                                          title: Text('Selected Network'))
+                                    ],
+                                  ),
+                                  // TODO: Search result section
+                                  CupertinoListSection.insetGrouped(
+                                    backgroundColor: Theme.of(context)
+                                        .scaffoldBackgroundColor,
+                                    footer: Text(
+                                        context.tr('$l10nKeyPrefix.network_feature_explanation'),
+                                        style: const TextStyle(
+                                          fontSize: 12,
+                                          color: CupertinoColors.secondaryLabel,
+                                        ),
+                                      ),
+                                    children: [
+                                      // TODO: search result
+                                      CupertinoListTile.notched(
+                                          title: Text('TODO'))
+                                    ],
+                                  ),
+                                ],
+                              )
+                            : TypeAheadField<Network>(
+                                suggestionsCallback: (pattern) async {
+                                  if (pattern.trim().isEmpty ||
+                                      pattern.length < 2) {
+                                    // Show popular networks when no search term
+                                    return NetworkProvider.instance
+                                        .getPopularNetworks(limit: 10);
+                                  }
+                                  return NetworkProvider.instance
+                                      .searchNetworks(pattern);
+                                },
+                                debounceDuration:
+                                    const Duration(milliseconds: 300),
+                                itemBuilder: (context, network) {
+                                  final isSelected =
+                                      selectedNetworks.contains(network);
+                                  return ListTile(
+                                    title: Row(
+                                      children: [
+                                        Expanded(child: Text(network.name)),
+                                        if (network.category != null)
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 8, vertical: 2),
+                                            decoration: BoxDecoration(
+                                              color: _getCategoryColor(
+                                                      network.category!)
+                                                  .withValues(alpha: 0.2),
+                                              borderRadius:
+                                                  BorderRadius.circular(12),
+                                              border: Border.all(
+                                                color: _getCategoryColor(
+                                                    network.category!),
+                                                width: 1,
                                               ),
                                             ),
-                                        ],
-                                      ),
-                                      trailing: isSelected
-                                          ? const Icon(Icons.check_circle)
-                                          : null,
-                                    );
-                                  },
-                                  onSelected: (network) {
-                                    context.read<ProfileStateProvider>().toggleNetwork(network);
-                                    searchController.clear();
-                                  },
-                                ),
-                        ),
+                                            child: Text(
+                                              network.category!.displayName,
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                color: _getCategoryColor(
+                                                    network.category!),
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                    trailing: isSelected
+                                        ? const Icon(Icons.check_circle)
+                                        : null,
+                                  );
+                                },
+                                onSelected: (network) {
+                                  context
+                                      .read<ProfileStateProvider>()
+                                      .toggleNetwork(network);
+                                  searchController.clear();
+                                },
+                              ),
                         if (selectedNetworks.isNotEmpty)
                           Expanded(
                             child: SingleChildScrollView(
@@ -185,13 +215,16 @@ class NetworkSelection extends StatelessWidget {
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Text(
-                                      context.tr('selected_networks'),
+                                      context.tr(
+                                          '$l10nKeyPrefix.selected_networks'),
                                       style: isCupertino(context)
                                           ? const TextStyle(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 16,
                                             )
-                                          : Theme.of(context).textTheme.titleMedium,
+                                          : Theme.of(context)
+                                              .textTheme
+                                              .titleMedium,
                                     ),
                                   ),
                                   ...selectedNetworks.map((network) => ListTile(
@@ -200,12 +233,19 @@ class NetworkSelection extends StatelessWidget {
                                             Expanded(child: Text(network.name)),
                                             if (network.category != null)
                                               Container(
-                                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 8,
+                                                        vertical: 2),
                                                 decoration: BoxDecoration(
-                                                  color: _getCategoryColor(network.category!).withValues(alpha: 0.2),
-                                                  borderRadius: BorderRadius.circular(12),
+                                                  color: _getCategoryColor(
+                                                          network.category!)
+                                                      .withValues(alpha: 0.2),
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
                                                   border: Border.all(
-                                                    color: _getCategoryColor(network.category!),
+                                                    color: _getCategoryColor(
+                                                        network.category!),
                                                     width: 1,
                                                   ),
                                                 ),
@@ -213,7 +253,8 @@ class NetworkSelection extends StatelessWidget {
                                                   network.category!.displayName,
                                                   style: TextStyle(
                                                     fontSize: 10,
-                                                    color: _getCategoryColor(network.category!),
+                                                    color: _getCategoryColor(
+                                                        network.category!),
                                                     fontWeight: FontWeight.w500,
                                                   ),
                                                 ),
@@ -316,7 +357,8 @@ class _NetworkListPageState extends State<NetworkListPage> {
       _isSearching = true;
     });
 
-    final results = await NetworkProvider.instance.getPopularNetworks(limit: 10);
+    final results =
+        await NetworkProvider.instance.getPopularNetworks(limit: 10);
 
     setState(() {
       _searchResults = results;
@@ -374,7 +416,8 @@ class _NetworkListPageState extends State<NetworkListPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8.0, vertical: 4.0),
                     child: Text(
                       'TODO',
                       style: TextStyle(
@@ -385,7 +428,6 @@ class _NetworkListPageState extends State<NetworkListPage> {
                   ),
                   CupertinoSearchTextField(
                     controller: _searchController,
-                    placeholder: context.tr('search_network'),
                     onChanged: (value) {
                       _performSearch(value);
                     },
@@ -395,10 +437,12 @@ class _NetworkListPageState extends State<NetworkListPage> {
             ),
             if (_isSearching)
               const Center(child: CupertinoActivityIndicator())
-            else if (_searchController.text.isNotEmpty && _searchController.text.length >= 2 && _searchResults.isEmpty)
+            else if (_searchController.text.isNotEmpty &&
+                _searchController.text.length >= 2 &&
+                _searchResults.isEmpty)
               Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: Text(context.tr('no_networks_found')),
+                child: Text(context.tr('$l10nKeyPrefix.no_networks_found')),
               )
             else if (_searchResults.isNotEmpty)
               Expanded(
@@ -413,9 +457,11 @@ class _NetworkListPageState extends State<NetworkListPage> {
                             Expanded(child: Text(network.name)),
                             if (network.category != null)
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 2),
                                 decoration: BoxDecoration(
-                                  color: _getCategoryColor(network.category!).withValues(alpha: 0.2),
+                                  color: _getCategoryColor(network.category!)
+                                      .withValues(alpha: 0.2),
                                   borderRadius: BorderRadius.circular(12),
                                   border: Border.all(
                                     color: _getCategoryColor(network.category!),
@@ -463,7 +509,8 @@ class _NetworkListPageState extends State<NetworkListPage> {
                       ),
                     ),
                     CupertinoListSection.insetGrouped(
-                      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                      backgroundColor:
+                          Theme.of(context).scaffoldBackgroundColor,
                       children: selectedNetworks.map((network) {
                         return CupertinoListTile.notched(
                           title: Row(
@@ -471,12 +518,15 @@ class _NetworkListPageState extends State<NetworkListPage> {
                               Expanded(child: Text(network.name)),
                               if (network.category != null)
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 2),
                                   decoration: BoxDecoration(
-                                    color: _getCategoryColor(network.category!).withValues(alpha: 0.2),
+                                    color: _getCategoryColor(network.category!)
+                                        .withValues(alpha: 0.2),
                                     borderRadius: BorderRadius.circular(12),
                                     border: Border.all(
-                                      color: _getCategoryColor(network.category!),
+                                      color:
+                                          _getCategoryColor(network.category!),
                                       width: 1,
                                     ),
                                   ),
@@ -484,7 +534,8 @@ class _NetworkListPageState extends State<NetworkListPage> {
                                     network.category!.displayName,
                                     style: TextStyle(
                                       fontSize: 10,
-                                      color: _getCategoryColor(network.category!),
+                                      color:
+                                          _getCategoryColor(network.category!),
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),

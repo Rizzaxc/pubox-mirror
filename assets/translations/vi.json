@@ -4,7 +4,14 @@
     "ageGroupLabel": "Nhóm Tuổi",
     "industryLabel": "Ngành Nghề",
     "networkLabel": "Network",
-    "playtimeLabel": "Lịch Hằng Tuần"
+    "network_selection_title": "Chọn Network",
+    "selected_networks": "Network Đã Chọn",
+    "no_networks_found": "Không tìm thấy network nào theo từ khoá",
+    "industry_selection_title": "Chọn Ngành Nghề",
+    "playtimeLabel": "Lịch Hằng Tuần",
+    "network_feature_explanation": "Chọn tối đa 2 cơ quan/ tổ chức/ trường học bạn đã hoặc đang là thành viên. Pubox sẽ kết nối bạn đến những người cùng network.",
+    "industry_feature_explanation": "Chọn tối đa 2 ngạch bạn đang hoạt động. Pubox sẽ kết nối bạn đến những người cùng industry.",
+    "profile_feature_explanation": "Điền profile sẽ giúp Pubox kết nối bạn hiệu quả hơn."
   },
   "timeslot": {
     "dayOfWeek": {
@@ -84,8 +91,28 @@
     "company": "Công Ty"
   },
   "homeTab": {
-    "professional": {
-      "title": "Chuyên Gia",
+    "filter": {
+      "location": "Địa điểm",
+      "time": "Thời gian",
+      "weekdayLabel": "Thứ trong tuần",
+      "dayChunkLabel": "Buổi"
+    },
+    "empty": {
+      "title": "Không tìm thấy kết quả",
+      "message": "Điều chỉnh bộ lọc hoặc quay lại sau"
+    },
+    "error": {
+      "title": "Lỗi tải dữ liệu",
+      "retry": "Thử lại"
+    },
+    "teammate": {
+      "title": "Đồng đội"
+    },
+    "challenger": {
+      "title": "Đối thủ"
+    },
+    "neutral": {
+      "title": "Trung Lập",
       "filter": {
         "all": "Tất Cả",
         "coach": "Huấn Luyện Viên",
@@ -122,14 +149,17 @@
       "details": {
         "bio": "Tiểu Sử"
       }
+    },
+    "venue": {
+      "title": "Sân tập & Tụ Điểm"
     }
   },
   "manageTab": {
     "title": "Quản Lý",
     "schedule": {
-      "title": "Lịch Trình",
-      "today": "Hôm Nay",
-      "tomorrow": "Ngày Mai",
+      "title": "Thời gian biểu",
+      "today": "Hôm nay",
+      "tomorrow": "Ngày mai",
       "participants": "{count} người tham gia",
       "empty": {
         "title": "Không có lịch hẹn",
@@ -137,25 +167,20 @@
       }
     },
     "lobby": {
-      "title": "Phòng Chơi",
+      "title": "Lobby",
       "participants": "{current}/{max} người chơi",
       "scheduledFor": "Đã lên lịch cho {time}",
-      "createNew": "Tạo Phòng Mới",
-      "createFirst": "Tạo Phòng Đầu Tiên",
+      "createNew": "Tạo Lobby Mới",
+      "createFirst": "Tạo Lobby Đầu Tiên",
       "navigate": "Vào Phòng Chơi",
       "navigateMessage": "Đang mở phòng {lobbyTitle}...",
-      "createMessage": "Tính năng tạo phòng sắp ra mắt!",
+      "createMessage": "Tính năng tạo lobby sắp ra mắt!",
       "empty": {
-        "title": "Không tìm thấy phòng chơi",
-        "message": "Tạo phòng để bắt đầu chơi với người khác"
+        "title": "Không tìm thấy lobby",
+        "message": "Tạo lobby để bắt đầu chơi với người khác"
       }
     }
   },
   "not_set": "Chưa Thiết Lập",
-  "done": "Xong",
-  "network_selection_title": "Chọn Network",
-  "search_network": "Tìm kiếm network...",
-  "selected_networks": "Network Đã Chọn",
-  "no_networks_found": "Không tìm thấy network",
-  "industry_selection_title": "Chọn Ngành Nghề"
+  "done": "Xong"
 }
