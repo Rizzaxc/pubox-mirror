@@ -50,7 +50,8 @@ class IndustrySelection extends StatelessWidget {
       BuildContext context, List<Industry> selectedIndustries) {
     // Sort industries alphabetically by localized names, stripping diacritics before comparison
     final industries = Industry.values.toList()
-      ..sort((a, b) => removeDiacritics(a.getLocalizedName(context)).compareTo(removeDiacritics(b.getLocalizedName(context))));
+      ..sort((a, b) => removeDiacritics(a.getLocalizedName(context))
+          .compareTo(removeDiacritics(b.getLocalizedName(context))));
 
     showPlatformModalSheet(
       context: context,
@@ -70,13 +71,14 @@ class IndustrySelection extends StatelessWidget {
         builder: (context, scrollController) => Container(
           decoration: BoxDecoration(
               color: Theme.of(context).canvasColor,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(24))),
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(24))),
           padding: const EdgeInsets.only(top: 8, left: 8, right: 8),
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0, vertical: 8.0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -95,7 +97,8 @@ class IndustrySelection extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                 child: Text(
                   'TODO',
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
@@ -157,7 +160,8 @@ class IndustryListPage extends StatelessWidget {
   Widget build(BuildContext context) {
     // Sort industries alphabetically by localized names, stripping diacritics before comparison
     final industries = Industry.values.toList()
-      ..sort((a, b) => removeDiacritics(a.getLocalizedName(context)).compareTo(removeDiacritics(b.getLocalizedName(context))));
+      ..sort((a, b) => removeDiacritics(a.getLocalizedName(context))
+          .compareTo(removeDiacritics(b.getLocalizedName(context))));
 
     final selectedIndustries =
         context.select<ProfileStateProvider, List<Industry>>(
@@ -168,34 +172,34 @@ class IndustryListPage extends StatelessWidget {
           middle: Text(context.tr('$l10nKeyPrefix.industryLabel'))),
       child: SingleChildScrollView(
         child: SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                child: Text(
-                  'TODO',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: CupertinoColors.secondaryLabel,
-                  ),
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            CupertinoListSection.insetGrouped(
+              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+              footer: Text(
+                context.tr('profileView.industry_feature_explanation'),
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: CupertinoColors.secondaryLabel,
                 ),
               ),
-              CupertinoListSection.insetGrouped(
-            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-            children: industries.map((industry) {
-              final isSelected = selectedIndustries.contains(industry);
+              children: industries.map((industry) {
+                final isSelected = selectedIndustries.contains(industry);
 
-              return CupertinoListTile.notched(
-                title: Text(industry.getLocalizedName(context)),
-                trailing:
-                    isSelected ? const Icon(CupertinoIcons.check_mark) : null,
-                onTap: () {
-                  context.read<ProfileStateProvider>().toggleIndustry(industry);
-                },
-              );
-            }).toList(),)]
-          ),
+                return CupertinoListTile.notched(
+                  title: Text(industry.getLocalizedName(context)),
+                  trailing:
+                      isSelected ? const Icon(CupertinoIcons.check_mark) : null,
+                  onTap: () {
+                    context
+                        .read<ProfileStateProvider>()
+                        .toggleIndustry(industry);
+                  },
+                );
+              }).toList(),
+            ),
+                const SizedBox(height: 32,)
+          ]),
         ),
       ),
     );

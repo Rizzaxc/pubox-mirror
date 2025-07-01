@@ -1,3 +1,4 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
@@ -77,6 +78,10 @@ class _ProfileTabState extends State<ProfileTab> {
       // iOS UI
       return CupertinoListSection.insetGrouped(
         header: const Text('General'),
+        footer: Text(context.tr('profileView.profile_feature_explanation'), style: const TextStyle(
+          fontSize: 12,
+          color: CupertinoColors.secondaryLabel,
+        ),),
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         children: [
           const GenderSelection(),

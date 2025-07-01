@@ -10,8 +10,8 @@
     "industry_selection_title": "Chọn Ngành Nghề",
     "playtimeLabel": "Lịch Hằng Tuần",
     "network_feature_explanation": "Chọn tối đa 2 cơ quan/ tổ chức/ trường học bạn đã hoặc đang là thành viên. Pubox sẽ kết nối bạn đến những người cùng network.",
-    "industry_feature_explanation": "Chọn tối đa 2 ngạch bạn đang hoạt động. Pubox sẽ kết nối bạn đến những người cùng industry.",
-    "profile_feature_explanation": "Điền profile sẽ giúp Pubox kết nối bạn hiệu quả hơn."
+    "industry_feature_explanation": "Chọn tối đa 2 ngạch bạn đang làm việc. Pubox sẽ kết nối bạn đến những người cùng ngành nghề.",
+    "profile_feature_explanation": "Điền profile để Pubox giúp bạn kết nối với người khác tốt hơn."
   },
   "timeslot": {
     "dayOfWeek": {
