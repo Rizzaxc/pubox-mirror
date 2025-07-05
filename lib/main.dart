@@ -16,7 +16,6 @@ import 'package:sentry_flutter/sentry_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:toastification/toastification.dart';
 
-import 'core/network_provider.dart';
 import 'core/player_provider.dart';
 import 'core/sport_switcher.dart';
 import 'health_tab/health_f_a_b.dart';
@@ -144,11 +143,6 @@ class Pubox extends StatelessWidget {
             providers: [
               ChangeNotifierProvider<PlayerProvider>(
                   create: (_) => PlayerProvider()),
-
-              ChangeNotifierProvider<NetworkProvider>.value(
-                value: NetworkProvider.instance,
-              ),
-
               ChangeNotifierProvider<SelectedSportProvider>.value(
                 value: SelectedSportProvider.instance,
               ),

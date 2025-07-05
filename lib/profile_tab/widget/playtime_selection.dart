@@ -42,9 +42,9 @@ class PlaytimeSelection extends StatelessWidget {
       cupertino: CupertinoModalSheetData(
           barrierDismissible: true, semanticsDismissible: true),
       builder: (context) => DraggableScrollableSheet(
-        initialChildSize: 0.35,
-        minChildSize: 0.35,
-        maxChildSize: 0.40,
+        initialChildSize: 0.42,
+        minChildSize: 0.36,
+        maxChildSize: 0.50,
         snap: true,
         builder: (context, scrollController) => Container(
           decoration: BoxDecoration(

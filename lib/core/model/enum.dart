@@ -1,5 +1,6 @@
 // follow database ID
 import 'package:easy_localization/easy_localization.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:sentry_flutter/sentry_flutter.dart';
@@ -26,7 +27,6 @@ enum DayChunk {
 
   String getShortName(BuildContext context) {
     return context.tr('timeslot.dayChunk.shortName.$name');
-
   }
 
   String getFullName(BuildContext context) {
@@ -58,7 +58,6 @@ enum DayOfWeek {
   odd, // tue thu sat
   @JsonValue('wkn')
   weekend; // sat sun
-
 
   static String getLocalizedEnumLabel(BuildContext context) {
     return context.tr('timeslot.dayOfWeek.label');
@@ -672,8 +671,20 @@ enum NetworkCategory {
     }
   }
 
-  static NetworkCategory? fromString(String? value) {
-    if (value == null) return null;
+  Color get categoryColor {
+    switch (this) {
+      case NetworkCategory.highSchool:
+        return Colors.blue;
+      case NetworkCategory.giftedHighSchool:
+        return Colors.purple;
+      case NetworkCategory.university:
+        return Colors.green;
+      case NetworkCategory.company:
+        return Colors.orange;
+    }
+  }
+
+  static NetworkCategory fromString(String? value) {
     switch (value) {
       case 'high school':
         return NetworkCategory.highSchool;
@@ -681,43 +692,44 @@ enum NetworkCategory {
         return NetworkCategory.giftedHighSchool;
       case 'university':
         return NetworkCategory.university;
-      case 'company':
-        return NetworkCategory.company;
       default:
-        return null;
+        return NetworkCategory.company;
     }
   }
 }
 
-/// Class representing a network
-class Network {
+/// Class representing a Network or a UserNetwork
+class Network extends Equatable implements Comparable<Network> {
   final int id;
   final String name;
-  final NetworkCategory? category;
+
+  // if representing a UserNetwork, can either be true or false.
+  // if it's only for a Network, default to false
+  final bool isAlumni;
+  final NetworkCategory category;
 
   const Network({
     required this.id,
     required this.name,
-    this.category,
+    required this.isAlumni,
+    required this.category,
   });
 
   @override
   String toString() => name;
 
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-    return other is Network && other.id == id;
-  }
-
-  @override
-  int get hashCode => id.hashCode;
-
   String getLocalizedName(BuildContext context) {
     return name;
   }
-}
 
+  @override
+  List<Object?> get props => [id];
+
+  @override
+  int compareTo(Network other) {
+    return id.compareTo(other.id);
+  }
+}
 
 // Do not change order
 @JsonEnum()

@@ -7,11 +7,15 @@
     "network_selection_title": "Chọn Network",
     "selected_networks": "Network Đã Chọn",
     "no_networks_found": "Không tìm thấy network nào theo từ khoá",
+    "no_networks_selected": "Bạn chưa chọn tổ chức nào. Tìm theo tên để bắt đầu.",
     "industry_selection_title": "Chọn Ngành Nghề",
     "playtimeLabel": "Lịch Hằng Tuần",
     "network_feature_explanation": "Chọn tối đa 2 cơ quan/ tổ chức/ trường học bạn đã hoặc đang là thành viên. Pubox sẽ kết nối bạn đến những người cùng network.",
     "industry_feature_explanation": "Chọn tối đa 2 ngạch bạn đang làm việc. Pubox sẽ kết nối bạn đến những người cùng ngành nghề.",
-    "profile_feature_explanation": "Điền profile để Pubox giúp bạn kết nối với người khác tốt hơn."
+    "profile_feature_explanation": "Điền profile để Pubox giúp bạn kết nối với người khác tốt hơn.",
+    "alumni": "Cựu Thành viên",
+    "currentMember": "Thành viên hiện tại",
+    "toggleAlumniStatus": "Đổi trạng thái thành viên"
   },
   "timeslot": {
     "dayOfWeek": {

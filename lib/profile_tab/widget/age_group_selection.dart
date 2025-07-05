@@ -23,7 +23,8 @@ class AgeGroupSelection extends StatelessWidget {
         : _buildAndroidAgeGroupListTile(context, ageGroup);
   }
 
-  Widget _buildAndroidAgeGroupListTile(BuildContext context, AgeGroup? ageGroup) {
+  Widget _buildAndroidAgeGroupListTile(
+      BuildContext context, AgeGroup? ageGroup) {
     late String subtitle;
 
     if (ageGroup == null) {
@@ -63,13 +64,14 @@ class AgeGroupSelection extends StatelessWidget {
         builder: (context, scrollController) => Container(
           decoration: BoxDecoration(
               color: Theme.of(context).canvasColor,
-              borderRadius: const BorderRadius.vertical(top: Radius.circular(24))),
+              borderRadius:
+                  const BorderRadius.vertical(top: Radius.circular(24))),
           padding: const EdgeInsets.only(top: 8, left: 8, right: 8),
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 16.0, vertical: 8.0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -93,15 +95,6 @@ class AgeGroupSelection extends StatelessWidget {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                        child: Text(
-                          'TODO',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Theme.of(context).colorScheme.secondary,
-                              ),
-                        ),
-                      ),
                       RadioListTile<AgeGroup>(
                         title: Text(AgeGroup.student.getLocalizedName(context)),
                         value: AgeGroup.student,
@@ -121,7 +114,8 @@ class AgeGroupSelection extends StatelessWidget {
                         },
                       ),
                       RadioListTile<AgeGroup>(
-                        title: Text(AgeGroup.middleAge.getLocalizedName(context)),
+                        title:
+                            Text(AgeGroup.middleAge.getLocalizedName(context)),
                         value: AgeGroup.middleAge,
                         groupValue: currentAgeGroup,
                         onChanged: (AgeGroup? value) {
@@ -151,7 +145,7 @@ class AgeGroupSelection extends StatelessWidget {
 
     return CupertinoListTile.notched(
       title: Text(context.tr('$l10nKeyPrefix.ageGroupLabel')),
-      additionalInfo: choice,
+      subtitle: choice,
       leading: PuboxIcons.age,
       trailing: ageGroup != null
           ? CupertinoListTileChevron()
@@ -187,16 +181,6 @@ class AgeGroupListPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              child: Text(
-                'TODO',
-                style: TextStyle(
-                  fontSize: 12,
-                  color: CupertinoColors.secondaryLabel,
-                ),
-              ),
-            ),
             CupertinoListSection.insetGrouped(
               backgroundColor: Theme.of(context).scaffoldBackgroundColor,
               children: [

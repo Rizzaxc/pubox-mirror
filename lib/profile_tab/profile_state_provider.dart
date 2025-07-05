@@ -8,7 +8,7 @@ import '../core/logger.dart';
 import '../core/model/enum.dart';
 import '../core/model/user_details.dart';
 import '../core/model/timeslot.dart';
-import '../core/network_provider.dart';
+import '../core/network_repository.dart';
 import '../core/player_provider.dart';
 import '../core/sport_switcher.dart';
 import '../core/utils.dart';
@@ -84,7 +84,7 @@ class ProfileStateProvider extends ChangeNotifier {
       _selectedNetworks = [];
       for (var each in response as List) {
         final networkId = each['network_id'];
-        final network = await NetworkProvider.instance.findNetworkById(networkId);
+        final network = await NetworkRepository.findNetworkById(networkId);
         if (network != null) {
           _selectedNetworks.add(network);
         }
@@ -98,8 +98,7 @@ class ProfileStateProvider extends ChangeNotifier {
   }
 
   // Getters for current values
-  Gender? get gender =>
-      _pendingGender ?? _playerProvider.details?.gender;
+  Gender? get gender => _pendingGender ?? _playerProvider.details?.gender;
 
   AgeGroup? get ageGroup =>
       _pendingAgeGroup ?? _playerProvider.details?.ageGroup;
@@ -165,6 +164,23 @@ class ProfileStateProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  void toggleAlumniStatus(Network network) {
+    _hasPendingChanges = true;
+    _pendingNetworks ??= List.from(_selectedNetworks);
+    final updatedNetwork = Network(
+        id: network.id,
+        name: network.name,
+        isAlumni: !(network.isAlumni),
+        category: network.category);
+
+    _pendingNetworks!.remove(network);
+    _pendingNetworks!.add(updatedNetwork);
+    _pendingNetworks = [..._pendingNetworks!];
+    _pendingNetworks?.sort();
+
+    notifyListeners();
+  }
+
   // Add or remove a single network
   void toggleNetwork(Network network) {
     _hasPendingChanges = true;
@@ -188,6 +204,7 @@ class ProfileStateProvider extends ChangeNotifier {
         _pendingNetworks![1] = network;
       }
     }
+    _pendingNetworks?.sort();
     notifyListeners();
   }
 
@@ -195,18 +212,12 @@ class ProfileStateProvider extends ChangeNotifier {
   Future<void> updateUserAccountData({
     String? username,
   }) async {
-
     // Update local state through provider
     _playerProvider.update(username: username);
 
-
     // TODO: Implement actual Supabase update
     // This is a stub for the actual implementation
-    try {
-
-    } catch (e) {
-
-    }
+    try {} catch (e) {}
   }
 
   // Commit changes to the player provider
@@ -253,7 +264,10 @@ class ProfileStateProvider extends ChangeNotifier {
         AppLogger.d(_pendingIndustries.toString());
 
         // First, delete all existing user_industry entries for this user
-        await supabase.from('user_industry').delete().eq('user_id', _playerProvider.id!);
+        await supabase
+            .from('user_industry')
+            .delete()
+            .eq('user_id', _playerProvider.id!);
 
         final data = _pendingIndustries!
             .map((industry) =>
@@ -271,10 +285,14 @@ class ProfileStateProvider extends ChangeNotifier {
         AppLogger.d(_pendingNetworks.toString());
 
         // First, delete all existing user_network entries for this user
-        await supabase.from('user_network').delete().eq('user_id', _playerProvider.id!);
+        await supabase
+            .from('user_network')
+            .delete()
+            .eq('user_id', _playerProvider.id!);
 
         final data = _pendingNetworks!
-            .map((network) => {'user_id': _playerProvider.id!, 'network_id': network.id})
+            .map((network) =>
+                {'user_id': _playerProvider.id!, 'network_id': network.id})
             .toList();
         await supabase.from('user_network').insert(data);
 
